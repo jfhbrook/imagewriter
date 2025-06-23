@@ -1,0 +1,6 @@
+100 REM "Switch output to printer"
+110 PRINT CHR$(4);"PR#1"
+120 REM "Actually print something"
+130 PRINT "Hello world!"
+140 REM "Switch back to screen"
+150 PRINT CHR$(4);"PR#0"
