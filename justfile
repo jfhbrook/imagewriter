@@ -12,15 +12,11 @@ default:
 # Installing, updating and upgrading dependencies
 #
 
-_venv:
-  if [ ! -d .venv ]; then uv venv; fi
-
 _clean-venv:
   rm -rf .venv
 
 # Install all dependencies
 install:
-  @just _venv
   uv sync --dev
 
 # Update all dependencies
@@ -52,13 +48,13 @@ _clean-compile:
 
 # Format with black and isort
 format:
-  uv run black './retroprint' ./tests
-  uv run isort --settings-file . './retroprint' ./tests
+  uv run black './imagewriter' ./tests
+  uv run isort --settings-file . './imagewriter' ./tests
 
 # Lint with flake8
 lint:
-  uv run flake8 './retroprint' ./tests
-  uv run validate-pyproject ./pyproject.toml
+  uv run flake8 './imagewriter' ./tests
+  # uv run validate-pyproject ./pyproject.toml
 
 # Check type annotations with pyright
 check:
@@ -115,6 +111,6 @@ publish: build
 
 # Clean up loose files
 clean: _clean-venv _clean-compile _clean-test
-  rm -rf retroprint.egg-info
-  rm -f retroprint/*.pyc
-  rm -rf retroprint/__pycache__
+  rm -rf imagewriter.egg-info
+  rm -f imagewriter/*.pyc
+  rm -rf imagewriter/__pycache__

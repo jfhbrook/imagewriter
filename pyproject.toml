@@ -3,7 +3,7 @@ requires = ["setuptools", "setuptools-scm", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "retroprint"
+name = "imagewriter"
 version = "1.0.0"
 authors = [
   {name = "Josh Holbrook", email = "josh.holbrook@gmail.com"}
@@ -55,17 +55,17 @@ package = true
 
 [tool.isort]
 profile = "appnexus"
-known_application = "retroprint"
+known_application = "imagewriter"
 
 [tool.pyright]
-include = ["retroprint", "tests"]
+include = ["imagewriter", "tests"]
 
 [tool.pytest]
 addopts = "--verbose -s"
 testpaths = [ "tests" ]
 
 [tool.setuptools]
-packages = [ "retroprint" ]
+packages = [ "imagewriter" ]
 
 [tool.setuptools.dynamic]
 dependencies = { file = ["requirements.txt"] }
