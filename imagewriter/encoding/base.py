@@ -24,13 +24,11 @@ def esc(*sequence: str | int | bytes) -> bytes:
     seq: bytes = b""
 
     for s in sequence:
-        if type(s) is str:
+        if isinstance(s, str):
             seq += bytes(s, encoding="ascii")
-        elif type(s) is int:
+        elif isinstance(s, int):
             seq += bytes([s])
-        elif type(s) is bytes:
-            seq += s
         else:
-            raise ValueError(f"Unable to convert {s} to bytes")
+            seq += s
 
     return ESC + seq
