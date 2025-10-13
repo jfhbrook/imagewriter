@@ -23,7 +23,7 @@ class SoftwareSwitch(Enum):
     IGNORE_EIGHTH_DATA_BIT = 1 << (8 + 5)
 
     @classmethod
-    def _setting(cls: Type[Self], *switches: Self) -> bytes:
+    def _setting(cls: Type[Self], *switches: "SoftwareSwitch") -> bytes:
         a = 0
         b = 0
         for sw in switches:

@@ -1,4 +1,4 @@
-def ctrl(character: str) -> str:
+def ctrl(character: str) -> bytes:
     """
     Generate a control character, as per page 5 of the ImageWriter II Technical
     Reference Manual.
@@ -9,7 +9,7 @@ def ctrl(character: str) -> str:
     if not (64 <= point <= 95):
         raise ValueError(f"{character} ({point}) must be between 64 and 95 inclusive")
 
-    return chr(point - 64)
+    return bytes(chr(point - 64), encoding="ascii")
 
 
 ESC = bytes([27])
