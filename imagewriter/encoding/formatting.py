@@ -1,11 +1,11 @@
 from imagewriter.encoding.attributes import Pitch
 from imagewriter.encoding.base import esc, format_number
-from imagewriter.encoding.distance import Distance, Inch
+from imagewriter.encoding.length import Inch, Length
 
 LINE_WIDTH = Inch(8)
 
 
-def set_left_margin(distance: Distance | int, pitch: Pitch) -> bytes:
+def set_left_margin(distance: Length | int, pitch: Pitch) -> bytes:
     """
     Set the left margin, as per page 59 of the ImageWriter II Technical
     Reference Manual.
@@ -14,7 +14,7 @@ def set_left_margin(distance: Distance | int, pitch: Pitch) -> bytes:
     conversion: float = (pitch.characters_per_line - 1) / LINE_WIDTH.inches
     set_to: int = 0
 
-    if isinstance(distance, Distance):
+    if isinstance(distance, Length):
         set_to = int(distance.inches * conversion)
     else:
         set_to = distance

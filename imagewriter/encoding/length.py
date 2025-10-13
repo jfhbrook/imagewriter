@@ -3,10 +3,10 @@ from typing import Self, Type, TypeVar
 
 Value = int | float
 
-D = TypeVar("D", bound="Distance")
+D = TypeVar("D", bound="Length")
 
 
-class Distance(ABC):
+class Length(ABC):
     def __init__(self: Self, value: Value) -> None:
         self.value: Value = value
 
@@ -26,14 +26,14 @@ class Distance(ABC):
         raise NotImplementedError("millimeters")
 
     @classmethod
-    def from_(cls: Type[Self], from_: "Distance") -> Self:
-        raise NotImplementedError("Distance.from")
+    def from_(cls: Type[Self], from_: "Length") -> Self:
+        raise NotImplementedError("Length.from")
 
     def convert_to(self: Self, cls: Type[D]) -> D:
         return cls.from_(self)
 
 
-class Inch(Distance):
+class Inch(Length):
     @property
     def inches(self: Self) -> Value:
         return self.value
@@ -47,11 +47,11 @@ class Inch(Distance):
         return self.value * 2.54
 
     @classmethod
-    def from_(cls: Type[Self], from_: "Distance") -> Self:
+    def from_(cls: Type[Self], from_: Length) -> Self:
         return cls(from_.inches)
 
 
-class Centimeter(Distance):
+class Centimeter(Length):
     @property
     def inches(self: Self) -> Value:
         return self.value / 2.54
@@ -65,11 +65,11 @@ class Centimeter(Distance):
         return self.value * 10
 
     @classmethod
-    def from_(cls: Type[Self], from_: "Distance") -> Self:
+    def from_(cls: Type[Self], from_: Length) -> Self:
         return cls(from_.centimeters)
 
 
-class Millimeter(Distance):
+class Millimeter(Length):
     @property
     def inches(self: Self) -> Value:
         return self.value / 25.4
@@ -83,5 +83,5 @@ class Millimeter(Distance):
         return self.value
 
     @classmethod
-    def from_(cls: Type[Self], from_: "Distance") -> Self:
+    def from_(cls: Type[Self], from_: Length) -> Self:
         return cls(from_.millimeters)
