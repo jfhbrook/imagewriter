@@ -1,8 +1,7 @@
 from typing import List
 
-from imagewriter.encoding.base import ctrl, esc
-from imagewriter.encoding.character import CharacterEncoder, Text
-from imagewriter.encoding.format import (
+from imagewriter.encoding.attributes import (
+    Pitch,
     START_BOLDFACE,
     START_DOUBLE_WIDTH,
     START_HALF_HEIGHT,
@@ -16,16 +15,13 @@ from imagewriter.encoding.format import (
     STOP_SUPERSCRIPT,
     STOP_UNDERLINE,
 )
+from imagewriter.encoding.base import ctrl, esc
+from imagewriter.encoding.character import CharacterEncoder, Text
 from imagewriter.encoding.language import Language
 from imagewriter.encoding.switch import SoftwareSwitch
 
 __all__: List[str] = [
-    "ctrl",
-    "esc",
-    "CharacterEncoder",
-    "Text",
-    "Language",
-    "SoftwareSwitch",
+    "Pitch",
     "START_DOUBLE_WIDTH",
     "STOP_DOUBLE_WIDTH",
     "START_UNDERLINE",
@@ -38,4 +34,10 @@ __all__: List[str] = [
     "STOP_SUPERSCRIPT",
     "START_SUBSCRIPT",
     "STOP_SUBSCRIPT",
+    "ctrl",
+    "esc",
+    "CharacterEncoder",
+    "Text",
+    "Language",
+    "SoftwareSwitch",
 ]

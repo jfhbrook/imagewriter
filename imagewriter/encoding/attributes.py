@@ -1,10 +1,10 @@
 from enum import Enum
 from typing import Optional, Self
 
-from imagewriter.encoding.base import esc
+from imagewriter.encoding.base import ctrl, esc
 
 
-class CharacterPitch(Enum):
+class Pitch(Enum):
     """
     Character pitches, as per page 48 of the ImageWriter II Technical
     Reference Manual.
@@ -28,8 +28,8 @@ class CharacterPitch(Enum):
         """
 
         return self in {
-            CharacterPitch.PICA_PROPORTIONAL,
-            CharacterPitch.ELITE_PROPORTIONAL,
+            Pitch.PICA_PROPORTIONAL,
+            Pitch.ELITE_PROPORTIONAL,
         }
 
     @property
@@ -41,12 +41,12 @@ class CharacterPitch(Enum):
         """
 
         return {
-            CharacterPitch.EXTENDED: 9,
-            CharacterPitch.PICA: 10,
-            CharacterPitch.ELITE: 12,
-            CharacterPitch.SEMICONDENSED: 13.4,
-            CharacterPitch.CONDENSED: 15,
-            CharacterPitch.ULTRACONDENSED: 17,
+            Pitch.EXTENDED: 9,
+            Pitch.PICA: 10,
+            Pitch.ELITE: 12,
+            Pitch.SEMICONDENSED: 13.4,
+            Pitch.CONDENSED: 15,
+            Pitch.ULTRACONDENSED: 17,
         }.get(self, None)
 
     @property
@@ -57,8 +57,8 @@ class CharacterPitch(Enum):
         inch.
         """
         return {
-            CharacterPitch.PICA_PROPORTIONAL: 144,
-            CharacterPitch.ELITE_PROPORTIONAL: 180,
+            Pitch.PICA_PROPORTIONAL: 144,
+            Pitch.ELITE_PROPORTIONAL: 180,
         }.get(self, None)
 
     def set_pitch(self: Self) -> bytes:
@@ -69,14 +69,14 @@ class CharacterPitch(Enum):
 
         return esc(
             {
-                CharacterPitch.EXTENDED: "n",
-                CharacterPitch.PICA: "N",
-                CharacterPitch.ELITE: "E",
-                CharacterPitch.SEMICONDENSED: "e",
-                CharacterPitch.CONDENSED: "q",
-                CharacterPitch.ULTRACONDENSED: "Q",
-                CharacterPitch.PICA_PROPORTIONAL: "p",
-                CharacterPitch.ELITE_PROPORTIONAL: "P",
+                Pitch.EXTENDED: "n",
+                Pitch.PICA: "N",
+                Pitch.ELITE: "E",
+                Pitch.SEMICONDENSED: "e",
+                Pitch.CONDENSED: "q",
+                Pitch.ULTRACONDENSED: "Q",
+                Pitch.PICA_PROPORTIONAL: "p",
+                Pitch.ELITE_PROPORTIONAL: "P",
             }[self]
         )
 
@@ -111,3 +111,17 @@ class CharacterPitch(Enum):
             raise ValueError("Spaces must be from 1 to 6")
 
         return esc("m", str(spaces))
+
+
+START_DOUBLE_WIDTH: bytes = ctrl("N")
+STOP_DOUBLE_WIDTH: bytes = ctrl("O")
+START_UNDERLINE: bytes = esc("X")
+STOP_UNDERLINE: bytes = esc("Y")
+START_BOLDFACE: bytes = esc("!")
+STOP_BOLDFACE: bytes = esc('"')
+START_HALF_HEIGHT: bytes = esc("w")
+STOP_HALF_HEIGHT: bytes = esc("W")
+START_SUPERSCRIPT: bytes = esc("x")
+STOP_SUPERSCRIPT: bytes = esc("z")
+START_SUBSCRIPT: bytes = esc("y")
+STOP_SUBSCRIPT: bytes = STOP_SUPERSCRIPT
