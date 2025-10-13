@@ -20,7 +20,14 @@ from imagewriter.encoding.boundaries import set_left_margin, set_page_length
 from imagewriter.encoding.character import CharacterEncoder, Text
 from imagewriter.encoding.language import Language
 from imagewriter.encoding.length import Centimeter, Inch, Length, Millimeter
-from imagewriter.encoding.motion import BACKSPACE, CR, LF, set_unidirectional_printing
+from imagewriter.encoding.motion import (
+    BACKSPACE,
+    CR,
+    LF,
+    set_unidirectional_printing,
+    TAB,
+    TabStops,
+)
 from imagewriter.encoding.quality import Quality
 from imagewriter.encoding.switch import SoftwareSwitch
 
@@ -52,6 +59,8 @@ __all__: List[str] = [
     "BACKSPACE",
     "CR",
     "LF",
+    "TAB",
+    "TabStops",
     "set_unidirectional_printing",
     "Quality",
     "SoftwareSwitch",

@@ -69,7 +69,7 @@ class Pitch(Enum):
 
         For non-proportional fonts, this corresponds to characters per inch
         given an 8 inch line. For proportional fonts, the value is not strict
-        but still useful for settings left margins.
+        but still useful for setting left margins.
         """
         return {
             Pitch.EXTENDED: 72,
@@ -80,6 +80,28 @@ class Pitch(Enum):
             Pitch.ULTRACONDENSED: 136,
             Pitch.PICA_PROPORTIONAL: 72,
             Pitch.ELITE_PROPORTIONAL: 79,
+        }[self]
+
+    @property
+    def characters_per_inch(self: Self) -> int:
+        """
+        Characters per inch, as per page 66 of the ImageWriter II Technical
+        Reference Manual.
+
+        For non-proportional fonts, this corresponds to characters per inch.
+        For proportional fonts, the value is not strict but still useful for
+        setting tab stops.
+        """
+
+        return {
+            Pitch.EXTENDED: 9,
+            Pitch.PICA: 10,
+            Pitch.ELITE: 12,
+            Pitch.SEMICONDENSED: 13.4,
+            Pitch.CONDENSED: 15,
+            Pitch.ULTRACONDENSED: 17,
+            Pitch.PICA_PROPORTIONAL: 9,
+            Pitch.ELITE_PROPORTIONAL: 10,
         }[self]
 
     def set_pitch(self: Self) -> bytes:
