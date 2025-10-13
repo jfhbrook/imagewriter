@@ -146,3 +146,6 @@ def place_exact_print_head_position(position: Length | int, pitch: Pitch) -> byt
     pos = min(pos, pitch.width)
 
     return esc("F", format_number(pos, 4))
+
+
+SET_TOP_OF_FORM = esc("v")
