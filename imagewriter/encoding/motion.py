@@ -126,3 +126,23 @@ class TabStops:
 
         self.pitch = pitch
         return self.clear_all() + self.set_many(self.stops)
+
+
+def place_exact_print_head_position(position: Length | int, pitch: Pitch) -> bytes:
+    """
+    Place the exact print head position, as per page 120 of the ImageWriter
+    II Technical Reference Manual.
+
+    Position is typically specified in dots per inch, based on the pitch.
+    """
+
+    pos: int = 0
+
+    if isinstance(position, Length):
+        pos = int(position.inches * pitch.horizontal_resolution)
+    else:
+        pos = position
+
+    pos = min(pos, pitch.width)
+
+    return esc("F", format_number(pos, 4))

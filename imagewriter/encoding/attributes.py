@@ -104,6 +104,52 @@ class Pitch(Enum):
             Pitch.ELITE_PROPORTIONAL: 10,
         }[self]
 
+    @property
+    def horizontal_resolution(self: Self) -> int:
+        """
+        The horizontal resolution in graphics mode, as per page 106 of the
+        ImageWriter II Technical Reference Manual, in dots per inch.
+        """
+
+        return {
+            Pitch.EXTENDED: 72,
+            Pitch.PICA: 80,
+            Pitch.ELITE: 96,
+            Pitch.SEMICONDENSED: 107,
+            Pitch.CONDENSED: 120,
+            Pitch.ULTRACONDENSED: 136,
+            Pitch.PICA_PROPORTIONAL: 144,
+            Pitch.ELITE_PROPORTIONAL: 160,
+        }[self]
+
+    @property
+    def vertical_resolution(self: Self) -> int:
+        """
+        The vertical resolution in graphics mode as per page 104 of the
+        ImageWriter II Technical Reference Manual, which is 72 dpi regardless
+        of pitch.
+        """
+
+        return 72
+
+    @property
+    def width(self: Self) -> int:
+        """
+        The maximum width in graphics mode, as per page 106 of the ImageWriter
+        II Technical Reference Manual, in dots.
+        """
+
+        return {
+            Pitch.EXTENDED: 576,
+            Pitch.PICA: 640,
+            Pitch.ELITE: 768,
+            Pitch.SEMICONDENSED: 856,
+            Pitch.CONDENSED: 960,
+            Pitch.ULTRACONDENSED: 1088,
+            Pitch.PICA_PROPORTIONAL: 1152,
+            Pitch.ELITE_PROPORTIONAL: 1280,
+        }[self]
+
     def set_pitch(self: Self) -> bytes:
         """
         Set the pitch, as per page 47 of the ImageWriter II Technical Reference
