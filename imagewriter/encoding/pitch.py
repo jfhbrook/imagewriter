@@ -5,6 +5,11 @@ from imagewriter.encoding.base import esc
 
 
 class CharacterPitch(Enum):
+    """
+    Character pitches, as per page 48 of the ImageWriter II Technical
+    Reference Manual.
+    """
+
     EXTENDED = "Extended"
     PICA = "Pica"
     ELITE = "Elite"
@@ -16,6 +21,12 @@ class CharacterPitch(Enum):
 
     @property
     def is_proportional(self: Self) -> bool:
+        """
+        Whether or not the pitch is proportional.
+
+        Note, proportional fonts will not be printed at draft quality.
+        """
+
         return self in {
             CharacterPitch.PICA_PROPORTIONAL,
             CharacterPitch.ELITE_PROPORTIONAL,
@@ -23,6 +34,12 @@ class CharacterPitch(Enum):
 
     @property
     def cpi(self: Self) -> Optional[int | float]:
+        """
+        The pitch's characters per inch. Note that proportional fonts do not
+        have a set characters per inch, and are specified in dots per inch
+        instead.
+        """
+
         return {
             CharacterPitch.EXTENDED: 9,
             CharacterPitch.PICA: 10,
@@ -34,12 +51,22 @@ class CharacterPitch(Enum):
 
     @property
     def dpi(self: Self) -> Optional[int]:
+        """
+        The pitch's dots per inch. Note that only proportional fonts have a
+        set dots per inch; all other fonts are specified in characters per
+        inch.
+        """
         return {
             CharacterPitch.PICA_PROPORTIONAL: 144,
             CharacterPitch.ELITE_PROPORTIONAL: 180,
         }.get(self, None)
 
     def set_pitch(self: Self) -> bytes:
+        """
+        Set the pitch, as per page 47 of the ImageWriter II Technical Reference
+        Manual.
+        """
+
         return esc(
             {
                 CharacterPitch.EXTENDED: "n",
@@ -54,6 +81,13 @@ class CharacterPitch(Enum):
         )
 
     def insert_spaces(self: Self, spaces: int) -> bytes:
+        """
+        Insert spaces before the next character, as per page 49 of the
+        ImageWriter II Technical Reference Manual.
+
+        Note that this command only works for proportional pitches.
+        """
+
         if not self.is_proportional:
             raise ValueError(f"{self.value} is not a proportional pitch")
 
@@ -63,6 +97,13 @@ class CharacterPitch(Enum):
         return esc(str(spaces))
 
     def set_spacing(self: Self, spaces: int) -> bytes:
+        """
+        Set the amount of spaces inserted between each character, as per page
+        49 of the ImageWriter II Technical Reference Manual.
+
+        Note that this command only works for proportional pitches.
+        """
+
         if not self.is_proportional:
             raise ValueError(f"{self.value} is not a proportional pitch")
 
