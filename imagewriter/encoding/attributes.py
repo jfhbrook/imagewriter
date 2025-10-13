@@ -61,6 +61,27 @@ class Pitch(Enum):
             Pitch.ELITE_PROPORTIONAL: 180,
         }.get(self, None)
 
+    @property
+    def characters_per_line(self: Self) -> int:
+        """
+        Characters per line, as per page 60 of the ImageWriter II Technical
+        Reference Manual.
+
+        For non-proportional fonts, this corresponds to characters per inch
+        given an 8 inch line. For proportional fonts, the value is not strict
+        but still useful for settings left margins.
+        """
+        return {
+            Pitch.EXTENDED: 72,
+            Pitch.PICA: 80,
+            Pitch.ELITE: 96,
+            Pitch.SEMICONDENSED: 107,
+            Pitch.CONDENSED: 120,
+            Pitch.ULTRACONDENSED: 136,
+            Pitch.PICA_PROPORTIONAL: 72,
+            Pitch.ELITE_PROPORTIONAL: 79,
+        }[self]
+
     def set_pitch(self: Self) -> bytes:
         """
         Set the pitch, as per page 47 of the ImageWriter II Technical Reference

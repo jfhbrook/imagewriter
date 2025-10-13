@@ -1,4 +1,4 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 from typing import Any, Dict, Generator, List, Self
 
 from imagewriter.encoding.base import esc
@@ -43,7 +43,7 @@ MOUSETEXT_CHARACTERS: Dict[str, MouseTextCharacter] = {
 DISABLE_MODE = esc("$")
 
 
-class Mode:
+class Mode(ABC):
     @abstractmethod
     def enable(self: Self) -> bytes:
         pass

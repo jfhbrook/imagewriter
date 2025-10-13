@@ -32,3 +32,16 @@ def esc(*sequence: str | int | bytes) -> bytes:
             seq += s
 
     return ESC + seq
+
+
+def format_number(n: int, width: int = 0) -> str:
+    """
+    Format a number by adding leading zeros.
+    """
+
+    formatted = str(n)
+
+    while len(formatted) < width:
+        formatted = "0" + formatted
+
+    return formatted
