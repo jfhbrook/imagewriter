@@ -16,8 +16,8 @@ from imagewriter.encoding.attributes import (
     STOP_UNDERLINE,
 )
 from imagewriter.encoding.base import ctrl, esc
+from imagewriter.encoding.boundaries import set_left_margin, set_page_length
 from imagewriter.encoding.character import CharacterEncoder, Text
-from imagewriter.encoding.formatting import set_left_margin
 from imagewriter.encoding.language import Language
 from imagewriter.encoding.length import Centimeter, Inch, Length, Millimeter
 from imagewriter.encoding.quality import Quality
@@ -39,9 +39,10 @@ __all__: List[str] = [
     "STOP_SUBSCRIPT",
     "ctrl",
     "esc",
+    "set_left_margin",
+    "set_page_length",
     "CharacterEncoder",
     "Text",
-    "set_left_margin",
     "Language",
     "Inch",
     "Centimeter",
