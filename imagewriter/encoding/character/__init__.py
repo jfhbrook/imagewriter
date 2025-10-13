@@ -24,8 +24,7 @@ LANGUAGE_ENCODINGS: Dict[Language, Dict[str, str]] = {
     Language.DANISH: dict(),
 }
 
-# TODO: Refactor to a List[LanguageMode] ?
-LANGUAGES_WITH_ENCODING: Dict[str, List[Language]] = {"£": [Language.BRITISH]}
+LANGUAGE_CHARACTERS: Dict[str, List[Language]] = {"£": [Language.BRITISH]}
 
 MOUSETEXT_CHARACTERS: Dict[str, MouseTextCharacter] = {
     "⌛︎": MouseTextCharacter.HOURGLASS,
@@ -71,6 +70,12 @@ class LanguageMode(Mode):
 
     def __eq__(self: Self, other: Any) -> bool:
         return isinstance(other, LanguageMode) and self.language == other.language
+
+
+LANGUAGE_MODES: Dict[str, List[LanguageMode]] = {
+    ch: [LanguageMode(lang) for lang in langs]
+    for ch, langs in LANGUAGE_CHARACTERS.items()
+}
 
 
 class MouseTextMode(Mode):
@@ -141,13 +146,14 @@ class CharacterEncoder:
         map_mousetext: bool = True,
         map_custom: bool = True,
     ) -> None:
-        # TODO: Refactor to store default language mode
-        self.language: Language = language
+        default_mode: LanguageMode = LanguageMode(language)
+
+        self.default_mode: LanguageMode = default_mode
         self.map_mousetext: bool = map_mousetext
         self.map_custom: bool = map_custom
 
-        self.language_mode: LanguageMode = LanguageMode(language)
-        self.mode: Mode = self.language_mode
+        self.language_mode: LanguageMode = default_mode
+        self.mode: Mode = default_mode
 
     def _next_mode(self: Self, character: Character) -> Mode:
         if isinstance(character, MouseTextCharacter):
@@ -156,16 +162,14 @@ class CharacterEncoder:
         if isinstance(character, CustomCharacter):
             return CustomCharacterMode(map=self.map_custom)
 
-        # TODO: If this encoding table is complete, it should be safe to
-        # default to self.language_mode.language.
-        supported: List[Language] = LANGUAGES_WITH_ENCODING.get(
-            character, [self.language]
+        supported: List[LanguageMode] = LANGUAGE_MODES.get(
+            character, [self.language_mode]
         )
 
         if self.language_mode.language in supported:
             return self.language_mode
         else:
-            return LanguageMode(supported[0])
+            return supported[0]
 
     def _set_mode(self: Self, mode: Mode) -> bytes:
         if mode == self.mode:
@@ -181,9 +185,6 @@ class CharacterEncoder:
         self.mode = mode
 
         return encoded
-
-    def enable_default_language(self: Self) -> bytes:
-        return LanguageMode(self.language).enable()
 
     def encode(self: Self, *text: Text) -> bytes:
         encoded: bytes = b""
@@ -216,7 +217,7 @@ class CharacterEncoder:
         encoded += self.mode.disable()
 
         # Enable the default language if need be
-        if self.language_mode.language != self.language:
-            encoded += self.enable_default_language()
+        if self.language_mode != self.default_mode:
+            encoded += self.default_mode.enable()
 
         return encoded
