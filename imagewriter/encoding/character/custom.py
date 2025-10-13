@@ -1,9 +1,4 @@
-from typing import Self
-
-from imagewriter.encoding.base import esc
-
-ENABLE_CUSTOM_CHARACTER = esc("'")
-ENABLE_MAP_CUSTOM_CHARACTER = esc("*")
+from typing import List, Self
 
 
 class CustomCharacter:
@@ -14,4 +9,4 @@ class CustomCharacter:
         self.point: int = point
 
 
-# TODO: Mapping mousetext is the same as mapping custom characters
+CustomCharacters = CustomCharacter | List[CustomCharacter]
