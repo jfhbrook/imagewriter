@@ -1,4 +1,4 @@
-from typing import List, Self, Sequence
+from typing import List, Literal, Self, Sequence, Type
 
 from imagewriter.encoding.base import ctrl, esc, format_number
 from imagewriter.encoding.length import Inch, Length
@@ -6,6 +6,7 @@ from imagewriter.encoding.pitch import Pitch
 
 CR = b"\r"
 LF = b"\n"
+FF = ctrl("L")
 BACKSPACE = ctrl("H")
 TAB = b"\t"
 
@@ -149,3 +150,72 @@ def place_exact_print_head_position(position: Length | int, pitch: Pitch) -> byt
 
 
 SET_TOP_OF_FORM = esc("v")
+
+
+class LineFeed:
+    @classmethod
+    def feed(cls: Type[Self], lines: int = 1) -> bytes:
+        """
+        Feed paper from 1 to 15 lines, as per page 70 of the ImageWriter II
+        Technical Reference Manual.
+        """
+
+        assert 1 <= lines <= 15, "Must feed between 1 and 15 lines"
+
+        if lines == 1:
+            return LF
+
+        return ctrl("_") + bytes(
+            {10: ":", 11: ";", 12: "<", 13: "=", 14: ">", 15: "?"}.get(
+                lines, str(lines)
+            ),
+            encoding="ascii",
+        )
+
+    @classmethod
+    def set_lines_per_inch(cls: Type[Self], lines: Literal[6] | Literal[8]) -> bytes:
+        """
+        Set lines per inch to either 6 or 8, as per page 71 of the ImageWriter
+        II Technical Reference Manual.
+        """
+
+        assert lines == 6 or lines == 8, "May only set 6 or 8 lines per inch"
+
+        if lines == 6:
+            return esc("A")
+        else:
+            return esc("B")
+
+    @classmethod
+    def set_distance_between_lines(cls: Type[Self], distance: Length | int) -> bytes:
+        """
+        Set the distance between lines, as per page 71 of the ImageWriter II
+        Technical Reference Manual.
+        """
+
+        dist: int = 0
+
+        if isinstance(distance, Length):
+            dist = int(distance.inches * 144)
+        else:
+            dist = distance
+
+        return esc("T", format_number(dist, 2))
+
+    @classmethod
+    def forard(cls: Type[Self]) -> bytes:
+        """
+        Set lines to feed forward (the default) as per page 71 of the
+        ImageWriter II Technical Reference Manual.
+        """
+
+        return esc("f")
+
+    @classmethod
+    def reverse(cls: Type[Self]) -> bytes:
+        """
+        Set lines to feed in reverse as per page 71 of the ImageWriter II
+        Technical Reference Manual.
+        """
+
+        return esc("r")
