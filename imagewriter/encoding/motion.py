@@ -195,7 +195,7 @@ class LineFeed:
         return esc("T", format_number(dist, 2))
 
     @classmethod
-    def forard(cls: Type[Self]) -> bytes:
+    def forward(cls: Type[Self]) -> bytes:
         """
         Set lines to feed forward (the default) as per page 71 of the
         ImageWriter II Technical Reference Manual.

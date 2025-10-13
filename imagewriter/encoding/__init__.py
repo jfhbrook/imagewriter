@@ -17,6 +17,10 @@ from imagewriter.encoding.attributes import (
 from imagewriter.encoding.base import ctrl, esc
 from imagewriter.encoding.boundaries import set_left_margin, set_page_length
 from imagewriter.encoding.character import CharacterEncoder, Text
+from imagewriter.encoding.insertion import (
+    DISABLE_CARRIAGE_RETURN_INSERTION,
+    ENABLE_CARRIAGE_RETURN_INSERTION,
+)
 from imagewriter.encoding.language import Language
 from imagewriter.encoding.motion import (
     BACKSPACE,
@@ -62,6 +66,8 @@ __all__: List[str] = [
     "set_page_length",
     "CharacterEncoder",
     "Text",
+    "DISABLE_CARRIAGE_RETURN_INSERTION",
+    "ENABLE_CARRIAGE_RETURN_INSERTION",
     "Language",
     "BACKSPACE",
     "CR",
