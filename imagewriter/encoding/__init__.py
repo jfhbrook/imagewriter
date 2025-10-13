@@ -20,6 +20,7 @@ from imagewriter.encoding.character import CharacterEncoder, Text
 from imagewriter.encoding.distance import Centimeter, Distance, Inch, Millimeter
 from imagewriter.encoding.formatting import set_left_margin
 from imagewriter.encoding.language import Language
+from imagewriter.encoding.quality import Quality
 from imagewriter.encoding.switch import SoftwareSwitch
 
 __all__: List[str] = [
@@ -46,5 +47,6 @@ __all__: List[str] = [
     "Millimeter",
     "set_left_margin",
     "Language",
+    "Quality",
     "SoftwareSwitch",
 ]

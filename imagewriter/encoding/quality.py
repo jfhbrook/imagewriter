@@ -4,16 +4,10 @@ from typing import Self
 from imagewriter.encoding.base import esc
 
 
-class PrintQuality(Enum):
+class Quality(Enum):
     """
     A Print-Quality Font, as per page 39 of the ImageWriter II Technical
     Reference Manual. Lower quality fonts print more quickly.
-
-    | Font                      | Print Speed |
-    |---------------------------|-------------|
-    | NLQ (Near Letter Quality) |      45 CPS |
-    | Correspondence            |     180 CPS |
-    | Draft                     |     250 CPS |
 
     Note that boldface, double-width, half-height, subscript, superscript
     and proportional printing will always print at the Correspondence quality
@@ -22,7 +16,19 @@ class PrintQuality(Enum):
 
     CORRESPONDENCE = "0"
     DRAFT = "1"
-    NLQ = "2"
+    NEAR_LETTER_QUALITY = "2"  # or "NLQ"
+
+    @property
+    def print_speed(self: Self) -> int:
+        """
+        Print speed, in characters per second.
+        """
+
+        return {
+            Quality.NEAR_LETTER_QUALITY: 45,
+            Quality.CORRESPONDENCE: 180,
+            Quality.DRAFT: 250,
+        }[self]
 
     def select(self: Self) -> bytes:
         """
@@ -40,9 +46,9 @@ class PrintQuality(Enum):
         This method is included in the interest of completeness.
         """
 
-        if self == PrintQuality.CORRESPONDENCE:
+        if self == Quality.CORRESPONDENCE:
             return esc("m")
-        elif self == PrintQuality.NLQ:
+        elif self == Quality.NEAR_LETTER_QUALITY:
             return esc("M")
         else:
             return self.select()
