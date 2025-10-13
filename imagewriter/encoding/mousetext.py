@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Dict, List, Self
+from typing import Dict, List
 
 from imagewriter.encoding.base import esc
 
@@ -101,6 +101,8 @@ def map_mousetext(text: bytes) -> bytes:
     This is necessary if the eighth data bit is ignored.
     """
 
+    assert all([is_mousetext(c) for c in text]), "All characters must be MouseText"
+
     return bytes([c - 128 for c in text])
 
 
@@ -110,60 +112,3 @@ def is_mousetext(point: int) -> bool:
     ImageWriter II Technical Reference Manual.
     """
     return 192 <= point <= 223
-
-
-def esc_mousetext(text: bytes) -> bytes:
-    """
-    Escape encoded MouseText characters using low ASCII, as per page 41 of
-    the ImageWriter II Technical Reference Manual.
-
-    This is necessary if the eighth data bit is ignored.
-    """
-
-    mouse_mode = False
-    escaped = b""
-    buffer = b""
-
-    for c in text:
-        if is_mousetext(c):
-            if not mouse_mode:
-                escaped += buffer
-                buffer = b""
-                escaped += ENABLE_MAP_MOUSETEXT
-                mouse_mode = True
-        else:
-            if mouse_mode:
-                escaped += map_mousetext(buffer)
-                buffer = b""
-                escaped += DISABLE_MAP_MOUSETEXT
-                mouse_mode = False
-
-        buffer += bytes([c])
-
-    escaped += buffer
-
-    if mouse_mode:
-        escaped += DISABLE_MAP_MOUSETEXT
-
-    return escaped
-
-
-class MouseTextEncoder:
-    """
-    An encoder for text containing MouseText. If escape is set, the encoding
-    will automatically be mapped when required.
-    """
-
-    def __init__(self: Self, escape: bool) -> None:
-        self.escape = escape
-
-    def encode(self: Self, *text: str | MouseTextCharacter) -> bytes:
-        encoded = b""
-
-        for chunk in text:
-            encoded += encode_mousetext(chunk)
-
-        if self.escape:
-            return esc_mousetext(encoded)
-        else:
-            return encoded
