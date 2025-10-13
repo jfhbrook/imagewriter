@@ -22,12 +22,14 @@ from imagewriter.encoding.motion import (
     BACKSPACE,
     CR,
     LF,
+    LineFeed,
     place_exact_print_head_position,
     SET_TOP_OF_FORM,
     set_unidirectional_printing,
     TAB,
     TabStops,
 )
+from imagewriter.encoding.paper import DISABLE_PAPER_OUT_SENSOR, ENABLE_PAPER_OUT_SENSOR
 from imagewriter.encoding.pitch import Pitch
 from imagewriter.encoding.quality import Quality
 from imagewriter.encoding.switch import SoftwareSwitch
@@ -64,11 +66,14 @@ __all__: List[str] = [
     "BACKSPACE",
     "CR",
     "LF",
+    "LineFeed",
     "place_exact_print_head_position",
     "SET_TOP_OF_FORM",
     "set_unidirectional_printing",
     "TAB",
     "TabStops",
+    "DISABLE_PAPER_OUT_SENSOR",
+    "ENABLE_PAPER_OUT_SENSOR",
     "Pitch",
     "Quality",
     "SoftwareSwitch",
