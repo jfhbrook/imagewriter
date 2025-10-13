@@ -18,7 +18,6 @@ from imagewriter.encoding.base import ctrl, esc
 from imagewriter.encoding.boundaries import set_left_margin, set_page_length
 from imagewriter.encoding.character import CharacterEncoder, Text
 from imagewriter.encoding.language import Language
-from imagewriter.encoding.length import Centimeter, Inch, Length, Millimeter
 from imagewriter.encoding.motion import (
     BACKSPACE,
     CR,
@@ -32,6 +31,15 @@ from imagewriter.encoding.motion import (
 from imagewriter.encoding.pitch import Pitch
 from imagewriter.encoding.quality import Quality
 from imagewriter.encoding.switch import SoftwareSwitch
+from imagewriter.encoding.units import (
+    Centimeter,
+    Distance,
+    Inch,
+    Length,
+    length_to_distance,
+    length_to_int,
+    Millimeter,
+)
 
 __all__: List[str] = [
     "START_DOUBLE_WIDTH",
@@ -53,10 +61,6 @@ __all__: List[str] = [
     "CharacterEncoder",
     "Text",
     "Language",
-    "Inch",
-    "Centimeter",
-    "Length",
-    "Millimeter",
     "BACKSPACE",
     "CR",
     "LF",
@@ -68,4 +72,11 @@ __all__: List[str] = [
     "Pitch",
     "Quality",
     "SoftwareSwitch",
+    "Centimeter",
+    "Distance",
+    "Inch",
+    "Length",
+    "length_to_distance",
+    "length_to_int",
+    "Millimeter",
 ]

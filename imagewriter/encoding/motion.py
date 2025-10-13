@@ -1,8 +1,14 @@
 from typing import List, Literal, Self, Sequence, Type
 
 from imagewriter.encoding.base import ctrl, esc, format_number
-from imagewriter.encoding.length import Inch, Length
 from imagewriter.encoding.pitch import Pitch
+from imagewriter.encoding.units import (
+    Distance,
+    Inch,
+    Length,
+    length_to_distance,
+    length_to_int,
+)
 
 CR = b"\r"
 LF = b"\n"
@@ -32,23 +38,19 @@ class TabStops:
 
     def __init__(self: Self, pitch: Pitch) -> None:
         self.pitch: Pitch = pitch
-        self.stops: List[Length] = list()
+        self.stops: List[Distance] = list()
 
-    def _to_int(self: Self, length: Length | int) -> int:
-        stop: int = 0
-        if isinstance(length, Length):
-            stop = int(length.inches * self.pitch.characters_per_inch)
-        else:
-            stop = length
+    def _to_int(self: Self, length: Length) -> int:
+        stop: int = length_to_int(length, lambda lg: lg.characters(self.pitch))
 
-        return min(stop, self.pitch.characters_per_line - 1)
+        return min(stop, self.pitch.max_character_position)
 
-    def _to_length(self: Self, length: Length | int) -> Length:
-        if isinstance(length, Length):
-            return length
-        return Inch(length / self.pitch.characters_per_inch)
+    def _to_distance(self: Self, length: Length) -> Distance:
+        return length_to_distance(
+            length, lambda lg: Inch(lg / self.pitch.characters_per_inch)
+        )
 
-    def _to_list(self: Self, stops: Sequence[Length | int]) -> bytes:
+    def _to_list(self: Self, stops: Sequence[Length]) -> bytes:
         tab_stops: List[int] = [self._to_int(st) for st in stops]
         tab_stops.sort()
 
@@ -64,38 +66,38 @@ class TabStops:
     def _sort_stops(self: Self) -> None:
         self.stops.sort(key=self._to_int)
 
-    def set_many(self: Self, stops: Sequence[Length | int]) -> bytes:
+    def set_many(self: Self, stops: Sequence[Length]) -> bytes:
         """
         Set multiple tab stops, as per page 65 of the ImageWriter II Technical
         Reference Manual.
         """
 
-        self.stops = [self._to_length(st) for st in stops]
+        self.stops = [self._to_distance(st) for st in stops]
         self._sort_stops()
 
         return esc("(") + self._to_list(stops)
 
-    def set_one(self: Self, stop: Length | int) -> bytes:
+    def set_one(self: Self, stop: Length) -> bytes:
         """
         Set a single tab stop, as per page 65 of the ImageWriter II Technical
         Reference Manual.
         """
 
-        self.stops.append(self._to_length(stop))
+        self.stops.append(self._to_distance(stop))
         self._sort_stops()
 
         tab_stop = self._to_int(stop)
 
         return esc("U", format_number(tab_stop, 3))
 
-    def clear_many(self: Self, stops: Sequence[Length | int]) -> bytes:
+    def clear_many(self: Self, stops: Sequence[Length]) -> bytes:
         """
         Clear multiple tab stops, as per page 65 of the ImageWriter II
         Technical Reference Manual.
         """
 
         self.stops = [
-            self._to_length(st)
+            self._to_distance(st)
             for st in (
                 {self._to_int(st) for st in self.stops}
                 - {self._to_int(st) for st in stops}
@@ -129,7 +131,7 @@ class TabStops:
         return self.clear_all() + self.set_many(self.stops)
 
 
-def place_exact_print_head_position(position: Length | int, pitch: Pitch) -> bytes:
+def place_exact_print_head_position(position: Length, pitch: Pitch) -> bytes:
     """
     Place the exact print head position, as per page 120 of the ImageWriter
     II Technical Reference Manual.
@@ -137,12 +139,7 @@ def place_exact_print_head_position(position: Length | int, pitch: Pitch) -> byt
     Position is typically specified in dots per inch, based on the pitch.
     """
 
-    pos: int = 0
-
-    if isinstance(position, Length):
-        pos = int(position.inches * pitch.horizontal_resolution)
-    else:
-        pos = position
+    pos: int = length_to_int(position, lambda p: p.horizontal_dpi(pitch))
 
     pos = min(pos, pitch.width)
 
@@ -187,18 +184,13 @@ class LineFeed:
             return esc("B")
 
     @classmethod
-    def set_distance_between_lines(cls: Type[Self], distance: Length | int) -> bytes:
+    def set_distance_between_lines(cls: Type[Self], distance: Length) -> bytes:
         """
         Set the distance between lines, as per page 71 of the ImageWriter II
         Technical Reference Manual.
         """
 
-        dist: int = 0
-
-        if isinstance(distance, Length):
-            dist = int(distance.inches * 144)
-        else:
-            dist = distance
+        dist: int = length_to_int(distance, lambda d: d.vertical)
 
         return esc("T", format_number(dist, 2))
 

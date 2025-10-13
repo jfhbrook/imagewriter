@@ -3,6 +3,8 @@ from typing import Optional, Self
 
 from imagewriter.encoding.base import esc
 
+LINE_WIDTH = 8  # inches
+
 
 class Pitch(Enum):
     """
@@ -62,27 +64,6 @@ class Pitch(Enum):
         }.get(self, None)
 
     @property
-    def characters_per_line(self: Self) -> int:
-        """
-        Characters per line, as per page 60 of the ImageWriter II Technical
-        Reference Manual.
-
-        For non-proportional fonts, this corresponds to characters per inch
-        given an 8 inch line. For proportional fonts, the value is not strict
-        but still useful for setting left margins.
-        """
-        return {
-            Pitch.EXTENDED: 72,
-            Pitch.PICA: 80,
-            Pitch.ELITE: 96,
-            Pitch.SEMICONDENSED: 107,
-            Pitch.CONDENSED: 120,
-            Pitch.ULTRACONDENSED: 136,
-            Pitch.PICA_PROPORTIONAL: 72,
-            Pitch.ELITE_PROPORTIONAL: 79,
-        }[self]
-
-    @property
     def characters_per_inch(self: Self) -> int:
         """
         Characters per inch, as per page 66 of the ImageWriter II Technical
@@ -103,6 +84,28 @@ class Pitch(Enum):
             Pitch.PICA_PROPORTIONAL: 9,
             Pitch.ELITE_PROPORTIONAL: 10,
         }[self]
+
+    @property
+    def characters_per_line(self: Self) -> int:
+        """
+        Characters per line, as per page 60 of the ImageWriter II Technical
+        Reference Manual.
+
+        For non-proportional fonts, this corresponds to characters per inch
+        given an 8 inch line. For proportional fonts, the value is not strict
+        but still useful for setting left margins.
+        """
+
+        return int(self.characters_per_inch * LINE_WIDTH)
+
+    @property
+    def max_character_position(self: Self) -> int:
+        """
+        The maximum character position, which is one less than the total
+        characters per line.
+        """
+
+        return self.characters_per_line - 1
 
     @property
     def horizontal_resolution(self: Self) -> int:
