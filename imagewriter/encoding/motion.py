@@ -1,8 +1,8 @@
 from typing import List, Self, Sequence
 
-from imagewriter.encoding.attributes import Pitch
 from imagewriter.encoding.base import ctrl, esc, format_number
 from imagewriter.encoding.length import Inch, Length
+from imagewriter.encoding.pitch import Pitch
 
 CR = b"\r"
 LF = b"\n"

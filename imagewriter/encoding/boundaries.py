@@ -1,6 +1,6 @@
-from imagewriter.encoding.attributes import Pitch
 from imagewriter.encoding.base import esc, format_number
 from imagewriter.encoding.length import Inch, Length
+from imagewriter.encoding.pitch import Pitch
 
 LINE_WIDTH = Inch(8)
 LENGTH_CONVERSION = 144  # Units per inch

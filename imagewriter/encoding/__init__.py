@@ -1,7 +1,6 @@
 from typing import List
 
 from imagewriter.encoding.attributes import (
-    Pitch,
     START_BOLDFACE,
     START_DOUBLE_WIDTH,
     START_HALF_HEIGHT,
@@ -24,15 +23,16 @@ from imagewriter.encoding.motion import (
     BACKSPACE,
     CR,
     LF,
+    place_exact_print_head_position,
     set_unidirectional_printing,
     TAB,
     TabStops,
 )
+from imagewriter.encoding.pitch import Pitch
 from imagewriter.encoding.quality import Quality
 from imagewriter.encoding.switch import SoftwareSwitch
 
 __all__: List[str] = [
-    "Pitch",
     "START_DOUBLE_WIDTH",
     "STOP_DOUBLE_WIDTH",
     "START_UNDERLINE",
@@ -59,9 +59,11 @@ __all__: List[str] = [
     "BACKSPACE",
     "CR",
     "LF",
+    "place_exact_print_head_position",
+    "set_unidirectional_printing",
     "TAB",
     "TabStops",
-    "set_unidirectional_printing",
+    "Pitch",
     "Quality",
     "SoftwareSwitch",
 ]
