@@ -24,6 +24,11 @@ from imagewriter.encoding.character.custom import (
     CustomCharacter,
     TOP_WIRES,
 )
+from imagewriter.encoding.color import Color
+from imagewriter.encoding.graphics import (
+    print_graphics_data,
+    set_graphics_distance_between_lines,
+)
 from imagewriter.encoding.insertion import (
     DISABLE_CARRIAGE_RETURN_INSERTION,
     ENABLE_CARRIAGE_RETURN_INSERTION,
@@ -81,6 +86,9 @@ __all__: List[str] = [
     "character_data",
     "CustomCharacter",
     "TOP_WIRES",
+    "Color",
+    "print_graphics_data",
+    "set_graphics_distance_between_lines",
     "DISABLE_CARRIAGE_RETURN_INSERTION",
     "ENABLE_CARRIAGE_RETURN_INSERTION",
     "Language",

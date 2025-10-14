@@ -4,6 +4,7 @@ from typing import Optional, Self
 from imagewriter.encoding.base import esc
 
 LINE_WIDTH = 8  # inches
+VERTICAL_RESOLUTION = 72  # dots per inch
 
 
 class Pitch(Enum):
@@ -133,7 +134,7 @@ class Pitch(Enum):
         of pitch.
         """
 
-        return 72
+        return VERTICAL_RESOLUTION
 
     @property
     def width(self: Self) -> int:
