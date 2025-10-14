@@ -280,10 +280,6 @@ class SoftwareSwitch(Enum):
         Note that the ImageWriter II will automatically switch to 8-bit mode
         when an escape sequence sent to it uses 8-bit data - examples include
         custom characters and graphics.
-
-        Also note that, if this is the only switch to set, there is an
-        alternate set of escape codes which is preferred, documented in
-        Chapter 6.
         """
 
         return cls.close(SoftwareSwitch.IGNORE_EIGHTH_DATA_BIT)
@@ -302,10 +298,6 @@ class SoftwareSwitch(Enum):
         Note that the ImageWriter II will automatically switch to 8-bit mode
         when an escape sequence sent to it uses 8-bit data - examples include
         custom characters and graphics.
-
-        Also note that, if this is the only switch to set, there is an
-        alternate set of escape codes which is preferred, documented in
-        Chapter 6.
         """
 
         return cls.open(SoftwareSwitch.IGNORE_EIGHTH_DATA_BIT)
