@@ -1,11 +1,9 @@
-from collections.abc import Buffer
 from enum import Enum
-from typing import Any, Dict, Literal, Optional, Self
+from typing import Literal, Optional, Self
 
 import serial
 
 BaudRate = Literal[300] | Literal[1200] | Literal[2400] | Literal[9600]
-Data = str | bytes
 
 
 class FlowControlMode(Enum):
@@ -34,13 +32,6 @@ class FlowControlMode(Enum):
 
     RTSCTS = "RTS/CTS"
     XONXOFF = "XON/XOFF"
-
-    @property
-    def serial_kwargs(self: Self) -> Dict[str, Any]:
-        return dict(
-            rtscts=self != FlowControlMode.XONXOFF,
-            xonxoff=self == FlowControlMode.XONXOFF,
-        )
 
 
 class Serial(serial.Serial):
@@ -71,34 +62,8 @@ class Serial(serial.Serial):
             inter_byte_timeout=inter_byte_timeout,
             exclusive=exclusive,
             dsrdtr=True,
-            **flow_control.serial_kwargs,
+            rtscts=False,
+            xonxoff=False,
         )
 
         self._flow_control: FlowControlMode = flow_control
-
-        # Deassert RTS when not in use
-        if flow_control == FlowControlMode.RTSCTS:
-            self.rts = False
-
-    def _set_rts(self: Self, enable: bool) -> None:
-        if self._flow_control == FlowControlMode.RTSCTS:
-            self.rts = enable
-        else:
-            self.set_input_flow_control(enable)
-
-    def open(self: Self) -> None:
-        super().open()
-
-        self._set_rts(False)
-
-    def write(self: Self, data: Buffer) -> Optional[int]:
-        # OS would likely assert RTS on write, but just in case...
-        self._set_rts(True)
-
-        rv: Optional[int] = super().write(data)
-
-        # OS will not de-assert RTS unless data is being read, so we do it
-        # here
-        self._set_rts(False)
-
-        return rv
