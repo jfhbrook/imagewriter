@@ -10,7 +10,7 @@ class FlowControlLogger:
     def __init__(self: Self, serial: Serial, executor: ThreadPoolExecutor) -> None:
         self._serial: Serial = serial
         self._executor: ThreadPoolExecutor = executor
-        self._tick: float = 0.5 / serial.baudrate
+        self._tick: float = 0.25 / serial.baudrate
         self._running: bool = False
 
     def _timestamp(self: Self) -> str:
