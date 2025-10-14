@@ -16,6 +16,7 @@ from imagewriter.encoding.attributes import (
 )
 from imagewriter.encoding.base import ctrl, esc
 from imagewriter.encoding.boundaries import set_left_margin, set_page_length
+from imagewriter.encoding.cancel import CANCEL_CURRENT_LINE
 from imagewriter.encoding.character import CharacterEncoder, Text
 from imagewriter.encoding.insertion import (
     DISABLE_CARRIAGE_RETURN_INSERTION,
@@ -36,6 +37,8 @@ from imagewriter.encoding.motion import (
 from imagewriter.encoding.paper import DISABLE_PAPER_OUT_SENSOR, ENABLE_PAPER_OUT_SENSOR
 from imagewriter.encoding.pitch import Pitch
 from imagewriter.encoding.quality import Quality
+from imagewriter.encoding.repeat import repeat
+from imagewriter.encoding.reset import RESET
 from imagewriter.encoding.switch import SoftwareSwitch
 from imagewriter.encoding.units import (
     Centimeter,
@@ -64,6 +67,7 @@ __all__: List[str] = [
     "esc",
     "set_left_margin",
     "set_page_length",
+    "CANCEL_CURRENT_LINE",
     "CharacterEncoder",
     "Text",
     "DISABLE_CARRIAGE_RETURN_INSERTION",
@@ -82,6 +86,8 @@ __all__: List[str] = [
     "ENABLE_PAPER_OUT_SENSOR",
     "Pitch",
     "Quality",
+    "repeat",
+    "RESET",
     "SoftwareSwitch",
     "Centimeter",
     "Distance",
