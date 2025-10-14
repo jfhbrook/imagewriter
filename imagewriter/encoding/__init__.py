@@ -18,6 +18,12 @@ from imagewriter.encoding.base import ctrl, esc
 from imagewriter.encoding.boundaries import set_left_margin, set_page_length
 from imagewriter.encoding.cancel import CANCEL_CURRENT_LINE
 from imagewriter.encoding.character import CharacterEncoder, Text
+from imagewriter.encoding.character.custom import (
+    BOTTOM_WIRES,
+    character_data,
+    CustomCharacter,
+    TOP_WIRES,
+)
 from imagewriter.encoding.insertion import (
     DISABLE_CARRIAGE_RETURN_INSERTION,
     ENABLE_CARRIAGE_RETURN_INSERTION,
@@ -71,6 +77,10 @@ __all__: List[str] = [
     "CANCEL_CURRENT_LINE",
     "CharacterEncoder",
     "Text",
+    "BOTTOM_WIRES",
+    "character_data",
+    "CustomCharacter",
+    "TOP_WIRES",
     "DISABLE_CARRIAGE_RETURN_INSERTION",
     "ENABLE_CARRIAGE_RETURN_INSERTION",
     "Language",
