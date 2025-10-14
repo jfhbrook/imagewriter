@@ -22,22 +22,28 @@ class Distance(ABC):
         raise NotImplementedError("inches")
 
     @property
-    @abstractmethod
     def centimeters(self: Self) -> float:
         """
         The distance in centimeters.
         """
 
-        raise NotImplementedError("centimeters")
+        return self.inches * 2.54
 
     @property
-    @abstractmethod
     def millimeters(self: Self) -> float:
         """
         The distance in millimeters.
         """
 
-        raise NotImplementedError("millimeters")
+        return self.centimeters * 10
+
+    @property
+    def points(self: Self) -> float:
+        return self.inches * 72
+
+    @property
+    def picas(self: Self) -> float:
+        return self.inches * 6
 
     @property
     def vertical(self: Self) -> int:
@@ -65,7 +71,7 @@ class Distance(ABC):
     def from_(cls: Type[Self], from_: "Distance") -> Self:
         raise NotImplementedError("Distance.from")
 
-    def convert_to(self: Self, cls: Type[D]) -> D:
+    def into(self: Self, cls: Type[D]) -> D:
         return cls.from_(self)
 
 
@@ -73,14 +79,6 @@ class Inch(Distance):
     @property
     def inches(self: Self) -> float:
         return self.value
-
-    @property
-    def centimeters(self: Self) -> float:
-        return self.value * 2.54
-
-    @property
-    def millimeters(self: Self) -> float:
-        return self.value * 2.54
 
     @classmethod
     def from_(cls: Type[Self], from_: Distance) -> Self:
@@ -95,10 +93,6 @@ class Centimeter(Distance):
     @property
     def centimeters(self: Self) -> float:
         return self.value
-
-    @property
-    def millimeters(self: Self) -> float:
-        return self.value * 10
 
     @classmethod
     def from_(cls: Type[Self], from_: Distance) -> Self:
@@ -121,6 +115,34 @@ class Millimeter(Distance):
     @classmethod
     def from_(cls: Type[Self], from_: Distance) -> Self:
         return cls(from_.millimeters)
+
+
+class Point(Distance):
+    @property
+    def inches(self: Self) -> float:
+        return self.value / 72
+
+    @property
+    def points(self: Self) -> float:
+        return self.value
+
+    @classmethod
+    def from_(cls: Type[Self], from_: Distance) -> Self:
+        return cls(from_.points)
+
+
+class Pica(Distance):
+    @property
+    def inches(self: Self) -> float:
+        return self.value / 6
+
+    @property
+    def picas(self: Self) -> float:
+        return self.value
+
+    @classmethod
+    def from_(cls: Type[Self], from_: Distance) -> Self:
+        return cls(from_.picas)
 
 
 Length = Distance | int

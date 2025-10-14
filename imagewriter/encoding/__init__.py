@@ -60,6 +60,8 @@ from imagewriter.encoding.units import (
     length_to_distance,
     length_to_int,
     Millimeter,
+    Pica,
+    Point,
 )
 
 __all__: List[str] = [
@@ -117,4 +119,6 @@ __all__: List[str] = [
     "length_to_distance",
     "length_to_int",
     "Millimeter",
+    "Pica",
+    "Point",
 ]
