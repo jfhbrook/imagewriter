@@ -60,6 +60,7 @@ class Serial(serial.Serial):
         inter_byte_timeout: Optional[float] = None,
         exclusive: Optional[bool] = None,
     ) -> None:
+        self._flow_control: FlowControlMode = flow_control
         super().__init__(
             port=port,
             baudrate=baudrate,
@@ -74,14 +75,13 @@ class Serial(serial.Serial):
             **flow_control.serial_kwargs,
         )
 
-        self._flow_control: FlowControlMode = flow_control
-
         # Deassert RTS when not in use
         if flow_control == FlowControlMode.RTSCTS:
             self.rts = False
 
-    def _set_rts(self: Self, enable: bool) -> None:
+    def _set_ready_to_write(self: Self, enable: bool) -> None:
         if self._flow_control == FlowControlMode.RTSCTS:
+            print(f"setting rts to {enable}")
             self.rts = enable
         else:
             self.set_input_flow_control(enable)
@@ -89,16 +89,16 @@ class Serial(serial.Serial):
     def open(self: Self) -> None:
         super().open()
 
-        self._set_rts(False)
+        self._set_ready_to_write(False)
 
     def write(self: Self, data: Buffer) -> Optional[int]:
         # OS would likely assert RTS on write, but just in case...
-        self._set_rts(True)
+        self._set_ready_to_write(True)
 
         rv: Optional[int] = super().write(data)
 
         # OS will not de-assert RTS unless data is being read, so we do it
         # here
-        self._set_rts(False)
+        self._set_ready_to_write(False)
 
         return rv
