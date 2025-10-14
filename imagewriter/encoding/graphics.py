@@ -1,6 +1,6 @@
 from imagewriter.encoding.base import esc, format_number
 from imagewriter.encoding.motion import LineFeed
-from imagewriter.encoding.units import Inch
+from imagewriter.encoding.units import Point
 
 
 def print_graphics_data(data: bytes) -> bytes:
@@ -31,4 +31,4 @@ def set_graphics_distance_between_lines() -> bytes:
     details.
     """
 
-    return LineFeed.set_distance_between_lines(Inch(1 / 72))
+    return LineFeed.set_distance_between_lines(Point(1))
