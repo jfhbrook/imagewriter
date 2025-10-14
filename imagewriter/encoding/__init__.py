@@ -39,6 +39,7 @@ from imagewriter.encoding.pitch import Pitch
 from imagewriter.encoding.quality import Quality
 from imagewriter.encoding.repeat import repeat
 from imagewriter.encoding.reset import RESET
+from imagewriter.encoding.select import DESELECT, SELECT
 from imagewriter.encoding.switch import SoftwareSwitch
 from imagewriter.encoding.units import (
     Centimeter,
@@ -88,6 +89,8 @@ __all__: List[str] = [
     "Quality",
     "repeat",
     "RESET",
+    "DESELECT",
+    "SELECT",
     "SoftwareSwitch",
     "Centimeter",
     "Distance",
