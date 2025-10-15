@@ -24,22 +24,30 @@ class SetSoftwareSwitches(Command):
     def open(self: Self, open: bool) -> None:
         self.closed = not open
 
-    def _pack(self: Self) -> bytes:
-        a = 0
-        b = 0
-        for sw in self.switches:
-            v = sw.value
-            if v > 128:
-                b |= v >> 8
-            else:
-                a |= v
+    def pack(self: Self) -> bytes:
+        bank_a = 0
+        bank_b = 0
 
-        return bytes([a, b])
+        # Collect the bits into a short
+        short = 0
+
+        for sw in sorted(self.switches, key=lambda s: s.value):
+            short |= sw.value
+
+        # Store data in two little endian bytes
+        for i in range(0, 16):
+            if short & (1 << i):
+                if i < 8:
+                    bank_a |= 0x80 >> i
+                else:
+                    bank_b |= 0x8000 >> i
+
+        return bytes([bank_a, bank_b])
 
     def __bytes__(self: Self) -> bytes:
         code: bytes = esc("D") if self.closed else esc("Z")
 
-        return code + self._pack()
+        return code + self.pack()
 
 
 class SoftwareSwitch(Enum):
@@ -48,16 +56,24 @@ class SoftwareSwitch(Enum):
     Reference Manual.
     """
 
+    # A bank
     LANGUAGE_1 = 1
     LANGUAGE_2 = 1 << 1
     LANGUAGE_3 = 1 << 2
+    # Switch A-4 not used
     SOFTWARE_SELECT_RESPONSE_DISABLED = 1 << 4
     LF_WHEN_LINE_FULL = 1 << 5
     PRINT_COMMANDS_INCLUDE_LF_FF = 1 << 6
     AUTO_LF_AFTER_CR = 1 << 7
+    # B bank
     SLASHED_ZERO = 1 << 8
+    # Switch B-2 not used
     PERFORATION_SKIP_DISABLED = 1 << (8 + 2)
+    # Switch B-4 not used
+    # Switch B-5 not used
     IGNORE_EIGHTH_DATA_BIT = 1 << (8 + 5)
+    # Switch B-7 not used
+    # Switch B-8 not used
 
     @classmethod
     def open(cls: Type[Self], *switches: "SoftwareSwitch") -> Command:
@@ -117,7 +133,7 @@ class SoftwareSwitch(Enum):
             SoftwareSwitch.IGNORE_EIGHTH_DATA_BIT,
         }
 
-        defaults |= cls.language(language)
+        defaults |= cls.language_switches(language)
 
         if auto_lf_after_cr:
             defaults.add(SoftwareSwitch.AUTO_LF_AFTER_CR)
@@ -152,7 +168,7 @@ class SoftwareSwitch(Enum):
         return cls.toggle(*defaults)
 
     @classmethod
-    def language(cls: Type[Self], language: Language) -> "Set[SoftwareSwitch]":
+    def language_switches(cls: Type[Self], language: Language) -> "Set[SoftwareSwitch]":
         """
         Language switches which should be closed, as per page 32 of the
         ImageWriter II Technical Reference Manual.
@@ -170,16 +186,20 @@ class SoftwareSwitch(Enum):
         }[language]
 
     @classmethod
-    def language_difference(
+    def open_language_switches(
         cls: Type[Self], language: Language
     ) -> "Set[SoftwareSwitch]":
-        return {cls.LANGUAGE_1, cls.LANGUAGE_2, cls.LANGUAGE_3} - cls.language(language)
+        return {
+            cls.LANGUAGE_1,
+            cls.LANGUAGE_2,
+            cls.LANGUAGE_3,
+        } - cls.open_language_switches(language)
 
     @classmethod
     def set_language(cls: Type[Self], language: Language) -> List[Command]:
         return [
-            cls.open(*cls.language_difference(language)),
-            cls.close(*cls.language(language)),
+            cls.open(*cls.open_language_switches(language)),
+            cls.close(*cls.language_switches(language)),
         ]
 
     @classmethod

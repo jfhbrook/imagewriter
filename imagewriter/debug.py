@@ -23,16 +23,13 @@ class FlowControlLogger:
 
     def _print_signals(self: Self) -> None:
         ts: str = self._timestamp()
-        print()
-        print("|-----------------|")
-        print(f"| ${ts} |")
-        print("|-----------------|")
+        print(f"| ${ts}")
+        print("|-------------------")
         print(self._fmt_signal("dtr", self.serial.dtr))
         print(self._fmt_signal("dsr", self.serial.dsr))
         print(self._fmt_signal("rts", self.serial.rts))
         print(self._fmt_signal("cts", self.serial.cts))
-        print("|-----------------|")
-        print()
+        print("|-------------------")
 
     def _loop(self: Self) -> None:
         dtr: Optional[bool] = None
