@@ -46,7 +46,7 @@ class Serial(serial.Serial):
         port: Optional[str] = None,
         baudrate: BaudRate = 9600,
         timeout: Optional[float] = None,
-        flow_control: FlowControlMode = FlowControlMode.RTSCTS,
+        flow_control_mode: FlowControlMode = FlowControlMode.RTSCTS,
         write_timeout: Optional[float] = None,
         inter_byte_timeout: Optional[float] = None,
         exclusive: Optional[bool] = None,
@@ -66,4 +66,4 @@ class Serial(serial.Serial):
             xonxoff=False,
         )
 
-        self._flow_control: FlowControlMode = flow_control
+        self._flow_control_mode: FlowControlMode = flow_control_mode

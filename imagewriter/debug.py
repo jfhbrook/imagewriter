@@ -7,11 +7,11 @@ from imagewriter.serial import Serial
 
 
 class FlowControlLogger:
-    def __init__(self: Self, serial: Serial, executor: ThreadPoolExecutor) -> None:
-        self._serial: Serial = serial
-        self._executor: ThreadPoolExecutor = executor
+    def __init__(self: Self, serial: Serial) -> None:
+        self.serial: Serial = serial
+        self._executor: ThreadPoolExecutor = ThreadPoolExecutor(max_workers=1)
         self._tick: float = 0.25 / serial.baudrate
-        self._running: bool = False
+        self.running: bool = False
 
     def _timestamp(self: Self) -> str:
         return datetime.datetime.now().strftime("%H:%M:%S.%f")
@@ -27,10 +27,10 @@ class FlowControlLogger:
         print("|-----------------|")
         print(f"| ${ts} |")
         print("|-----------------|")
-        print(self._fmt_signal("dtr", self._serial.dtr))
-        print(self._fmt_signal("dsr", self._serial.dsr))
-        print(self._fmt_signal("rts", self._serial.rts))
-        print(self._fmt_signal("cts", self._serial.cts))
+        print(self._fmt_signal("dtr", self.serial.dtr))
+        print(self._fmt_signal("dsr", self.serial.dsr))
+        print(self._fmt_signal("rts", self.serial.rts))
+        print(self._fmt_signal("cts", self.serial.cts))
         print("|-----------------|")
         print()
 
@@ -40,27 +40,34 @@ class FlowControlLogger:
         rts: Optional[bool] = None
         cts: Optional[bool] = None
 
-        while self._running:
+        while self.running:
             if any(
                 [
-                    dtr != self._serial.dtr,
-                    dsr != self._serial.dsr,
-                    rts != self._serial.rts,
-                    cts != self._serial.cts,
+                    dtr != self.serial.dtr,
+                    dsr != self.serial.dsr,
+                    rts != self.serial.rts,
+                    cts != self.serial.cts,
                 ]
             ):
                 self._print_signals()
 
-                dtr = self._serial.dtr
-                dsr = self._serial.dsr
-                rts = self._serial.rts
-                cts = self._serial.cts
+                dtr = self.serial.dtr
+                dsr = self.serial.dsr
+                rts = self.serial.rts
+                cts = self.serial.cts
 
             time.sleep(self._tick)
 
     def start(self: Self) -> None:
-        self._running = True
+        if self.running:
+            return
+
+        self.running = True
         self._executor.submit(self._loop)
 
     def stop(self: Self) -> None:
-        self._running = False
+        self.running = False
+
+    def shutdown(self: Self) -> None:
+        self.stop()
+        self._executor.shutdown()
