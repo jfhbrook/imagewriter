@@ -5,6 +5,25 @@ import serial
 
 BaudRate = Literal[300] | Literal[1200] | Literal[2400] | Literal[9600]
 
+# When CTS goes low, you have 27 characters of grace before the print buffer is
+# completely full and the printer goes into an error state.
+#
+# The documentation suggests the true value is 30 bytes, but up to 3 of those
+# bytes may already be used by the time the host receives the signal.
+#
+# See page 193 of the ImageWriter II Technical Reference Manual for more
+# details.
+AVAILABLE_WHEN_CTS_LOW = 27
+
+# When CTS goes high, you are guaranteed to have at least 100 characters. Note
+# that this means we can actually expect up to 70 characters before CTS goes
+# low again - and, presumably, only 97 characters given the 3 byte grace
+# period.
+#
+# See page 193 of the ImageWriter II Technical Reference Manual for more
+# details.
+AVAILABLE_WHEN_CTS_HIGH = 100
+
 
 class FlowControlMode(Enum):
     """
