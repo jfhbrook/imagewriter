@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict, Generator, List, Self
 
-from imagewriter.encoding.base import esc
+from imagewriter.encoding.base import Bytes, Command, Esc
 from imagewriter.encoding.character.custom import CustomCharacter, CustomCharacters
 from imagewriter.encoding.character.mousetext import MouseText, MouseTextCharacter
 from imagewriter.encoding.language import Language
@@ -40,16 +40,16 @@ MOUSETEXT_CHARACTERS: Dict[str, MouseTextCharacter] = {
     "▏": MouseTextCharacter.LEFT_ONE_EIGHTH_BLOCK,
 }
 
-DISABLE_MODE = esc("$")
+DISABLE_MODE = Esc("$")
 
 
 class Mode(ABC):
     @abstractmethod
-    def enable(self: Self) -> bytes:
+    def enable(self: Self) -> List[Command]:
         pass
 
     @abstractmethod
-    def disable(self: Self) -> bytes:
+    def disable(self: Self) -> List[Command]:
         pass
 
     @abstractmethod
@@ -61,12 +61,12 @@ class LanguageMode(Mode):
     def __init__(self: Self, language: Language) -> None:
         self.language: Language = language
 
-    def enable(self: Self) -> bytes:
+    def enable(self: Self) -> List[Command]:
         return SoftwareSwitch.set_language(self.language)
 
-    def disable(self: Self) -> bytes:
+    def disable(self: Self) -> List[Command]:
         # Language modes can not be disabled
-        return b""
+        return []
 
     def __eq__(self: Self, other: Any) -> bool:
         return isinstance(other, LanguageMode) and self.language == other.language
@@ -82,11 +82,11 @@ class MouseTextMode(Mode):
     def __init__(self, map: bool = True) -> None:
         self.map: bool = map
 
-    def enable(self: Self) -> bytes:
-        return esc("&") if self.map else b""
+    def enable(self: Self) -> List[Command]:
+        return [Esc("&")] if self.map else list()
 
-    def disable(self: Self) -> bytes:
-        return DISABLE_MODE if self.map else b""
+    def disable(self: Self) -> List[Command]:
+        return [DISABLE_MODE] if self.map else list()
 
     def __eq__(self: Self, other: Any) -> bool:
         return isinstance(other, MouseTextMode) and self.map == other.map
@@ -96,11 +96,11 @@ class CustomCharacterMode(Mode):
     def __init__(self: Self, map: bool = True) -> None:
         self.map: bool = map
 
-    def enable(self: Self) -> bytes:
-        return esc("*") if self.map else esc("'")
+    def enable(self: Self) -> List[Command]:
+        return [Esc("*") if self.map else Esc("'")]
 
-    def disable(self: Self) -> bytes:
-        return DISABLE_MODE
+    def disable(self: Self) -> List[Command]:
+        return [DISABLE_MODE]
 
     def __eq__(self: Self, other: Any) -> bool:
         return isinstance(other, MouseTextMode) and self.map == other.map
@@ -171,12 +171,12 @@ class CharacterEncoder:
         else:
             return supported[0]
 
-    def _set_mode(self: Self, mode: Mode) -> bytes:
+    def _set_mode(self: Self, mode: Mode) -> List[Command]:
         if mode == self.mode:
-            return b""
+            return []
 
         # Disable the current mode and enable the new mode
-        encoded: bytes = self.mode.disable() + mode.enable()
+        encoded: List[Command] = self.mode.disable() + mode.enable()
 
         # Save the newest language mode
         if isinstance(mode, LanguageMode):
@@ -186,8 +186,8 @@ class CharacterEncoder:
 
         return encoded
 
-    def encode(self: Self, *text: Text) -> bytes:
-        encoded: bytes = b""
+    def encode(self: Self, *text: Text) -> List[Command]:
+        encoded: List[Command] = list()
         mode: Mode = self.language_mode
         buffer: bytes = b""
 
@@ -197,7 +197,7 @@ class CharacterEncoder:
 
             # If the mode is changing, add the buffer to the encoded output
             if mode != self.mode:
-                encoded += buffer
+                encoded.append(Bytes(buffer))
                 buffer = b""
 
             # Set the new mode
@@ -213,7 +213,7 @@ class CharacterEncoder:
                 buffer += bytes([ch.point])
 
         # Attach the final buffer
-        encoded += buffer
+        encoded.append(Bytes(buffer))
         encoded += self.mode.disable()
 
         # Enable the default language if need be

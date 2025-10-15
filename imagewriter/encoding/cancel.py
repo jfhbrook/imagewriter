@@ -5,6 +5,6 @@ not be printed on the next Print Command.
 See page 85 of the ImageWriter II Technical Reference Manual for more details.
 """
 
-from imagewriter.encoding.base import ctrl
+from imagewriter.encoding.base import Ctrl
 
-CANCEL_CURRENT_LINE = ctrl("X")
+CANCEL_CURRENT_LINE = Ctrl("X")

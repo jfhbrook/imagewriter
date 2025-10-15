@@ -15,7 +15,7 @@ them, open the "software select response" software switch.
 See page 87 of the ImageWriter II Technical Reference Manual for more details.
 """
 
-from imagewriter.encoding.base import ctrl
+from imagewriter.encoding.base import Ctrl
 
-SELECT = ctrl("Q")
-DESELECT = ctrl("S")
+SELECT = Ctrl("Q")
+DESELECT = Ctrl("S")

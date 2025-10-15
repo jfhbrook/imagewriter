@@ -1,14 +1,14 @@
-from imagewriter.encoding.base import ctrl, esc
+from imagewriter.encoding.base import Ctrl, Esc
 
-START_DOUBLE_WIDTH: bytes = ctrl("N")
-STOP_DOUBLE_WIDTH: bytes = ctrl("O")
-START_UNDERLINE: bytes = esc("X")
-STOP_UNDERLINE: bytes = esc("Y")
-START_BOLDFACE: bytes = esc("!")
-STOP_BOLDFACE: bytes = esc('"')
-START_HALF_HEIGHT: bytes = esc("w")
-STOP_HALF_HEIGHT: bytes = esc("W")
-START_SUPERSCRIPT: bytes = esc("x")
-STOP_SUPERSCRIPT: bytes = esc("z")
-START_SUBSCRIPT: bytes = esc("y")
-STOP_SUBSCRIPT: bytes = STOP_SUPERSCRIPT
+START_DOUBLE_WIDTH = Ctrl("N")
+STOP_DOUBLE_WIDTH = Ctrl("O")
+START_UNDERLINE = Esc("X")
+STOP_UNDERLINE = Esc("Y")
+START_BOLDFACE = Esc("!")
+STOP_BOLDFACE = Esc('"')
+START_HALF_HEIGHT = Esc("w")
+STOP_HALF_HEIGHT = Esc("W")
+START_SUPERSCRIPT = Esc("x")
+STOP_SUPERSCRIPT = Esc("z")
+START_SUBSCRIPT = Esc("y")
+STOP_SUBSCRIPT = STOP_SUPERSCRIPT
