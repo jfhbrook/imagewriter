@@ -5,7 +5,7 @@ default:
   if [ ! -d .venv ]; then just install; fi
   @just format
   @just check
-  # @just test
+  @just test
   @just lint
 
 #
