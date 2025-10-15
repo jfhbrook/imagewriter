@@ -14,7 +14,7 @@ from imagewriter.encoding.attributes import (
     STOP_SUPERSCRIPT,
     STOP_UNDERLINE,
 )
-from imagewriter.encoding.base import Bytes, ctrl, Ctrl, esc, Esc, NULL, Packet
+from imagewriter.encoding.base import Bytes, Command, ctrl, Ctrl, esc, Esc, NULL
 from imagewriter.encoding.boundaries import SetLeftMargin, SetPageLength
 from imagewriter.encoding.cancel import CANCEL_CURRENT_LINE
 from imagewriter.encoding.character import CharacterEncoder, Text
@@ -83,7 +83,7 @@ __all__: List[str] = [
     "esc",
     "Esc",
     "NULL",
-    "Packet",
+    "Command",
     "SetLeftMargin",
     "SetPageLength",
     "CANCEL_CURRENT_LINE",

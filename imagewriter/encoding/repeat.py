@@ -1,7 +1,7 @@
-from imagewriter.encoding.base import Bytes, esc, number, Packet
+from imagewriter.encoding.base import Bytes, Command, esc, number
 
 
-def repeat(char: str, n: int) -> Packet:
+def repeat(char: str, n: int) -> Command:
     """
     Repeat a character n times, as per page 83 of the ImageWriter II Technical
     Reference Manual.

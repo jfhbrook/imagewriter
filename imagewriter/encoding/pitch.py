@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Optional, Self
 
-from imagewriter.encoding.base import Esc, Packet
+from imagewriter.encoding.base import Command, Esc
 
 LINE_WIDTH = 8  # inches
 VERTICAL_RESOLUTION = 72  # dots per inch
@@ -154,7 +154,7 @@ class Pitch(Enum):
             Pitch.ELITE_PROPORTIONAL: 1280,
         }[self]
 
-    def set_pitch(self: Self) -> Packet:
+    def set_pitch(self: Self) -> Command:
         """
         Set the pitch, as per page 47 of the ImageWriter II Technical Reference
         Manual.
@@ -173,7 +173,7 @@ class Pitch(Enum):
             }[self]
         )
 
-    def insert_spaces(self: Self, spaces: int) -> Packet:
+    def insert_spaces(self: Self, spaces: int) -> Command:
         """
         Insert spaces before the next character, as per page 49 of the
         ImageWriter II Technical Reference Manual.
@@ -189,7 +189,7 @@ class Pitch(Enum):
 
         return Esc(str(spaces))
 
-    def set_spacing(self: Self, spaces: int) -> Packet:
+    def set_spacing(self: Self, spaces: int) -> Command:
         """
         Set the amount of spaces inserted between each character, as per page
         49 of the ImageWriter II Technical Reference Manual.

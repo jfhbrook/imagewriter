@@ -1,11 +1,11 @@
 from typing import Self
 
-from imagewriter.encoding.base import esc, number, Packet
+from imagewriter.encoding.base import Command, esc, number
 from imagewriter.encoding.pitch import Pitch
 from imagewriter.encoding.units import Length, length_to_int
 
 
-class SetLeftMargin(Packet):
+class SetLeftMargin(Command):
     """
     Set the left margin, as per page 59 of the ImageWriter II Technical
     Reference Manual.
@@ -31,11 +31,11 @@ class SetLeftMargin(Packet):
 
         self._width = width
 
-    def data(self: Self) -> bytes:
+    def __bytes__(self: Self) -> bytes:
         return esc("L") + number(self.width, 3)
 
 
-class SetPageLength(Packet):
+class SetPageLength(Command):
     """
     Set the page length, as per page 61 of the ImageWriter II Technical
     Reference Manual.
@@ -60,5 +60,5 @@ class SetPageLength(Packet):
 
         self._length = length
 
-    def data(self: Self) -> bytes:
+    def __bytes__(self: Self) -> bytes:
         return esc("H") + number(self.length, 4)

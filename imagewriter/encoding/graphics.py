@@ -1,11 +1,11 @@
 from typing import Self
 
-from imagewriter.encoding.base import esc, number, Packet
+from imagewriter.encoding.base import Command, esc, number
 from imagewriter.encoding.motion import LineFeed
 from imagewriter.encoding.units import Point
 
 
-class PrintGraphicsData(Packet):
+class PrintGraphicsData(Command):
     """
     Print graphics data, as per page 105 of the ImageWriter II Technical
     Reference Manual.
@@ -14,7 +14,7 @@ class PrintGraphicsData(Packet):
     def __init__(self: Self, data: bytes) -> None:
         self._data: bytes = data
 
-    def data(self: Self) -> bytes:
+    def __bytes__(self: Self) -> bytes:
         length: int = len(self._data)
         encoded: bytes = b""
 
@@ -28,7 +28,7 @@ class PrintGraphicsData(Packet):
         return encoded
 
 
-def set_graphics_distance_between_lines() -> Packet:
+def set_graphics_distance_between_lines() -> Command:
     """
     Set the distance between lines such that two adjacent graphics lines are
     flush with each other, given the pitch.

@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Self
 
-from imagewriter.encoding.base import Esc, Packet
+from imagewriter.encoding.base import Command, Esc
 
 
 class Quality(Enum):
@@ -30,7 +30,7 @@ class Quality(Enum):
             Quality.DRAFT: 250,
         }[self]
 
-    def select(self: Self) -> Packet:
+    def select(self: Self) -> Command:
         """
         Select a Print-Quality Font, as per page 39 of the ImageWriter II
         Technical Reference Manual.
@@ -38,7 +38,7 @@ class Quality(Enum):
 
         return Esc("a" + self.value)
 
-    def select_scribe(self: Self) -> Packet:
+    def select_scribe(self: Self) -> Command:
         """
         Select a Print-Quality Font, using the Scribe compatibility modes, as
         per page 39 of the ImageWriter II Technical Reference Manual.

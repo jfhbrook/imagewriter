@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Self
 
-from imagewriter.encoding.base import Bytes, esc, Packet
+from imagewriter.encoding.base import Bytes, Command, esc
 
 
 class Color(Enum):
@@ -24,5 +24,5 @@ class Color(Enum):
         except KeyError:
             return value
 
-    def set(self: Self) -> Packet:
+    def set(self: Self) -> Command:
         return Bytes(esc("K") + self.code.encode(encoding="ascii"))

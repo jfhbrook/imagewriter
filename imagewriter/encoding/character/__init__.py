@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict, Generator, List, Self
 
-from imagewriter.encoding.base import Bytes, Esc, Packet
+from imagewriter.encoding.base import Bytes, Command, Esc
 from imagewriter.encoding.character.custom import CustomCharacter, CustomCharacters
 from imagewriter.encoding.character.mousetext import MouseText, MouseTextCharacter
 from imagewriter.encoding.language import Language
@@ -45,11 +45,11 @@ DISABLE_MODE = Esc("$")
 
 class Mode(ABC):
     @abstractmethod
-    def enable(self: Self) -> List[Packet]:
+    def enable(self: Self) -> List[Command]:
         pass
 
     @abstractmethod
-    def disable(self: Self) -> List[Packet]:
+    def disable(self: Self) -> List[Command]:
         pass
 
     @abstractmethod
@@ -61,10 +61,10 @@ class LanguageMode(Mode):
     def __init__(self: Self, language: Language) -> None:
         self.language: Language = language
 
-    def enable(self: Self) -> List[Packet]:
+    def enable(self: Self) -> List[Command]:
         return SoftwareSwitch.set_language(self.language)
 
-    def disable(self: Self) -> List[Packet]:
+    def disable(self: Self) -> List[Command]:
         # Language modes can not be disabled
         return []
 
@@ -82,10 +82,10 @@ class MouseTextMode(Mode):
     def __init__(self, map: bool = True) -> None:
         self.map: bool = map
 
-    def enable(self: Self) -> List[Packet]:
+    def enable(self: Self) -> List[Command]:
         return [Esc("&")] if self.map else list()
 
-    def disable(self: Self) -> List[Packet]:
+    def disable(self: Self) -> List[Command]:
         return [DISABLE_MODE] if self.map else list()
 
     def __eq__(self: Self, other: Any) -> bool:
@@ -96,10 +96,10 @@ class CustomCharacterMode(Mode):
     def __init__(self: Self, map: bool = True) -> None:
         self.map: bool = map
 
-    def enable(self: Self) -> List[Packet]:
+    def enable(self: Self) -> List[Command]:
         return [Esc("*") if self.map else Esc("'")]
 
-    def disable(self: Self) -> List[Packet]:
+    def disable(self: Self) -> List[Command]:
         return [DISABLE_MODE]
 
     def __eq__(self: Self, other: Any) -> bool:
@@ -171,12 +171,12 @@ class CharacterEncoder:
         else:
             return supported[0]
 
-    def _set_mode(self: Self, mode: Mode) -> List[Packet]:
+    def _set_mode(self: Self, mode: Mode) -> List[Command]:
         if mode == self.mode:
             return []
 
         # Disable the current mode and enable the new mode
-        encoded: List[Packet] = self.mode.disable() + mode.enable()
+        encoded: List[Command] = self.mode.disable() + mode.enable()
 
         # Save the newest language mode
         if isinstance(mode, LanguageMode):
@@ -186,8 +186,8 @@ class CharacterEncoder:
 
         return encoded
 
-    def encode(self: Self, *text: Text) -> List[Packet]:
-        encoded: List[Packet] = list()
+    def encode(self: Self, *text: Text) -> List[Command]:
+        encoded: List[Command] = list()
         mode: Mode = self.language_mode
         buffer: bytes = b""
 

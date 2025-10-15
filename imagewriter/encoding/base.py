@@ -27,33 +27,33 @@ def esc(character: str) -> bytes:
     return ESC + bytes(character, encoding="ascii")
 
 
-class Packet(ABC):
+class Command(ABC):
     """
     A chunk of data which should be written as a single unit, even if CTS is
     de-asserted.
     """
 
     def __len__(self: Self) -> int:
-        return len(self.data())
+        return len(self.__bytes__())
 
     @abstractmethod
-    def data(self: Self) -> bytes:
+    def __bytes__(self: Self) -> bytes:
         pass
 
 
-class Null(Packet):
+class Null(Command):
     """
     An empty packet.
     """
 
-    def data(self: Self) -> bytes:
+    def __bytes__(self: Self) -> bytes:
         return b""
 
 
 NULL = Null()
 
 
-class Bytes(Packet):
+class Bytes(Command):
     """
     A packet containing raw bytes.
     """
@@ -61,11 +61,11 @@ class Bytes(Packet):
     def __init__(self: Self, data: bytes) -> None:
         self.bytes: bytes = data
 
-    def data(self: Self) -> bytes:
+    def __bytes__(self: Self) -> bytes:
         return self.bytes
 
 
-class Ctrl(Packet):
+class Ctrl(Command):
     """
     A packet containing a single control character.
     """
@@ -73,11 +73,11 @@ class Ctrl(Packet):
     def __init__(self: Self, character: str) -> None:
         self.character: bytes = ctrl(character)
 
-    def data(self: Self) -> bytes:
+    def __bytes__(self: Self) -> bytes:
         return self.character
 
 
-class Esc(Packet):
+class Esc(Command):
     """
     A packet containing a single escape code.
     """
@@ -85,7 +85,7 @@ class Esc(Packet):
     def __init__(self: Self, character: str) -> None:
         self.code = esc(character)
 
-    def data(self: Self) -> bytes:
+    def __bytes__(self: Self) -> bytes:
         return self.code
 
 

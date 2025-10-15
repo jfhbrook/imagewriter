@@ -2,12 +2,12 @@ from typing import List, Literal, Self, Sequence, Type
 
 from imagewriter.encoding.base import (
     Bytes,
+    Command,
     ctrl,
     Ctrl,
     esc,
     Esc,
     number,
-    Packet,
 )
 from imagewriter.encoding.pitch import Pitch
 from imagewriter.encoding.units import (
@@ -74,7 +74,7 @@ class TabStops:
     def _sort_stops(self: Self) -> None:
         self.stops.sort(key=self._to_int)
 
-    def set_many(self: Self, stops: Sequence[Length]) -> Packet:
+    def set_many(self: Self, stops: Sequence[Length]) -> Command:
         """
         Set multiple tab stops, as per page 65 of the ImageWriter II Technical
         Reference Manual.
@@ -85,7 +85,7 @@ class TabStops:
 
         return Bytes(esc("(") + self._to_list(stops))
 
-    def set_one(self: Self, stop: Length) -> Packet:
+    def set_one(self: Self, stop: Length) -> Command:
         """
         Set a single tab stop, as per page 65 of the ImageWriter II Technical
         Reference Manual.
@@ -98,7 +98,7 @@ class TabStops:
 
         return Bytes(esc("U") + number(tab_stop, 3))
 
-    def clear_many(self: Self, stops: Sequence[Length]) -> Packet:
+    def clear_many(self: Self, stops: Sequence[Length]) -> Command:
         """
         Clear multiple tab stops, as per page 65 of the ImageWriter II
         Technical Reference Manual.
@@ -115,7 +115,7 @@ class TabStops:
 
         return Bytes(esc(")") + self._to_list(stops))
 
-    def clear_all(self: Self) -> Packet:
+    def clear_all(self: Self) -> Command:
         """
         Clear all tab stops, as per page 65 of the ImageWriter II Technical
         Reference Manual.
@@ -125,7 +125,7 @@ class TabStops:
 
         return Esc("0")
 
-    def set_pitch(self: Self, pitch: Pitch) -> List[Packet]:
+    def set_pitch(self: Self, pitch: Pitch) -> List[Command]:
         """
         Set the pitch used for tab stops and reset all stored tab stops.
 
@@ -139,7 +139,7 @@ class TabStops:
         return [self.clear_all(), self.set_many(self.stops)]
 
 
-class PlaceExactPrintHeadPosition(Packet):
+class PlaceExactPrintHeadPosition(Command):
     """
     Place the exact print head position, as per page 120 of the ImageWriter
     II Technical Reference Manual.
@@ -161,7 +161,7 @@ class PlaceExactPrintHeadPosition(Packet):
     def position(self: Self, position: Length) -> None:
         self._position = position
 
-    def data(self: Self) -> bytes:
+    def __bytes__(self: Self) -> bytes:
         return esc("F") + number(self.position, 4)
 
 
@@ -170,7 +170,7 @@ SET_TOP_OF_FORM = Esc("v")
 
 class LineFeed:
     @classmethod
-    def feed(cls: Type[Self], lines: int = 1) -> Packet:
+    def feed(cls: Type[Self], lines: int = 1) -> Command:
         """
         Feed paper from 1 to 15 lines, as per page 70 of the ImageWriter II
         Technical Reference Manual.
@@ -192,7 +192,7 @@ class LineFeed:
         )
 
     @classmethod
-    def set_lines_per_inch(cls: Type[Self], lines: Literal[6] | Literal[8]) -> Packet:
+    def set_lines_per_inch(cls: Type[Self], lines: Literal[6] | Literal[8]) -> Command:
         """
         Set lines per inch to either 6 or 8, as per page 71 of the ImageWriter
         II Technical Reference Manual.
@@ -206,7 +206,7 @@ class LineFeed:
             return Esc("B")
 
     @classmethod
-    def set_distance_between_lines(cls: Type[Self], distance: Length) -> Packet:
+    def set_distance_between_lines(cls: Type[Self], distance: Length) -> Command:
         """
         Set the distance between lines, as per page 71 of the ImageWriter II
         Technical Reference Manual.
@@ -217,7 +217,7 @@ class LineFeed:
         return Bytes(esc("T") + number(dist, 2))
 
     @classmethod
-    def forward(cls: Type[Self]) -> Packet:
+    def forward(cls: Type[Self]) -> Command:
         """
         Set lines to feed forward (the default) as per page 71 of the
         ImageWriter II Technical Reference Manual.
@@ -226,7 +226,7 @@ class LineFeed:
         return Esc("f")
 
     @classmethod
-    def reverse(cls: Type[Self]) -> Packet:
+    def reverse(cls: Type[Self]) -> Command:
         """
         Set lines to feed in reverse as per page 71 of the ImageWriter II
         Technical Reference Manual.
