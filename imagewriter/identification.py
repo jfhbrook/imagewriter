@@ -1,17 +1,9 @@
 from dataclasses import dataclass
-from typing import Set
+from typing import Self, Set
 
 Feature = str
-
-
-class Features:
-    """
-    Known features. Documented features are "C" (color ribbon installed) and
-    "F" (SheetFeeder installed).
-    """
-
-    COLOR_RIBBON: Feature = "C"
-    SHEET_FEEDER: Feature = "F"
+FEAT_COLOR_RIBBON: Feature = "C"
+FEAT_SHEET_FEEDER: Feature = "F"
 
 
 @dataclass
@@ -19,6 +11,21 @@ class Identification:
     model: str
     carriage_width: int
     features: Set[Feature]
+
+    @property
+    def color_ribbon(self: Self) -> bool:
+        """
+        True if a color ribbon is installed.
+        """
+        return FEAT_COLOR_RIBBON in self.features
+
+    @property
+    def sheet_feeder(self: Self) -> bool:
+        """
+        True if a SheetFeeder is installed.
+        """
+
+        return FEAT_SHEET_FEEDER in self.features
 
 
 def parse_id_response(res: bytes) -> Identification:
