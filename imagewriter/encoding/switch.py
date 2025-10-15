@@ -1,8 +1,45 @@
 from enum import Enum
-from typing import Self, Set, Type
+from typing import List, Self, Sequence, Set, Type
 
-from imagewriter.encoding.base import esc
+from imagewriter.encoding.base import esc, Packet
 from imagewriter.encoding.language import Language
+
+
+class SetSoftwareSwitches(Packet):
+    """
+    Set software switch settings.
+    """
+
+    def __init__(
+        self: Self, closed: bool, switches: "Sequence[SoftwareSwitch]"
+    ) -> None:
+        self.closed: bool = closed
+        self.switches: Set[SoftwareSwitch] = set(switches)
+
+    @property
+    def open(self: Self) -> bool:
+        return not self.closed
+
+    @open.setter
+    def open(self: Self, open: bool) -> None:
+        self.closed = not open
+
+    def _pack(self: Self) -> bytes:
+        a = 0
+        b = 0
+        for sw in self.switches:
+            v = sw.value
+            if v > 128:
+                b |= v >> 8
+            else:
+                a |= v
+
+        return bytes([a, b])
+
+    def data(self: Self) -> bytes:
+        code: bytes = esc("D") if self.closed else esc("Z")
+
+        return code + self._pack()
 
 
 class SoftwareSwitch(Enum):
@@ -23,35 +60,22 @@ class SoftwareSwitch(Enum):
     IGNORE_EIGHTH_DATA_BIT = 1 << (8 + 5)
 
     @classmethod
-    def _setting(cls: Type[Self], *switches: "SoftwareSwitch") -> bytes:
-        a = 0
-        b = 0
-        for sw in switches:
-            v = sw.value
-            if v > 128:
-                b |= v >> 8
-            else:
-                a |= v
-
-        return bytes([a, b])
-
-    @classmethod
-    def open(cls: Type[Self], *switches: "SoftwareSwitch") -> bytes:
+    def open(cls: Type[Self], *switches: "SoftwareSwitch") -> Packet:
         """
         Open the provided software switches, as per page 31 of the ImageWriter
         II Technical Reference Manual. This does not affect switches which
         aren't provided.
         """
-        return esc("Z", cls._setting(*switches))
+        return SetSoftwareSwitches(False, switches)
 
     @classmethod
-    def close(cls: Type[Self], *switches: "SoftwareSwitch") -> bytes:
+    def close(cls: Type[Self], *switches: "SoftwareSwitch") -> Packet:
         """
         Close the provided software switches, as per page 31 of the ImageWriter
         II Technical Reference Manual. This does not affect switches which
         aren't provided.
         """
-        return esc("D", cls._setting(*switches))
+        return SetSoftwareSwitches(True, switches)
 
     @classmethod
     def difference(
@@ -63,12 +87,12 @@ class SoftwareSwitch(Enum):
         return set(cls) - set(switches)
 
     @classmethod
-    def toggle(cls: Type[Self], *switches: "SoftwareSwitch") -> bytes:
+    def toggle(cls: Type[Self], *switches: "SoftwareSwitch") -> List[Packet]:
         """
         Close the software switches provided, and open all other software
         switches.
         """
-        return cls.open(*cls.difference(*switches)) + cls.close(*switches)
+        return [cls.open(*cls.difference(*switches)), cls.close(*switches)]
 
     @classmethod
     def defaults(
@@ -109,7 +133,7 @@ class SoftwareSwitch(Enum):
         language: Language = Language.AMERICAN,
         auto_lf_after_cr: bool = False,
         perforation_skip_disabled: bool = True,
-    ) -> bytes:
+    ) -> List[Packet]:
         """
         Reset software switches to their defaults, as per page 32 of the
         ImageWriter II Technical Reference Manual.
@@ -152,13 +176,14 @@ class SoftwareSwitch(Enum):
         return {cls.LANGUAGE_1, cls.LANGUAGE_2, cls.LANGUAGE_3} - cls.language(language)
 
     @classmethod
-    def set_language(cls: Type[Self], language: Language) -> bytes:
-        return cls.open(*cls.language_difference(language)) + cls.close(
-            *cls.language(language)
-        )
+    def set_language(cls: Type[Self], language: Language) -> List[Packet]:
+        return [
+            cls.open(*cls.language_difference(language)),
+            cls.close(*cls.language(language)),
+        ]
 
     @classmethod
-    def enable_software_select_response(cls: Type[Self]) -> bytes:
+    def enable_software_select_response(cls: Type[Self]) -> Packet:
         """
         Enable Software Select-Deselect Response, as per page 34 of the
         ImageWriter II Technical Reference Manual.
@@ -167,7 +192,7 @@ class SoftwareSwitch(Enum):
         return cls.open(SoftwareSwitch.SOFTWARE_SELECT_RESPONSE_DISABLED)
 
     @classmethod
-    def disable_software_select_response(cls: Type[Self]) -> bytes:
+    def disable_software_select_response(cls: Type[Self]) -> Packet:
         """
         Disable Software Select-Deselect Response, as per page 34 of the
         ImageWriter II Technical Reference Manual.
@@ -176,7 +201,7 @@ class SoftwareSwitch(Enum):
         return cls.close(SoftwareSwitch.SOFTWARE_SELECT_RESPONSE_DISABLED)
 
     @classmethod
-    def enable_lf_when_line_full(cls: Type[Self]) -> bytes:
+    def enable_lf_when_line_full(cls: Type[Self]) -> Packet:
         """
         Enable the automatic insertion of a line feed when the line is full, as
         per page 34 of the ImageWriter II Technical Reference
@@ -186,7 +211,7 @@ class SoftwareSwitch(Enum):
         return cls.close(SoftwareSwitch.LF_WHEN_LINE_FULL)
 
     @classmethod
-    def disable_lf_when_line_full(cls: Type[Self]) -> bytes:
+    def disable_lf_when_line_full(cls: Type[Self]) -> Packet:
         """
         Disable the automatic insertion of a line feed when the line is full,
         as per page 34 of the ImageWriter II Technical Reference Manual.
@@ -195,7 +220,7 @@ class SoftwareSwitch(Enum):
         return cls.open(SoftwareSwitch.LF_WHEN_LINE_FULL)
 
     @classmethod
-    def enable_lf_ff_print_commands(cls: Type[Self]) -> bytes:
+    def enable_lf_ff_print_commands(cls: Type[Self]) -> Packet:
         """
         Enable the treatment of LF and FF as print commands, as per page 34
         of the ImageWriter II Technical Reference Manual.
@@ -204,7 +229,7 @@ class SoftwareSwitch(Enum):
         return cls.close(SoftwareSwitch.PRINT_COMMANDS_INCLUDE_LF_FF)
 
     @classmethod
-    def disable_lf_ff_print_commands(cls: Type[Self]) -> bytes:
+    def disable_lf_ff_print_commands(cls: Type[Self]) -> Packet:
         """
         Disable the treatment of LF and FF as print commands, as per page 34
         of the ImageWriter II Technical Reference Manual.
@@ -213,7 +238,7 @@ class SoftwareSwitch(Enum):
         return cls.open(SoftwareSwitch.PRINT_COMMANDS_INCLUDE_LF_FF)
 
     @classmethod
-    def enable_auto_lf_after_cr(cls: Type[Self]) -> bytes:
+    def enable_auto_lf_after_cr(cls: Type[Self]) -> Packet:
         """
         Enable an automatic LF after a CR, as per page 34 of the ImageWriter II
         Technical Reference Manual.
@@ -222,7 +247,7 @@ class SoftwareSwitch(Enum):
         return cls.close(SoftwareSwitch.AUTO_LF_AFTER_CR)
 
     @classmethod
-    def disable_auto_lf_after_cr(cls: Type[Self]) -> bytes:
+    def disable_auto_lf_after_cr(cls: Type[Self]) -> Packet:
         """
         Disable an automatic LF after a CR, as per page 34 of the ImageWriter
         II Technical Reference Manual.
@@ -231,7 +256,7 @@ class SoftwareSwitch(Enum):
         return cls.open(SoftwareSwitch.AUTO_LF_AFTER_CR)
 
     @classmethod
-    def print_slashed_zero(cls: Type[Self]) -> bytes:
+    def print_slashed_zero(cls: Type[Self]) -> Packet:
         """
         Print zeroes with a slash, as per page 34 of the ImageWriter II
         Technical Reference Manual.
@@ -240,7 +265,7 @@ class SoftwareSwitch(Enum):
         return cls.close(SoftwareSwitch.SLASHED_ZERO)
 
     @classmethod
-    def print_unslashed_zero(cls: Type[Self]) -> bytes:
+    def print_unslashed_zero(cls: Type[Self]) -> Packet:
         """
         Print zeroes without a slash, as per page 34 of the ImageWriter II
         Technical Reference Manual.
@@ -249,7 +274,7 @@ class SoftwareSwitch(Enum):
         return cls.open(SoftwareSwitch.SLASHED_ZERO)
 
     @classmethod
-    def enable_perforation_skip(cls: Type[Self]) -> bytes:
+    def enable_perforation_skip(cls: Type[Self]) -> Packet:
         """
         Enable automatic perforation skip, as per page 34 of the ImageWriter II
         Technical Reference Manual.
@@ -258,7 +283,7 @@ class SoftwareSwitch(Enum):
         return cls.open(SoftwareSwitch.PERFORATION_SKIP_DISABLED)
 
     @classmethod
-    def disable_perforation_skip(cls: Type[Self]) -> bytes:
+    def disable_perforation_skip(cls: Type[Self]) -> Packet:
         """
         Disable automatic perforation skip, as per page 34 of the ImageWriter
         II Technical Reference Manual.
@@ -267,7 +292,7 @@ class SoftwareSwitch(Enum):
         return cls.close(SoftwareSwitch.PERFORATION_SKIP_DISABLED)
 
     @classmethod
-    def ignore_eighth_data_bit(cls: Type[Self]) -> bytes:
+    def ignore_eighth_data_bit(cls: Type[Self]) -> Packet:
         """
         Ignore the eighth data bit of each byte sent, as per page 34 of the
         ImageWriter II Technical Reference Manual.
@@ -285,7 +310,7 @@ class SoftwareSwitch(Enum):
         return cls.close(SoftwareSwitch.IGNORE_EIGHTH_DATA_BIT)
 
     @classmethod
-    def include_eighth_data_bit(cls: Type[Self]) -> bytes:
+    def include_eighth_data_bit(cls: Type[Self]) -> Packet:
         """
         Include the eighth data bit of each byte sent, as per page 34 of the
         ImageWriter II Technical Reference Manual.

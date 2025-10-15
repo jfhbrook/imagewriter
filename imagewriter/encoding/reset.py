@@ -9,6 +9,6 @@ Resetting the printer will do the following:
 See page 87 of the ImageWriter II Technical Reference Manual for more details.
 """
 
-from imagewriter.encoding.base import esc
+from imagewriter.encoding.base import Esc
 
-RESET = esc("c")
+RESET = Esc("c")

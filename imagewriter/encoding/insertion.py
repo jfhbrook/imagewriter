@@ -1,4 +1,4 @@
-from imagewriter.encoding.base import esc
+from imagewriter.encoding.base import Esc
 
 """
 As per page 75 of the ImageWriter II Technical Reference Manual, when carriage
@@ -12,5 +12,5 @@ opposite behavior. This is controlled by switches, as per page 77 of the
 ImageWriter II Technical Reference Manual.
 """
 
-ENABLE_CARRIAGE_RETURN_INSERTION = esc("l1")
-DISABLE_CARRIAGE_RETURN_INSERTION = esc("l0")
+ENABLE_CARRIAGE_RETURN_INSERTION = Esc("l1")
+DISABLE_CARRIAGE_RETURN_INSERTION = Esc("l0")

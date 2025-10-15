@@ -1,6 +1,14 @@
 from typing import List, Literal, Self, Sequence, Type
 
-from imagewriter.encoding.base import ctrl, esc, format_number
+from imagewriter.encoding.base import (
+    Bytes,
+    ctrl,
+    Ctrl,
+    esc,
+    Esc,
+    number,
+    Packet,
+)
 from imagewriter.encoding.pitch import Pitch
 from imagewriter.encoding.units import (
     Distance,
@@ -10,22 +18,22 @@ from imagewriter.encoding.units import (
     length_to_int,
 )
 
-CR = b"\r"
-LF = b"\n"
-FF = ctrl("L")
-BACKSPACE = ctrl("H")
-TAB = b"\t"
+CR = Bytes(b"\r")
+LF = Bytes(b"\n")
+FF = Ctrl("L")
+BACKSPACE = Ctrl("H")
+TAB = Bytes(b"\t")
 
 
-def set_unidirectional_printing(is_unidirectional: bool) -> bytes:
+class SetUnidirectionalPrinting(Esc):
     """
     Configure unidirectional printing, as per page 63 of the ImageWriter II
     Technical Reference Manual.
     """
 
-    if is_unidirectional:
-        return esc(">")
-    return esc("<")
+    def __init__(self: Self, is_unidirectional: bool) -> None:
+        code = ">" if is_unidirectional else "<"
+        super().__init__(code)
 
 
 class TabStops:
@@ -57,7 +65,7 @@ class TabStops:
         encoded: bytes = b""
 
         for stop in tab_stops:
-            encoded += bytes(f"{format_number(stop, 3)},", encoding="ascii")
+            encoded += bytes(f"{number(stop, 3)},", encoding="ascii")
 
         encoded = encoded[:-1] + b"."
 
@@ -66,7 +74,7 @@ class TabStops:
     def _sort_stops(self: Self) -> None:
         self.stops.sort(key=self._to_int)
 
-    def set_many(self: Self, stops: Sequence[Length]) -> bytes:
+    def set_many(self: Self, stops: Sequence[Length]) -> Packet:
         """
         Set multiple tab stops, as per page 65 of the ImageWriter II Technical
         Reference Manual.
@@ -75,9 +83,9 @@ class TabStops:
         self.stops = [self._to_distance(st) for st in stops]
         self._sort_stops()
 
-        return esc("(") + self._to_list(stops)
+        return Bytes(esc("(") + self._to_list(stops))
 
-    def set_one(self: Self, stop: Length) -> bytes:
+    def set_one(self: Self, stop: Length) -> Packet:
         """
         Set a single tab stop, as per page 65 of the ImageWriter II Technical
         Reference Manual.
@@ -88,9 +96,9 @@ class TabStops:
 
         tab_stop = self._to_int(stop)
 
-        return esc("U", format_number(tab_stop, 3))
+        return Bytes(esc("U") + number(tab_stop, 3))
 
-    def clear_many(self: Self, stops: Sequence[Length]) -> bytes:
+    def clear_many(self: Self, stops: Sequence[Length]) -> Packet:
         """
         Clear multiple tab stops, as per page 65 of the ImageWriter II
         Technical Reference Manual.
@@ -105,9 +113,9 @@ class TabStops:
         ]
         self._sort_stops()
 
-        return esc(")") + self._to_list(stops)
+        return Bytes(esc(")") + self._to_list(stops))
 
-    def clear_all(self: Self) -> bytes:
+    def clear_all(self: Self) -> Packet:
         """
         Clear all tab stops, as per page 65 of the ImageWriter II Technical
         Reference Manual.
@@ -115,9 +123,9 @@ class TabStops:
 
         self.stops = list()
 
-        return esc("0")
+        return Esc("0")
 
-    def set_pitch(self: Self, pitch: Pitch) -> bytes:
+    def set_pitch(self: Self, pitch: Pitch) -> List[Packet]:
         """
         Set the pitch used for tab stops and reset all stored tab stops.
 
@@ -128,10 +136,10 @@ class TabStops:
         """
 
         self.pitch = pitch
-        return self.clear_all() + self.set_many(self.stops)
+        return [self.clear_all(), self.set_many(self.stops)]
 
 
-def place_exact_print_head_position(position: Length, pitch: Pitch) -> bytes:
+class PlaceExactPrintHeadPosition(Packet):
     """
     Place the exact print head position, as per page 120 of the ImageWriter
     II Technical Reference Manual.
@@ -139,19 +147,30 @@ def place_exact_print_head_position(position: Length, pitch: Pitch) -> bytes:
     Position is typically specified in dots per inch, based on the pitch.
     """
 
-    pos: int = length_to_int(position, lambda p: p.horizontal_dpi(pitch))
+    def __init__(self: Self, position: Length, pitch: Pitch) -> None:
+        self._position: Length = position
+        self.pitch: Pitch = pitch
 
-    pos = min(pos, pitch.width)
+    @property
+    def position(self: Self) -> int:
+        pos: int = length_to_int(self.position, lambda p: p.horizontal_dpi(self.pitch))
 
-    return esc("F", format_number(pos, 4))
+        return min(pos, self.pitch.width)
+
+    @position.setter
+    def position(self: Self, position: Length) -> None:
+        self._position = position
+
+    def data(self: Self) -> bytes:
+        return esc("F") + number(self.position, 4)
 
 
-SET_TOP_OF_FORM = esc("v")
+SET_TOP_OF_FORM = Esc("v")
 
 
 class LineFeed:
     @classmethod
-    def feed(cls: Type[Self], lines: int = 1) -> bytes:
+    def feed(cls: Type[Self], lines: int = 1) -> Packet:
         """
         Feed paper from 1 to 15 lines, as per page 70 of the ImageWriter II
         Technical Reference Manual.
@@ -162,15 +181,18 @@ class LineFeed:
         if lines == 1:
             return LF
 
-        return ctrl("_") + bytes(
-            {10: ":", 11: ";", 12: "<", 13: "=", 14: ">", 15: "?"}.get(
-                lines, str(lines)
-            ),
-            encoding="ascii",
+        return Bytes(
+            ctrl("_")
+            + bytes(
+                {10: ":", 11: ";", 12: "<", 13: "=", 14: ">", 15: "?"}.get(
+                    lines, str(lines)
+                ),
+                encoding="ascii",
+            )
         )
 
     @classmethod
-    def set_lines_per_inch(cls: Type[Self], lines: Literal[6] | Literal[8]) -> bytes:
+    def set_lines_per_inch(cls: Type[Self], lines: Literal[6] | Literal[8]) -> Packet:
         """
         Set lines per inch to either 6 or 8, as per page 71 of the ImageWriter
         II Technical Reference Manual.
@@ -179,12 +201,12 @@ class LineFeed:
         assert lines == 6 or lines == 8, "May only set 6 or 8 lines per inch"
 
         if lines == 6:
-            return esc("A")
+            return Esc("A")
         else:
-            return esc("B")
+            return Esc("B")
 
     @classmethod
-    def set_distance_between_lines(cls: Type[Self], distance: Length) -> bytes:
+    def set_distance_between_lines(cls: Type[Self], distance: Length) -> Packet:
         """
         Set the distance between lines, as per page 71 of the ImageWriter II
         Technical Reference Manual.
@@ -192,22 +214,22 @@ class LineFeed:
 
         dist: int = length_to_int(distance, lambda d: d.vertical)
 
-        return esc("T", format_number(dist, 2))
+        return Bytes(esc("T") + number(dist, 2))
 
     @classmethod
-    def forward(cls: Type[Self]) -> bytes:
+    def forward(cls: Type[Self]) -> Packet:
         """
         Set lines to feed forward (the default) as per page 71 of the
         ImageWriter II Technical Reference Manual.
         """
 
-        return esc("f")
+        return Esc("f")
 
     @classmethod
-    def reverse(cls: Type[Self]) -> bytes:
+    def reverse(cls: Type[Self]) -> Packet:
         """
         Set lines to feed in reverse as per page 71 of the ImageWriter II
         Technical Reference Manual.
         """
 
-        return esc("r")
+        return Esc("r")

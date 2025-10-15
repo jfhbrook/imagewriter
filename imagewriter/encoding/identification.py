@@ -9,6 +9,6 @@ Receiving the response has a number of additional caveats. See the
 `imagewriter.identification` module for more details.
 """
 
-from imagewriter.encoding.base import esc
+from imagewriter.encoding.base import Esc
 
-REQUEST_SELF_IDENTIFY = esc("?")
+REQUEST_SELF_IDENTIFY = Esc("?")

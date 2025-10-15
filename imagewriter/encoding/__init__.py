@@ -14,8 +14,8 @@ from imagewriter.encoding.attributes import (
     STOP_SUPERSCRIPT,
     STOP_UNDERLINE,
 )
-from imagewriter.encoding.base import ctrl, esc
-from imagewriter.encoding.boundaries import set_left_margin, set_page_length
+from imagewriter.encoding.base import Bytes, ctrl, Ctrl, esc, Esc, NULL, Packet
+from imagewriter.encoding.boundaries import SetLeftMargin, SetPageLength
 from imagewriter.encoding.cancel import CANCEL_CURRENT_LINE
 from imagewriter.encoding.character import CharacterEncoder, Text
 from imagewriter.encoding.character.custom import (
@@ -26,7 +26,7 @@ from imagewriter.encoding.character.custom import (
 )
 from imagewriter.encoding.color import Color
 from imagewriter.encoding.graphics import (
-    print_graphics_data,
+    PrintGraphicsData,
     set_graphics_distance_between_lines,
 )
 from imagewriter.encoding.insertion import (
@@ -39,9 +39,9 @@ from imagewriter.encoding.motion import (
     CR,
     LF,
     LineFeed,
-    place_exact_print_head_position,
+    PlaceExactPrintHeadPosition,
     SET_TOP_OF_FORM,
-    set_unidirectional_printing,
+    SetUnidirectionalPrinting,
     TAB,
     TabStops,
 )
@@ -51,7 +51,7 @@ from imagewriter.encoding.quality import Quality
 from imagewriter.encoding.repeat import repeat
 from imagewriter.encoding.reset import RESET
 from imagewriter.encoding.select import DESELECT, SELECT
-from imagewriter.encoding.switch import SoftwareSwitch
+from imagewriter.encoding.switch import SetSoftwareSwitches, SoftwareSwitch
 from imagewriter.encoding.units import (
     Centimeter,
     Distance,
@@ -77,10 +77,15 @@ __all__: List[str] = [
     "STOP_SUPERSCRIPT",
     "START_SUBSCRIPT",
     "STOP_SUBSCRIPT",
+    "Bytes",
     "ctrl",
+    "Ctrl",
     "esc",
-    "set_left_margin",
-    "set_page_length",
+    "Esc",
+    "NULL",
+    "Packet",
+    "SetLeftMargin",
+    "SetPageLength",
     "CANCEL_CURRENT_LINE",
     "CharacterEncoder",
     "Text",
@@ -89,7 +94,7 @@ __all__: List[str] = [
     "CustomCharacter",
     "TOP_WIRES",
     "Color",
-    "print_graphics_data",
+    "PrintGraphicsData",
     "set_graphics_distance_between_lines",
     "DISABLE_CARRIAGE_RETURN_INSERTION",
     "ENABLE_CARRIAGE_RETURN_INSERTION",
@@ -98,9 +103,9 @@ __all__: List[str] = [
     "CR",
     "LF",
     "LineFeed",
-    "place_exact_print_head_position",
+    "PlaceExactPrintHeadPosition",
     "SET_TOP_OF_FORM",
-    "set_unidirectional_printing",
+    "SetUnidirectionalPrinting",
     "TAB",
     "TabStops",
     "DISABLE_PAPER_OUT_SENSOR",
@@ -111,6 +116,7 @@ __all__: List[str] = [
     "RESET",
     "DESELECT",
     "SELECT",
+    "SetSoftwareSwitches",
     "SoftwareSwitch",
     "Centimeter",
     "Distance",
