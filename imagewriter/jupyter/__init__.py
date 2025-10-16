@@ -73,9 +73,9 @@ class SerialStateObserver(debug.SerialStateObserver):
 
     def on_change(self: Self) -> None:
         self._widget.dtr.value = self._fmt_signal(self.serial.dtr)
-        self._widget.dtr.value = self._fmt_signal(self.serial.dtr)
-        self._widget.dtr.value = self._fmt_signal(self.serial.dtr)
-        self._widget.dtr.value = self._fmt_signal(self.serial.dtr)
+        self._widget.dsr.value = self._fmt_signal(self.serial.dsr)
+        self._widget.rts.value = self._fmt_signal(self.serial.rts)
+        self._widget.cts.value = self._fmt_signal(self.serial.cts)
 
 
 class PinActivity(widgets.VBox):
