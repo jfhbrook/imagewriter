@@ -1,18 +1,21 @@
 from typing import List
 
 from imagewriter.encoding.base import Command, esc
-from imagewriter.encoding.switch import SoftwareSwitch
+from imagewriter.encoding.switch import set_software_switches
+from imagewriter.switch import SoftwareSwitch
 
 
 def test_toggle() -> None:
-    commands: List[Command] = SoftwareSwitch.toggle(
-        SoftwareSwitch.LANGUAGE_1,
-        SoftwareSwitch.SOFTWARE_SELECT_RESPONSE_DISABLED,
-        SoftwareSwitch.LF_WHEN_LINE_FULL,
-        SoftwareSwitch.PRINT_COMMANDS_INCLUDE_LF_FF,
-        SoftwareSwitch.AUTO_LF_AFTER_CR,
-        SoftwareSwitch.PERFORATION_SKIP_DISABLED,
-        SoftwareSwitch.IGNORE_EIGHTH_DATA_BIT,
+    commands: List[Command] = set_software_switches(
+        {
+            SoftwareSwitch.LANGUAGE_1,
+            SoftwareSwitch.SOFTWARE_SELECT_RESPONSE_DISABLED,
+            SoftwareSwitch.LF_WHEN_LINE_FULL,
+            SoftwareSwitch.PRINT_COMMANDS_INCLUDE_LF_FF,
+            SoftwareSwitch.AUTO_LF_AFTER_CR,
+            SoftwareSwitch.PERFORATION_SKIP_DISABLED,
+            SoftwareSwitch.IGNORE_EIGHTH_DATA_BIT,
+        }
     )
 
     assert len(commands) == 2, "Should be an open and a close command"

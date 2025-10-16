@@ -8,6 +8,12 @@ from imagewriter.identification import (
 )
 from imagewriter.language import Language
 from imagewriter.serial import Serial, SerialProtocol
+from imagewriter.switch import (
+    DIPSwitch,
+    DIPSwitchSettings,
+    SoftwareSwitch,
+    SoftwareSwitchSettings,
+)
 
 __all__: List[str] = [
     "FEAT_COLOR_RIBBON",
@@ -17,4 +23,8 @@ __all__: List[str] = [
     "Language",
     "Serial",
     "SerialProtocol",
+    "DIPSwitch",
+    "DIPSwitchSettings",
+    "SoftwareSwitch",
+    "SoftwareSwitchSettings",
 ]

@@ -4,7 +4,7 @@ from typing import Any, Dict, Generator, List, Self
 from imagewriter.encoding.base import Bytes, Command, Esc
 from imagewriter.encoding.character.custom import CustomCharacter, CustomCharacters
 from imagewriter.encoding.character.mousetext import MouseText, MouseTextCharacter
-from imagewriter.encoding.switch import SoftwareSwitch
+from imagewriter.encoding.switch import set_language
 from imagewriter.language import Language
 
 Text = str | MouseText | CustomCharacters
@@ -62,7 +62,7 @@ class LanguageMode(Mode):
         self.language: Language = language
 
     def enable(self: Self) -> List[Command]:
-        return SoftwareSwitch.set_language(self.language)
+        return set_language(self.language)
 
     def disable(self: Self) -> List[Command]:
         # Language modes can not be disabled
