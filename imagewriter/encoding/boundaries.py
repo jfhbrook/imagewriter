@@ -1,8 +1,8 @@
 from typing import Self
 
 from imagewriter.encoding.base import Command, esc, number
-from imagewriter.encoding.pitch import Pitch
 from imagewriter.encoding.units import Length, length_to_int
+from imagewriter.pitch import Pitch
 
 
 class SetLeftMargin(Command):

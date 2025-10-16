@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Callable, Self, Type, TypeVar
 
-from imagewriter.encoding.pitch import Pitch
+from imagewriter.pitch import Pitch
 
 VERTICAL_RESOLUTION = 144  # Per inch
 

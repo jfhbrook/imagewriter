@@ -2,8 +2,8 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Dict, Literal, Optional, Self, Set, Type
 
-from imagewriter.encoding.pitch import Pitch
 from imagewriter.language import Language
+from imagewriter.pitch import Pitch
 from imagewriter.serial import BaudRate, SerialProtocol
 
 

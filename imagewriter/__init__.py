@@ -7,6 +7,7 @@ from imagewriter.identification import (
     Identification,
 )
 from imagewriter.language import Language
+from imagewriter.pitch import Pitch
 from imagewriter.serial import Serial, SerialProtocol
 from imagewriter.switch import (
     DIPSwitch,
@@ -21,6 +22,7 @@ __all__: List[str] = [
     "Feature",
     "Identification",
     "Language",
+    "Pitch",
     "Serial",
     "SerialProtocol",
     "DIPSwitch",

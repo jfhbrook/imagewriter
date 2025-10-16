@@ -9,7 +9,6 @@ from imagewriter.encoding.base import (
     Esc,
     number,
 )
-from imagewriter.encoding.pitch import Pitch
 from imagewriter.encoding.units import (
     Distance,
     Inch,
@@ -17,6 +16,7 @@ from imagewriter.encoding.units import (
     length_to_distance,
     length_to_int,
 )
+from imagewriter.pitch import Pitch
 
 CR = Bytes(b"\r")
 LF = Bytes(b"\n")
