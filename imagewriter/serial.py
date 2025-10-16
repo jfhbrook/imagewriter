@@ -25,18 +25,19 @@ AVAILABLE_WHEN_CTS_LOW = 27
 AVAILABLE_WHEN_CTS_HIGH = 100
 
 
-class FlowControlMode(Enum):
+class SerialProtocol(Enum):
     """
-    The ImageWriter II supports two flow control modes - hardware and XON/XOFF.
+    The ImageWriter II supports two flow contrl protocols - hardware handshake
+    and XON/XOFF.
 
-    The hardware flow control is documented by Apple as using its DTR line.
-    Apple recommends, connecting its DTR and DSR lines to the serial device's
-    DSR/DCD and DTR lines, respectively. This recommendation is based on an
-    older regime, where DSR/DCD and DTR were abused to manage flow control a
-    la modern RTS/CTS. On a modern system, DSR and DTR often can not be
-    controlled directly at the OS level, and should not be used in this manner.
-    Instead, the ImageWriter II's DTR and DSR lines should be wired to the
-    serial device's RTS and CTS lines, respectively.
+    The hardware handshake protocol is documented by Apple as using its DTR
+    line. Apple recommends, connecting its DTR and DSR lines to the serial
+    device's DSR/DCD and DTR lines, respectively. This recommendation is based
+    on an older regime, where DSR/DCD and DTR were abused to manage flow
+    control a la modern RTS/CTS. On a modern system, DSR and DTR often can not
+    be controlled directly at the OS level, and should not be used in this
+    manner. Instead, the ImageWriter II's DTR and DSR lines should be wired to
+    the serial device's RTS and CTS lines, respectively.
 
     Note that the ImageWriter II expects to run in a "half-duplex" mode, where
     it waits for the RTS line to de-assert before processing the data in its
@@ -49,7 +50,7 @@ class FlowControlMode(Enum):
     **WARNING:** XON/XOFF has not been tested and may not work!
     """
 
-    RTSCTS = "RTS/CTS"
+    HARDWARE_HANDSHAKE = "HARDWARE_HANDSHAKE"
     XONXOFF = "XON/XOFF"
 
 
@@ -65,7 +66,7 @@ class Serial(serial.Serial):
         port: Optional[str] = None,
         baudrate: BaudRate = 9600,
         timeout: Optional[float] = None,
-        flow_control_mode: FlowControlMode = FlowControlMode.RTSCTS,
+        protocol: SerialProtocol = SerialProtocol.HARDWARE_HANDSHAKE,
         write_timeout: Optional[float] = None,
         inter_byte_timeout: Optional[float] = None,
         exclusive: Optional[bool] = None,
@@ -85,4 +86,4 @@ class Serial(serial.Serial):
             xonxoff=False,
         )
 
-        self._flow_control_mode: FlowControlMode = flow_control_mode
+        self._protocol: SerialProtocol = protocol

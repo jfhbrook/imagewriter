@@ -1,8 +1,121 @@
+from dataclasses import dataclass
 from enum import Enum
-from typing import List, Self, Sequence, Set, Type
+from typing import Dict, List, Literal, Optional, Self, Sequence, Set, Type
 
 from imagewriter.encoding.base import Command, esc
 from imagewriter.encoding.language import Language
+from imagewriter.encoding.pitch import Pitch
+from imagewriter.serial import BaudRate, SerialProtocol
+
+
+class DIPSwitch(Enum):
+    LANGUAGE_1 = "1-1"
+    LANGUAGE_2 = "1-2"
+    LANGUAGE_3 = "1-3"
+    FORM_LENGTH = "1-4"
+    PERFORATION_SKIP = "1-5"
+    PITCH_1 = "1-6"
+    PITCH_2 = "1-7"
+    AUTO_LF_AFTER_CR = "1-8"
+    BAUD_RATE_1 = "2-1"
+    BAUD_RATE_2 = "2-2"
+    PROTOCOL = "2-3"
+    OPTION_CARD = "2-4"
+
+
+@dataclass
+class DIPSwitchSettings:
+    language: Language
+    form_length: Literal[11] | Literal[12]
+    perforation_skip: bool
+    pitch: Pitch
+    auto_lf_after_cr: bool
+    baud_rate: BaudRate
+    protocol: SerialProtocol
+
+    @classmethod
+    def language_from_switches(cls: Type[Self], switches: Set[DIPSwitch]) -> Language:
+        key: int = 0b000
+        if DIPSwitch.LANGUAGE_1 in switches:
+            key |= 0b100
+        if DIPSwitch.LANGUAGE_2 in switches:
+            key |= 0b010
+        if DIPSwitch.LANGUAGE_3 in switches:
+            key |= 0b001
+
+        return {
+            0b000: Language.AMERICAN,
+            0b100: Language.ITALIAN,
+            0b010: Language.DANISH,
+            0b110: Language.BRITISH,
+            0b001: Language.GERMAN,
+            0b101: Language.SWEDISH,
+            0b011: Language.FRENCH,
+            0b111: Language.SPANISH,
+        }[key]
+
+    @classmethod
+    def pitch_from_switches(cls: Type[Self], switches: Set[DIPSwitch]) -> Pitch:
+        key: int = 0b00
+        if DIPSwitch.PITCH_1 in switches:
+            key |= 0b10
+        if DIPSwitch.PITCH_2 in switches:
+            key |= 0b01
+
+        return {
+            0b00: Pitch.PICA,
+            0b10: Pitch.ELITE,
+            0b01: Pitch.ULTRACONDENSED,
+            0b11: Pitch.ELITE_PROPORTIONAL,
+        }[key]
+
+    @classmethod
+    def baud_rate_from_switches(cls: Type[Self], switches: Set[DIPSwitch]) -> BaudRate:
+        key: int = 0b00
+        if DIPSwitch.BAUD_RATE_1 in switches:
+            key |= 0b10
+        if DIPSwitch.BAUD_RATE_2 in switches:
+            key |= 0b01
+
+        baud_rates: Dict[int, BaudRate] = {
+            0b00: 300,
+            0b10: 1200,
+            0b01: 2400,
+            0b11: 9600,
+        }
+
+        return baud_rates[key]
+
+    @classmethod
+    def from_switches(cls: Type[Self], switches: Set[DIPSwitch]) -> Self:
+        """
+        Get the DIP switch settings based on which switches are closed, as per
+        Chapter 2 of the ImageWriter II Technical Reference Manual.
+        """
+
+        return cls(
+            language=cls.language_from_switches(switches),
+            form_length=12 if DIPSwitch.FORM_LENGTH else 11,
+            perforation_skip=DIPSwitch.PERFORATION_SKIP in switches,
+            pitch=cls.pitch_from_switches(switches),
+            auto_lf_after_cr=DIPSwitch.AUTO_LF_AFTER_CR in switches,
+            baud_rate=cls.baud_rate_from_switches(switches),
+            protocol=(
+                SerialProtocol.XONXOFF
+                if DIPSwitch.PROTOCOL in switches
+                else SerialProtocol.HARDWARE_HANDSHAKE
+            ),
+        )
+
+    @classmethod
+    def defaults(cls: Type[Self]) -> Self:
+        """
+        Get the factory default DIP switch settings for printers sold in
+        North America, as per Chapter 2 of the ImageWriter II Technical
+        Reference Manual.
+        """
+
+        return cls.from_switches({DIPSwitch["1-6"], DIPSwitch["2-1"], DIPSwitch["2-2"]})
 
 
 class SetSoftwareSwitches(Command):
@@ -112,10 +225,7 @@ class SoftwareSwitch(Enum):
 
     @classmethod
     def defaults(
-        cls: Type[Self],
-        language: Language = Language.AMERICAN,
-        auto_lf_after_cr: bool = False,
-        perforation_skip_disabled: bool = True,
+        cls: Type[Self], dip_switch_settings: Optional[DIPSwitchSettings] = None
     ) -> "Set[SoftwareSwitch]":
         """
         Returns software switches which are closed by default, as per page 32
@@ -127,28 +237,29 @@ class SoftwareSwitch(Enum):
         North America.
         """
 
+        settings = (
+            dip_switch_settings if dip_switch_settings else DIPSwitchSettings.defaults()
+        )
+
         defaults: "Set[SoftwareSwitch]" = {
             SoftwareSwitch.SOFTWARE_SELECT_RESPONSE_DISABLED,
             SoftwareSwitch.PRINT_COMMANDS_INCLUDE_LF_FF,
             SoftwareSwitch.IGNORE_EIGHTH_DATA_BIT,
         }
 
-        defaults |= cls.language_switches(language)
+        defaults |= cls.language_switches(settings.language)
 
-        if auto_lf_after_cr:
+        if settings.auto_lf_after_cr:
             defaults.add(SoftwareSwitch.AUTO_LF_AFTER_CR)
 
-        if perforation_skip_disabled:
+        if not settings.perforation_skip:
             defaults.add(SoftwareSwitch.PERFORATION_SKIP_DISABLED)
 
         return defaults
 
     @classmethod
     def set_defaults(
-        cls: Type[Self],
-        language: Language = Language.AMERICAN,
-        auto_lf_after_cr: bool = False,
-        perforation_skip_disabled: bool = True,
+        cls: Type[Self], dip_switch_settings: Optional[DIPSwitchSettings] = None
     ) -> List[Command]:
         """
         Reset software switches to their defaults, as per page 32 of the
@@ -160,11 +271,7 @@ class SoftwareSwitch(Enum):
         North America.
         """
 
-        defaults = cls.defaults(
-            language=language,
-            auto_lf_after_cr=auto_lf_after_cr,
-            perforation_skip_disabled=perforation_skip_disabled,
-        )
+        defaults = cls.defaults(dip_switch_settings=dip_switch_settings)
         return cls.toggle(*defaults)
 
     @classmethod

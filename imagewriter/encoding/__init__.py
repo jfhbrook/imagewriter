@@ -51,7 +51,12 @@ from imagewriter.encoding.quality import Quality
 from imagewriter.encoding.repeat import repeat
 from imagewriter.encoding.reset import RESET
 from imagewriter.encoding.select import DESELECT, SELECT
-from imagewriter.encoding.switch import SetSoftwareSwitches, SoftwareSwitch
+from imagewriter.encoding.switch import (
+    DIPSwitch,
+    DIPSwitchSettings,
+    SetSoftwareSwitches,
+    SoftwareSwitch,
+)
 from imagewriter.encoding.units import (
     Centimeter,
     Distance,
@@ -116,6 +121,8 @@ __all__: List[str] = [
     "RESET",
     "DESELECT",
     "SELECT",
+    "DIPSwitch",
+    "DIPSwitchSettings",
     "SetSoftwareSwitches",
     "SoftwareSwitch",
     "Centimeter",
