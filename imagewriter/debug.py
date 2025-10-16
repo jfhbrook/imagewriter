@@ -3,12 +3,12 @@ import datetime
 import time
 from typing import Optional, Self
 
-from imagewriter.serial import Serial
+import serial
 
 
-class FlowControlLogger:
-    def __init__(self: Self, serial: Serial) -> None:
-        self.serial: Serial = serial
+class SerialStateObserver:
+    def __init__(self: Self, serial: serial.Serial) -> None:
+        self.serial = serial
         self._executor: ThreadPoolExecutor = ThreadPoolExecutor(max_workers=1)
         self._tick: float = 0.25 / serial.baudrate
         self.running: bool = False
@@ -16,19 +16,20 @@ class FlowControlLogger:
     def _timestamp(self: Self) -> str:
         return datetime.datetime.now().strftime("%H:%M:%S.%f")
 
-    def _fmt_signal(self: Self, name: str, signal: bool) -> str:
-        light = "🚨" if signal else "_"
+    def _fmt_signal(self: Self, signal: bool) -> str:
+        return "🚨" if signal else ""
 
-        return f"| {name} | {light}         |"
+    def _fmt_row(self: Self, name: str, signal: bool) -> str:
+        return f"| {name} | {self._fmt_signal(signal)}"
 
-    def _print_signals(self: Self) -> None:
+    def on_change(self: Self) -> None:
         ts: str = self._timestamp()
         print(f"| ${ts}")
         print("|-------------------")
-        print(self._fmt_signal("dtr", self.serial.dtr))
-        print(self._fmt_signal("dsr", self.serial.dsr))
-        print(self._fmt_signal("rts", self.serial.rts))
-        print(self._fmt_signal("cts", self.serial.cts))
+        print(self._fmt_row("DTR", self.serial.dtr))
+        print(self._fmt_row("DSR", self.serial.dsr))
+        print(self._fmt_row("RTS", self.serial.rts))
+        print(self._fmt_row("CTS", self.serial.cts))
         print("|-------------------")
 
     def _loop(self: Self) -> None:
@@ -46,7 +47,7 @@ class FlowControlLogger:
                     cts != self.serial.cts,
                 ]
             ):
-                self._print_signals()
+                self.on_change()
 
                 dtr = self.serial.dtr
                 dsr = self.serial.dsr
