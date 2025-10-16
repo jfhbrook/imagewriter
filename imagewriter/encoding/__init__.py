@@ -46,7 +46,7 @@ from imagewriter.encoding.motion import (
 )
 from imagewriter.encoding.paper import DISABLE_PAPER_OUT_SENSOR, ENABLE_PAPER_OUT_SENSOR
 from imagewriter.encoding.pitch import insert_spaces, set_pitch, set_spacing
-from imagewriter.encoding.quality import Quality
+from imagewriter.encoding.quality import select_quality
 from imagewriter.encoding.repeat import repeat
 from imagewriter.encoding.reset import RESET
 from imagewriter.encoding.select import DESELECT, SELECT
@@ -104,7 +104,7 @@ __all__: List[str] = [
     "insert_spaces",
     "set_pitch",
     "set_spacing",
-    "Quality",
+    "select_quality",
     "repeat",
     "RESET",
     "DESELECT",
