@@ -33,7 +33,6 @@ from imagewriter.encoding.insertion import (
     DISABLE_CARRIAGE_RETURN_INSERTION,
     ENABLE_CARRIAGE_RETURN_INSERTION,
 )
-from imagewriter.encoding.language import Language
 from imagewriter.encoding.motion import (
     BACKSPACE,
     CR,
@@ -103,7 +102,6 @@ __all__: List[str] = [
     "set_graphics_distance_between_lines",
     "DISABLE_CARRIAGE_RETURN_INSERTION",
     "ENABLE_CARRIAGE_RETURN_INSERTION",
-    "Language",
     "BACKSPACE",
     "CR",
     "LF",

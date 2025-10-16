@@ -6,6 +6,7 @@ from imagewriter.identification import (
     Feature,
     Identification,
 )
+from imagewriter.language import Language
 from imagewriter.serial import Serial, SerialProtocol
 
 __all__: List[str] = [
@@ -13,6 +14,7 @@ __all__: List[str] = [
     "FEAT_SHEET_FEEDER",
     "Feature",
     "Identification",
+    "Language",
     "Serial",
     "SerialProtocol",
 ]

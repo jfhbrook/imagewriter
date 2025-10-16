@@ -4,8 +4,8 @@ from typing import Any, Dict, Generator, List, Self
 from imagewriter.encoding.base import Bytes, Command, Esc
 from imagewriter.encoding.character.custom import CustomCharacter, CustomCharacters
 from imagewriter.encoding.character.mousetext import MouseText, MouseTextCharacter
-from imagewriter.encoding.language import Language
 from imagewriter.encoding.switch import SoftwareSwitch
+from imagewriter.language import Language
 
 Text = str | MouseText | CustomCharacters
 Character = str | MouseTextCharacter | CustomCharacter

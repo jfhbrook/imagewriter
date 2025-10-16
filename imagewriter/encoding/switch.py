@@ -3,8 +3,8 @@ from enum import Enum
 from typing import Dict, List, Literal, Optional, Self, Sequence, Set, Type
 
 from imagewriter.encoding.base import Command, esc
-from imagewriter.encoding.language import Language
 from imagewriter.encoding.pitch import Pitch
+from imagewriter.language import Language
 from imagewriter.serial import BaudRate, SerialProtocol
 
 
