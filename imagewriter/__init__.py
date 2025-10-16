@@ -15,6 +15,17 @@ from imagewriter.switch import (
     SoftwareSwitch,
     SoftwareSwitchSettings,
 )
+from imagewriter.units import (
+    Centimeter,
+    Distance,
+    Inch,
+    Length,
+    length_to_distance,
+    length_to_int,
+    Millimeter,
+    Pica,
+    Point,
+)
 
 __all__: List[str] = [
     "FEAT_COLOR_RIBBON",
@@ -29,4 +40,13 @@ __all__: List[str] = [
     "DIPSwitchSettings",
     "SoftwareSwitch",
     "SoftwareSwitchSettings",
+    "Centimeter",
+    "Distance",
+    "Inch",
+    "Length",
+    "length_to_distance",
+    "length_to_int",
+    "Millimeter",
+    "Pica",
+    "Point",
 ]

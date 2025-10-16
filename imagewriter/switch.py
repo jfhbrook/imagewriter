@@ -265,7 +265,9 @@ class SoftwareSwitchSettings:
 
         return cls(
             language=cls.language_from_switches(switches),
-            software_select_response_disabled=SoftwareSwitch.SOFTWARE_SELECT_RESPONSE_DISABLED
+            software_select_response_disabled=(
+                SoftwareSwitch.SOFTWARE_SELECT_RESPONSE_DISABLED
+            )
             in switches,
             lf_when_line_full=SoftwareSwitch.LF_WHEN_LINE_FULL in switches,
             print_commands_include_lf_ff=SoftwareSwitch.PRINT_COMMANDS_INCLUDE_LF_FF

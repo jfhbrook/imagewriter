@@ -1,8 +1,6 @@
 from enum import Enum
 from typing import Optional, Self
 
-from imagewriter.encoding.base import Command, Esc
-
 LINE_WIDTH = 8  # inches
 VERTICAL_RESOLUTION = 72  # dots per inch
 

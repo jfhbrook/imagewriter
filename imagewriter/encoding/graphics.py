@@ -2,7 +2,7 @@ from typing import Self
 
 from imagewriter.encoding.base import Command, esc, number
 from imagewriter.encoding.motion import LineFeed
-from imagewriter.encoding.units import Point
+from imagewriter.units import Point
 
 
 class PrintGraphicsData(Command):
