@@ -1,9 +1,9 @@
 from abc import ABC
-from typing import List, Self, Set
+import dataclasses
+from typing import Any, List, Self, Set, Tuple
 
 from imagewriter.encoding.base import Command, esc
-from imagewriter.language import Language
-from imagewriter.switch import SoftwareSwitch
+from imagewriter.switch import SoftwareSwitch, SoftwareSwitchSettings
 
 
 class SetSoftwareSwitches(Command, ABC):
@@ -55,165 +55,40 @@ class CloseSoftwareSwitches(SetSoftwareSwitches):
         return super().__init__(True, switches)
 
 
-def set_software_switches(switches: Set[SoftwareSwitch]) -> List[Command]:
+def update_software_switch_settings(
+    settings: SoftwareSwitchSettings, **changes: Any
+) -> Tuple[SoftwareSwitchSettings, List[Command]]:
     """
-    Close the software switches provided, and open all other software
-    switches.
-    """
-
-    return [
-        OpenSoftwareSwitches(SoftwareSwitch.difference(*switches)),
-        CloseSoftwareSwitches(switches),
-    ]
-
-
-def set_language(language: Language) -> List[Command]:
-    return [
-        OpenSoftwareSwitches(SoftwareSwitch.open_language_switches(language)),
-        CloseSoftwareSwitches(SoftwareSwitch.language_switches(language)),
-    ]
-
-
-def enable_software_select_response() -> Command:
-    """
-    Enable Software Select-Deselect Response, as per page 34 of the
-    ImageWriter II Technical Reference Manual.
+    Update software switch settings, under the assumption that the current
+    settings are accurate.
     """
 
-    return OpenSoftwareSwitches({SoftwareSwitch.SOFTWARE_SELECT_RESPONSE_DISABLED})
+    replaced = dataclasses.replace(settings, **changes)
+
+    closed_before = settings.switches()
+    open_before = SoftwareSwitch.difference(closed_before)
+    closed_after = replaced.switches()
+    open_after = SoftwareSwitch.difference(closed_after)
+
+    to_open = open_after - open_before
+    to_close = closed_after - closed_before
+
+    commands: List[Command] = list()
+
+    if to_open:
+        commands.append(OpenSoftwareSwitches(to_open))
+    if to_close:
+        commands.append(CloseSoftwareSwitches(to_close))
+
+    return (replaced, commands)
 
 
-def disable_software_select_response() -> Command:
+def force_software_switch_settings(settings: SoftwareSwitchSettings) -> List[Command]:
     """
-    Disable Software Select-Deselect Response, as per page 34 of the
-    ImageWriter II Technical Reference Manual.
-    """
-
-    return CloseSoftwareSwitches({SoftwareSwitch.SOFTWARE_SELECT_RESPONSE_DISABLED})
-
-
-def enable_lf_when_line_full() -> Command:
-    """
-    Enable the automatic insertion of a line feed when the line is full, as
-    per page 34 of the ImageWriter II Technical Reference
-    Manual.
-    """
-
-    return CloseSoftwareSwitches({SoftwareSwitch.LF_WHEN_LINE_FULL})
-
-
-def disable_lf_when_line_full() -> Command:
-    """
-    Disable the automatic insertion of a line feed when the line is full,
-    as per page 34 of the ImageWriter II Technical Reference Manual.
+    Fully write out software switch settings, regardless of their prior state.
     """
 
-    return OpenSoftwareSwitches({SoftwareSwitch.LF_WHEN_LINE_FULL})
+    to_close = settings.switches()
+    to_open = SoftwareSwitch.difference(to_close)
 
-
-def enable_lf_ff_print_commands() -> Command:
-    """
-    Enable the treatment of LF and FF as print commands, as per page 34
-    of the ImageWriter II Technical Reference Manual.
-    """
-
-    return CloseSoftwareSwitches({SoftwareSwitch.PRINT_COMMANDS_INCLUDE_LF_FF})
-
-
-def disable_lf_ff_print_commands() -> Command:
-    """
-    Disable the treatment of LF and FF as print commands, as per page 34
-    of the ImageWriter II Technical Reference Manual.
-    """
-
-    return OpenSoftwareSwitches({SoftwareSwitch.PRINT_COMMANDS_INCLUDE_LF_FF})
-
-
-def enable_auto_lf_after_cr() -> Command:
-    """
-    Enable an automatic LF after a CR, as per page 34 of the ImageWriter II
-    Technical Reference Manual.
-    """
-
-    return CloseSoftwareSwitches({SoftwareSwitch.AUTO_LF_AFTER_CR})
-
-
-def disable_auto_lf_after_cr() -> Command:
-    """
-    Disable an automatic LF after a CR, as per page 34 of the ImageWriter
-    II Technical Reference Manual.
-    """
-
-    return OpenSoftwareSwitches({SoftwareSwitch.AUTO_LF_AFTER_CR})
-
-
-def print_slashed_zero() -> Command:
-    """
-    Print zeroes with a slash, as per page 34 of the ImageWriter II
-    Technical Reference Manual.
-    """
-
-    return CloseSoftwareSwitches({SoftwareSwitch.SLASHED_ZERO})
-
-
-def print_unslashed_zero() -> Command:
-    """
-    Print zeroes without a slash, as per page 34 of the ImageWriter II
-    Technical Reference Manual.
-    """
-
-    return OpenSoftwareSwitches({SoftwareSwitch.SLASHED_ZERO})
-
-
-def enable_perforation_skip() -> Command:
-    """
-    Enable automatic perforation skip, as per page 34 of the ImageWriter II
-    Technical Reference Manual.
-    """
-
-    return OpenSoftwareSwitches({SoftwareSwitch.PERFORATION_SKIP_DISABLED})
-
-
-def disable_perforation_skip() -> Command:
-    """
-    Disable automatic perforation skip, as per page 34 of the ImageWriter
-    II Technical Reference Manual.
-    """
-
-    return CloseSoftwareSwitches({SoftwareSwitch.PERFORATION_SKIP_DISABLED})
-
-
-def ignore_eighth_data_bit() -> Command:
-    """
-    Ignore the eighth data bit of each byte sent, as per page 34 of the
-    ImageWriter II Technical Reference Manual.
-
-    This setting is for the benefit of Applesoft Basic, which does not
-    support an eighth bit. Pure ASCII does not use the eighth bit, and the
-    ImageWriter II supports escape sequences for "high-ASCII", as per
-    Chapter 4 and Chapter 7 of the manual.
-
-    Note that the ImageWriter II will automatically switch to 8-bit mode
-    when an escape sequence sent to it uses 8-bit data - examples include
-    custom characters and graphics.
-    """
-
-    return CloseSoftwareSwitches({SoftwareSwitch.IGNORE_EIGHTH_DATA_BIT})
-
-
-def include_eighth_data_bit() -> Command:
-    """
-    Include the eighth data bit of each byte sent, as per page 34 of the
-    ImageWriter II Technical Reference Manual.
-
-    This setting is for the benefit of Applesoft Basic, which does not
-    support an eighth bit. Pure ASCII does not use the eighth bit, and the
-    ImageWriter II supports escape sequences for "high-ASCII", as per
-    Chapter 4 and Chapter 7 of the manual.
-
-    Note that the ImageWriter II will automatically switch to 8-bit mode
-    when an escape sequence sent to it uses 8-bit data - examples include
-    custom characters and graphics.
-    """
-
-    return OpenSoftwareSwitches({SoftwareSwitch.IGNORE_EIGHTH_DATA_BIT})
+    return [OpenSoftwareSwitches(to_open), CloseSoftwareSwitches(to_close)]

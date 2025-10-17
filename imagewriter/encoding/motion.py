@@ -1,4 +1,5 @@
-from typing import List, Literal, Self, Sequence, Type
+import dataclasses
+from typing import List, Literal, Self, Sequence, Tuple, Type
 
 from imagewriter.encoding.base import (
     Bytes,
@@ -9,7 +10,13 @@ from imagewriter.encoding.base import (
     Esc,
     number,
 )
+from imagewriter.encoding.switch import (
+    CloseSoftwareSwitches,
+    OpenSoftwareSwitches,
+    SoftwareSwitchSettings,
+)
 from imagewriter.pitch import Pitch
+from imagewriter.switch import SoftwareSwitch
 from imagewriter.units import (
     Distance,
     Inch,
@@ -233,3 +240,51 @@ class LineFeed:
         """
 
         return Esc("r")
+
+    @classmethod
+    def set_auto_after_cr(
+        cls: Type[Self], settings: SoftwareSwitchSettings, enabled: bool
+    ) -> Tuple[SoftwareSwitchSettings, Command]:
+        """
+        Enable or disable an automatic LF after a CR, as per page 34 of the
+        ImageWriter II Technical Reference Manual.
+        """
+
+        cmd_cls = CloseSoftwareSwitches if enabled else OpenSoftwareSwitches
+
+        return (
+            dataclasses.replace(settings, auto_lf_after_cr=enabled),
+            cmd_cls({SoftwareSwitch.AUTO_LF_AFTER_CR}),
+        )
+
+    @classmethod
+    def set_auto_when_line_full(
+        cls: Type[Self], settings: SoftwareSwitchSettings, enabled: bool
+    ) -> Tuple[SoftwareSwitchSettings, Command]:
+        """
+        Configure the automatic insertion of a line feed when the line is full,
+        as per page 34 of the ImageWriter II Technical Reference Manual.
+        """
+
+        cmd_cls = CloseSoftwareSwitches if enabled else OpenSoftwareSwitches
+
+        return (
+            dataclasses.replace(settings, lf_when_line_full=enabled),
+            cmd_cls({SoftwareSwitch.LF_WHEN_LINE_FULL}),
+        )
+
+
+def set_perforation_skip(
+    settings: SoftwareSwitchSettings, enabled: bool
+) -> Tuple[SoftwareSwitchSettings, Command]:
+    """
+    Configure automatic perforation skip, as per page 34 of the ImageWriter II
+    Technical Reference Manual.
+    """
+
+    cmd_cls = OpenSoftwareSwitches if enabled else CloseSoftwareSwitches
+
+    return (
+        dataclasses.replace(settings, perforation_skip_disabled=not enabled),
+        cmd_cls({SoftwareSwitch.PERFORATION_SKIP_DISABLED}),
+    )
