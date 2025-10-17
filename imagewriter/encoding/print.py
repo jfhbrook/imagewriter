@@ -6,29 +6,17 @@ from imagewriter.encoding.switch import CloseSoftwareSwitches, OpenSoftwareSwitc
 from imagewriter.switch import SoftwareSwitch, SoftwareSwitchSettings
 
 
-def enable_lf_ff_print_commands(
-    settings: SoftwareSwitchSettings,
+def set_print_commands_include_lf_ff(
+    settings: SoftwareSwitchSettings, enabled: bool
 ) -> Tuple[SoftwareSwitchSettings, Command]:
     """
-    Enable the treatment of LF and FF as print commands, as per page 34
+    Configure the treatment of LF and FF as print commands, as per page 34
     of the ImageWriter II Technical Reference Manual.
     """
 
-    return (
-        dataclasses.replace(settings, print_commands_include_lf_ff=True),
-        CloseSoftwareSwitches({SoftwareSwitch.PRINT_COMMANDS_INCLUDE_LF_FF}),
-    )
-
-
-def disable_lf_ff_print_commands(
-    settings: SoftwareSwitchSettings,
-) -> Tuple[SoftwareSwitchSettings, Command]:
-    """
-    Disable the treatment of LF and FF as print commands, as per page 34
-    of the ImageWriter II Technical Reference Manual.
-    """
+    cmd_cls = CloseSoftwareSwitches if enabled else OpenSoftwareSwitches
 
     return (
-        dataclasses.replace(settings, print_commands_include_lf_ff=False),
-        OpenSoftwareSwitches({SoftwareSwitch.PRINT_COMMANDS_INCLUDE_LF_FF}),
+        dataclasses.replace(settings, print_commands_include_lf_ff=enabled),
+        cmd_cls({SoftwareSwitch.PRINT_COMMANDS_INCLUDE_LF_FF}),
     )
