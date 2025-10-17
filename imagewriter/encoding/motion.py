@@ -9,7 +9,9 @@ from imagewriter.encoding.base import (
     Esc,
     number,
 )
+from imagewriter.encoding.switch import CloseSoftwareSwitches, OpenSoftwareSwitches
 from imagewriter.pitch import Pitch
+from imagewriter.switch import SoftwareSwitch
 from imagewriter.units import (
     Distance,
     Inch,
@@ -233,3 +235,58 @@ class LineFeed:
         """
 
         return Esc("r")
+
+    @classmethod
+    def enable_auto_lf_after_cr(cls: Type[Self]) -> Command:
+        """
+        Enable an automatic LF after a CR, as per page 34 of the ImageWriter II
+        Technical Reference Manual.
+        """
+
+        return CloseSoftwareSwitches({SoftwareSwitch.AUTO_LF_AFTER_CR})
+
+    @classmethod
+    def disable_auto_lf_after_cr(cls: Type[Self]) -> Command:
+        """
+        Disable an automatic LF after a CR, as per page 34 of the ImageWriter
+        II Technical Reference Manual.
+        """
+
+        return OpenSoftwareSwitches({SoftwareSwitch.AUTO_LF_AFTER_CR})
+
+    @classmethod
+    def enable_lf_when_line_full(cls: Type[Self]) -> Command:
+        """
+        Enable the automatic insertion of a line feed when the line is full, as
+        per page 34 of the ImageWriter II Technical Reference
+        Manual.
+        """
+
+        return CloseSoftwareSwitches({SoftwareSwitch.LF_WHEN_LINE_FULL})
+
+    @classmethod
+    def disable_lf_when_line_full(cls: Type[Self]) -> Command:
+        """
+        Disable the automatic insertion of a line feed when the line is full,
+        as per page 34 of the ImageWriter II Technical Reference Manual.
+        """
+
+        return OpenSoftwareSwitches({SoftwareSwitch.LF_WHEN_LINE_FULL})
+
+
+def enable_perforation_skip() -> Command:
+    """
+    Enable automatic perforation skip, as per page 34 of the ImageWriter II
+    Technical Reference Manual.
+    """
+
+    return OpenSoftwareSwitches({SoftwareSwitch.PERFORATION_SKIP_DISABLED})
+
+
+def disable_perforation_skip() -> Command:
+    """
+    Disable automatic perforation skip, as per page 34 of the ImageWriter
+    II Technical Reference Manual.
+    """
+
+    return CloseSoftwareSwitches({SoftwareSwitch.PERFORATION_SKIP_DISABLED})

@@ -15,7 +15,27 @@ them, open the "software select response" software switch.
 See page 87 of the ImageWriter II Technical Reference Manual for more details.
 """
 
-from imagewriter.encoding.base import Ctrl
+from imagewriter.encoding.base import Command, Ctrl
+from imagewriter.encoding.switch import CloseSoftwareSwitches, OpenSoftwareSwitches
+from imagewriter.switch import SoftwareSwitch
 
 SELECT = Ctrl("Q")
 DESELECT = Ctrl("S")
+
+
+def enable_software_select_response() -> Command:
+    """
+    Enable Software Select-Deselect Response, as per page 34 of the
+    ImageWriter II Technical Reference Manual.
+    """
+
+    return OpenSoftwareSwitches({SoftwareSwitch.SOFTWARE_SELECT_RESPONSE_DISABLED})
+
+
+def disable_software_select_response() -> Command:
+    """
+    Disable Software Select-Deselect Response, as per page 34 of the
+    ImageWriter II Technical Reference Manual.
+    """
+
+    return CloseSoftwareSwitches({SoftwareSwitch.SOFTWARE_SELECT_RESPONSE_DISABLED})
