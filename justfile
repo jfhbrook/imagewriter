@@ -114,3 +114,12 @@ clean: _clean-venv _clean-compile _clean-test
   rm -rf imagewriter.egg-info
   rm -f imagewriter/*.pyc
   rm -rf imagewriter/__pycache__
+
+enable_cups_web:
+  cupsctl WebInterface=yes
+
+disable_cups_web:
+  cupsctl WebInterface=no
+
+open_cups_web:
+  open http://localhost:631
