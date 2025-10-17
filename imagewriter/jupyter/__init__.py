@@ -1,9 +1,8 @@
 from typing import List
 
-from imagewriter.jupyter.activity import Activity
-from imagewriter.jupyter.connection import Connection
+from imagewriter.jupyter.connection import Activity, Connection
 
 __all__: List[str] = [
-    "Connection",
     "Activity",
+    "Connection",
 ]
