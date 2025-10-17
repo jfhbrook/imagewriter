@@ -7,6 +7,11 @@ from imagewriter.switch import SoftwareSwitch
 
 
 def set_language(language: Language) -> List[Command]:
+    """
+    Set the language, irrespective of current software switch or language
+    settings.
+    """
+
     return [
         OpenSoftwareSwitches(SoftwareSwitch.open_language_switches(language)),
         CloseSoftwareSwitches(SoftwareSwitch.language_switches(language)),

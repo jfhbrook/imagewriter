@@ -1,4 +1,5 @@
-from typing import List, Literal, Self, Sequence, Type
+import dataclasses
+from typing import List, Literal, Self, Sequence, Tuple, Type
 
 from imagewriter.encoding.base import (
     Bytes,
@@ -9,7 +10,11 @@ from imagewriter.encoding.base import (
     Esc,
     number,
 )
-from imagewriter.encoding.switch import CloseSoftwareSwitches, OpenSoftwareSwitches
+from imagewriter.encoding.switch import (
+    CloseSoftwareSwitches,
+    OpenSoftwareSwitches,
+    SoftwareSwitchSettings,
+)
 from imagewriter.pitch import Pitch
 from imagewriter.switch import SoftwareSwitch
 from imagewriter.units import (
@@ -237,56 +242,49 @@ class LineFeed:
         return Esc("r")
 
     @classmethod
-    def enable_auto_lf_after_cr(cls: Type[Self]) -> Command:
+    def set_auto_after_cr(
+        cls: Type[Self], settings: SoftwareSwitchSettings, enabled: bool
+    ) -> Tuple[SoftwareSwitchSettings, Command]:
         """
-        Enable an automatic LF after a CR, as per page 34 of the ImageWriter II
-        Technical Reference Manual.
-        """
-
-        return CloseSoftwareSwitches({SoftwareSwitch.AUTO_LF_AFTER_CR})
-
-    @classmethod
-    def disable_auto_lf_after_cr(cls: Type[Self]) -> Command:
-        """
-        Disable an automatic LF after a CR, as per page 34 of the ImageWriter
-        II Technical Reference Manual.
+        Enable or disable an automatic LF after a CR, as per page 34 of the
+        ImageWriter II Technical Reference Manual.
         """
 
-        return OpenSoftwareSwitches({SoftwareSwitch.AUTO_LF_AFTER_CR})
+        cmd_cls = CloseSoftwareSwitches if enabled else OpenSoftwareSwitches
+
+        return (
+            dataclasses.replace(settings, auto_lf_after_cr=enabled),
+            cmd_cls({SoftwareSwitch.AUTO_LF_AFTER_CR}),
+        )
 
     @classmethod
-    def enable_lf_when_line_full(cls: Type[Self]) -> Command:
+    def set_auto_when_line_full(
+        cls: Type[Self], settings: SoftwareSwitchSettings, enabled: bool
+    ) -> Tuple[SoftwareSwitchSettings, Command]:
         """
-        Enable the automatic insertion of a line feed when the line is full, as
-        per page 34 of the ImageWriter II Technical Reference
-        Manual.
-        """
-
-        return CloseSoftwareSwitches({SoftwareSwitch.LF_WHEN_LINE_FULL})
-
-    @classmethod
-    def disable_lf_when_line_full(cls: Type[Self]) -> Command:
-        """
-        Disable the automatic insertion of a line feed when the line is full,
+        Configure the automatic insertion of a line feed when the line is full,
         as per page 34 of the ImageWriter II Technical Reference Manual.
         """
 
-        return OpenSoftwareSwitches({SoftwareSwitch.LF_WHEN_LINE_FULL})
+        cmd_cls = CloseSoftwareSwitches if enabled else OpenSoftwareSwitches
+
+        return (
+            dataclasses.replace(settings, lf_when_line_full=enabled),
+            cmd_cls({SoftwareSwitch.LF_WHEN_LINE_FULL}),
+        )
 
 
-def enable_perforation_skip() -> Command:
+def set_perforation_skip(
+    settings: SoftwareSwitchSettings, enabled: bool
+) -> Tuple[SoftwareSwitchSettings, Command]:
     """
-    Enable automatic perforation skip, as per page 34 of the ImageWriter II
+    Configure automatic perforation skip, as per page 34 of the ImageWriter II
     Technical Reference Manual.
     """
 
-    return OpenSoftwareSwitches({SoftwareSwitch.PERFORATION_SKIP_DISABLED})
+    cmd_cls = OpenSoftwareSwitches if enabled else CloseSoftwareSwitches
 
-
-def disable_perforation_skip() -> Command:
-    """
-    Disable automatic perforation skip, as per page 34 of the ImageWriter
-    II Technical Reference Manual.
-    """
-
-    return CloseSoftwareSwitches({SoftwareSwitch.PERFORATION_SKIP_DISABLED})
+    return (
+        dataclasses.replace(settings, perforation_skip_disabled=not enabled),
+        cmd_cls({SoftwareSwitch.PERFORATION_SKIP_DISABLED}),
+    )
