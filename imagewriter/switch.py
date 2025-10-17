@@ -103,7 +103,7 @@ class DIPSwitchSettings:
 
         return cls(
             language=cls.language_from_switches(switches),
-            form_length=12 if DIPSwitch.FORM_LENGTH else 11,
+            form_length=12 if DIPSwitch.FORM_LENGTH in switches else 11,
             perforation_skip=DIPSwitch.PERFORATION_SKIP in switches,
             pitch=cls.pitch_from_switches(switches),
             auto_lf_after_cr=DIPSwitch.AUTO_LF_AFTER_CR in switches,
