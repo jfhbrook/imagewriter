@@ -153,7 +153,7 @@ class SoftwareSwitch(Enum):
 
     @classmethod
     def difference(
-        cls: Type[Self], *switches: "SoftwareSwitch"
+        cls: Type[Self], switches: "Set[SoftwareSwitch]"
     ) -> "Set[SoftwareSwitch]":
         """
         Returns the software switches **not** provided.
@@ -239,11 +239,11 @@ class SoftwareSwitchSettings:
         cls: Type[Self], switches: Set[SoftwareSwitch]
     ) -> Language:
         key: int = 0b000
-        if DIPSwitch.LANGUAGE_1 in switches:
+        if SoftwareSwitch.LANGUAGE_1 in switches:
             key |= 0b100
-        if DIPSwitch.LANGUAGE_2 in switches:
+        if SoftwareSwitch.LANGUAGE_2 in switches:
             key |= 0b010
-        if DIPSwitch.LANGUAGE_3 in switches:
+        if SoftwareSwitch.LANGUAGE_3 in switches:
             key |= 0b001
 
         return {

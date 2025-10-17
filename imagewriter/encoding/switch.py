@@ -1,8 +1,9 @@
 from abc import ABC
-from typing import List, Self, Set
+import dataclasses
+from typing import Any, List, Self, Set, Tuple
 
 from imagewriter.encoding.base import Command, esc
-from imagewriter.switch import SoftwareSwitch
+from imagewriter.switch import SoftwareSwitch, SoftwareSwitchSettings
 
 
 class SetSoftwareSwitches(Command, ABC):
@@ -54,13 +55,24 @@ class CloseSoftwareSwitches(SetSoftwareSwitches):
         return super().__init__(True, switches)
 
 
-def set_software_switches(switches: Set[SoftwareSwitch]) -> List[Command]:
-    """
-    Close the software switches provided, and open all other software
-    switches.
-    """
+def update_software_switch_settings(
+    settings: SoftwareSwitchSettings, **changes: Any
+) -> Tuple[SoftwareSwitchSettings, List[Command]]:
+    replaced = dataclasses.replace(settings, **changes)
 
-    return [
-        OpenSoftwareSwitches(SoftwareSwitch.difference(*switches)),
-        CloseSoftwareSwitches(switches),
-    ]
+    closed_before = settings.switches()
+    open_before = SoftwareSwitch.difference(closed_before)
+    closed_after = replaced.switches()
+    open_after = SoftwareSwitch.difference(closed_after)
+
+    to_open = open_after - open_before
+    to_close = closed_after - closed_before
+
+    commands: List[Command] = list()
+
+    if to_open:
+        commands.append(OpenSoftwareSwitches(to_open))
+    if to_close:
+        commands.append(CloseSoftwareSwitches(to_close))
+
+    return (replaced, commands)

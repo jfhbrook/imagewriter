@@ -1,22 +1,28 @@
-from typing import List
+import dataclasses
 
-from imagewriter.encoding.base import Command, esc
-from imagewriter.encoding.switch import set_software_switches
-from imagewriter.switch import SoftwareSwitch
+from imagewriter.encoding.base import esc
+from imagewriter.encoding.switch import update_software_switch_settings
+from imagewriter.switch import SoftwareSwitch, SoftwareSwitchSettings
 
 
 def test_toggle() -> None:
-    commands: List[Command] = set_software_switches(
-        {
-            SoftwareSwitch.LANGUAGE_1,
-            SoftwareSwitch.SOFTWARE_SELECT_RESPONSE_DISABLED,
-            SoftwareSwitch.LF_WHEN_LINE_FULL,
-            SoftwareSwitch.PRINT_COMMANDS_INCLUDE_LF_FF,
-            SoftwareSwitch.AUTO_LF_AFTER_CR,
-            SoftwareSwitch.PERFORATION_SKIP_DISABLED,
-            SoftwareSwitch.IGNORE_EIGHTH_DATA_BIT,
-        }
-    )
+    switches = {
+        SoftwareSwitch.LANGUAGE_1,
+        SoftwareSwitch.SOFTWARE_SELECT_RESPONSE_DISABLED,
+        SoftwareSwitch.LF_WHEN_LINE_FULL,
+        SoftwareSwitch.PRINT_COMMANDS_INCLUDE_LF_FF,
+        SoftwareSwitch.AUTO_LF_AFTER_CR,
+        SoftwareSwitch.PERFORATION_SKIP_DISABLED,
+        SoftwareSwitch.IGNORE_EIGHTH_DATA_BIT,
+    }
+
+    before = SoftwareSwitchSettings.from_switches(SoftwareSwitch.difference(switches))
+    after = SoftwareSwitchSettings.from_switches(switches)
+
+    print(before)
+    print(after)
+
+    _, commands = update_software_switch_settings(before, **dataclasses.asdict(after))
 
     assert len(commands) == 2, "Should be an open and a close command"
 
