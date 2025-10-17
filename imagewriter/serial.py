@@ -50,7 +50,7 @@ class SerialProtocol(Enum):
     **WARNING:** XON/XOFF has not been tested and may not work!
     """
 
-    HARDWARE_HANDSHAKE = "HARDWARE_HANDSHAKE"
+    HARDWARE_HANDSHAKE = "Hardware Handshake"
     XONXOFF = "XON/XOFF"
 
 
