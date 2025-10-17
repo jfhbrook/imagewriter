@@ -123,7 +123,9 @@ class DIPSwitchSettings:
         Reference Manual.
         """
 
-        return cls.from_switches({DIPSwitch["1-6"], DIPSwitch["2-1"], DIPSwitch["2-2"]})
+        return cls.from_switches(
+            {DIPSwitch.PITCH_1, DIPSwitch.BAUD_RATE_1, DIPSwitch.BAUD_RATE_2}
+        )
 
 
 class SoftwareSwitch(Enum):
@@ -174,7 +176,7 @@ class SoftwareSwitch(Enum):
         North America.
         """
 
-        settings = (
+        settings: DIPSwitchSettings = (
             dip_switch_settings if dip_switch_settings else DIPSwitchSettings.defaults()
         )
 
@@ -233,6 +235,12 @@ class SoftwareSwitchSettings:
     slashed_zero: bool
     perforation_skip_disabled: bool
     ignore_eighth_data_bit: bool
+
+    @classmethod
+    def defaults(
+        cls: Type[Self], dip_switch_settings: Optional[DIPSwitchSettings] = None
+    ) -> Self:
+        return cls.from_switches(SoftwareSwitch.defaults(dip_switch_settings))
 
     @classmethod
     def language_from_switches(
