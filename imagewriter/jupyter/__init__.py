@@ -1,8 +1,9 @@
-from typing import List, Self
+from typing import Any, List, Optional, Self
 
 import ipywidgets as widgets
 import serial
 
+from imagewriter.jupyter.base import header
 from imagewriter.jupyter.connection import Activity, Connection
 from imagewriter.jupyter.switch import DIPSwitches, Settings
 from imagewriter.switch import DIPSwitchSettings, SoftwareSwitchSettings
@@ -25,9 +26,9 @@ class ControlPanel(widgets.Tab):
             children=[
                 widgets.VBox(
                     [
-                        widgets.Label(value="Connection:", font_weight="bold"),
+                        header("Connection"),
                         self.connection,
-                        widgets.Label(value="Software Switches:", font_weight="bold"),
+                        header("Software Switches"),
                         self.software_switches,
                     ]
                 ),
@@ -45,6 +46,14 @@ class ControlPanel(widgets.Tab):
 
     def close_port(self: Self) -> None:
         self.connection.close_port()
+
+    def update(
+        self: Self, switches: Optional[SoftwareSwitchSettings] = None, **changes: Any
+    ) -> None:
+        self.software_switches.update(switches, **changes)
+
+    def apply(self: Self) -> None:
+        self.software_switches.apply()
 
 
 __all__: List[str] = [

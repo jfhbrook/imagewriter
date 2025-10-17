@@ -5,6 +5,7 @@ import serial
 from serial.tools.list_ports import comports
 
 import imagewriter.debug as debug
+from imagewriter.jupyter.base import Label
 
 
 class SerialStateObserver(debug.SerialStateObserver):
@@ -22,35 +23,35 @@ class SerialStateObserver(debug.SerialStateObserver):
 
 class Activity(widgets.VBox):
     def __init__(self: Self, connection: "Connection") -> None:
-        self._connection: Connection = connection
-        self.dtr: widgets.Text = widgets.Text(value="")
-        self.dsr: widgets.Text = widgets.Text(value="")
-        self.rts: widgets.Text = widgets.Text(value="")
-        self.cts: widgets.Text = widgets.Text(value="")
+        self._connection = connection
+        self.dtr = widgets.Text(value="", disabled=True)
+        self.dsr = widgets.Text(value="", disabled=True)
+        self.rts = widgets.Text(value="", disabled=True)
+        self.cts = widgets.Text(value="", disabled=True)
 
         super().__init__(
             [
                 widgets.HBox(
                     [
-                        widgets.Label("DTR:"),
+                        Label(value="DTR:"),
                         self.dtr,
                     ]
                 ),
                 widgets.HBox(
                     [
-                        widgets.Label("DSR:"),
+                        Label(value="DSR:"),
                         self.dsr,
                     ]
                 ),
                 widgets.HBox(
                     [
-                        widgets.Label("RTS:"),
+                        Label(value="RTS:"),
                         self.rts,
                     ]
                 ),
                 widgets.HBox(
                     [
-                        widgets.Label("CTS:"),
+                        Label(value="CTS:"),
                         self.cts,
                     ]
                 ),

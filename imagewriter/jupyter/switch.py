@@ -1,8 +1,10 @@
-from typing import cast, Optional, Self
+import dataclasses
+from typing import Any, cast, Optional, Self
 
 import ipywidgets as widgets
 
 from imagewriter.encoding.switch import force_software_switch_settings
+from imagewriter.jupyter.base import Label
 from imagewriter.jupyter.connection import Connection
 from imagewriter.language import Language
 from imagewriter.switch import DIPSwitchSettings, SoftwareSwitchSettings
@@ -13,7 +15,7 @@ def language(switches: DIPSwitchSettings | SoftwareSwitchSettings) -> str:
 
 
 def form_length(switches: DIPSwitchSettings) -> str:
-    return str(switches.form_length)
+    return f"{switches.form_length} in"
 
 
 def software_select_response(switches: SoftwareSwitchSettings) -> str:
@@ -75,59 +77,57 @@ class DIPSwitches(widgets.VBox):
             [
                 widgets.HBox(
                     [
-                        widgets.Label(value="Language:", font_weight="bold"),
+                        Label(value="Language:"),
                         self._language,
                     ]
                 ),
                 widgets.HBox(
                     [
-                        widgets.Label(value="Form length:", font_weight="bold"),
+                        Label(value="Form length:"),
                         self._form_length,
                     ]
                 ),
                 widgets.HBox(
                     [
-                        widgets.Label(value="Perf skip:", font_weight="bold"),
+                        Label(value="Perf skip:"),
                         self._perforation_skip,
                     ]
                 ),
                 widgets.HBox(
                     [
-                        widgets.Label(value="Pitch:", font_weight="bold"),
+                        Label(value="Pitch:"),
                         self._pitch,
                     ]
                 ),
                 widgets.HBox(
                     [
-                        widgets.Label(value="LF after CR:", font_weight="bold"),
+                        Label(value="LF after CR:"),
                         self._auto_lf_after_cr,
                     ]
                 ),
                 widgets.HBox(
                     [
-                        widgets.Label(value="Baud rate:", font_weight="bold"),
+                        Label(value="Baud rate:"),
                         self._baud_rate,
                     ]
                 ),
                 widgets.HBox(
                     [
-                        widgets.Label(value="Protocol:", font_weight="bold"),
+                        Label(value="Protocol:"),
                         self._protocol,
                     ]
                 ),
             ]
         )
-        self._baud_rate = widgets.Label(value=str(dip_switches.baud_rate))
-        self._protocol = widgets.Label(value=dip_switches.protocol.value)
 
 
 class Settings(widgets.VBox):
     def __init__(
         self: Self,
-        software_switches: SoftwareSwitchSettings,
+        switches: SoftwareSwitchSettings,
         connection: Optional[Connection] = None,
     ) -> None:
-        self.software_switches = software_switches
+        self.switches = switches
         self.connection = connection
 
         self._language = widgets.Dropdown(
@@ -141,7 +141,7 @@ class Settings(widgets.VBox):
                 "Spanish",
                 "Danish",
             ],
-            value=language(software_switches),
+            value=language(switches),
             description="Language:",
             disabled=False,
         )
@@ -150,7 +150,7 @@ class Settings(widgets.VBox):
                 "Disabled",
                 "Enabled",
             ],
-            value=software_select_response(software_switches),
+            value=software_select_response(switches),
             description="SW Select:",
             disabled=False,
         )
@@ -159,44 +159,44 @@ class Settings(widgets.VBox):
                 "No",
                 "Yes",
             ],
-            value=lf_when_line_full(software_switches),
+            value=lf_when_line_full(switches),
             description="LF when full:",
             disabled=False,
         )
         self._print_commands_include_lf_ff = widgets.Dropdown(
             options=["Yes", "No"],
-            value=print_commands_include_lf_ff(software_switches),
+            value=print_commands_include_lf_ff(switches),
             description="LF/FF print:",
             disabled=False,
         )
         self._auto_lf_after_cr = widgets.Dropdown(
             options=["Yes", "No"],
-            value=auto_lf_after_cr(software_switches),
+            value=auto_lf_after_cr(switches),
             description="LF after CR:",
             disabled=False,
         )
         self._slashed_zero = widgets.Dropdown(
             options=["Slashed", "Unslashed"],
-            value=slashed_zero(software_switches),
+            value=slashed_zero(switches),
             description="Zero:",
         )
         self._perforation_skip = widgets.Dropdown(
             options=["Yes", "No"],
-            value=perforation_skip(software_switches),
+            value=perforation_skip(switches),
             description="Perf skip:",
         )
         self._eighth_data_bit = widgets.Dropdown(
             options=["Ignored", "Respected"],
-            value=eighth_data_bit(software_switches),
+            value=eighth_data_bit(switches),
             description="8th bit:",
         )
         self._apply_button = widgets.Button(
             description="Apply",
             disabled=False,
             button_style="",
-            tooltip="Apply software_switches",
+            tooltip="Apply switches",
         )
-        self._apply_status = widgets.Label(value="❓ Not yet applied")
+        self._apply_status = Label(value="❓ Not yet applied")
 
         self._apply_button.on_click(lambda b: self.apply())
 
@@ -219,23 +219,29 @@ class Settings(widgets.VBox):
             ]
         )
 
-    def update(self: Self, software_switches: SoftwareSwitchSettings) -> None:
-        self.software_switches = software_switches
-        self._language.value = language(software_switches)
-        self._software_select_response.value = software_select_response(
-            software_switches
-        )
-        self._lf_when_line_full.value = lf_when_line_full(software_switches)
+    def update(
+        self: Self, switches: Optional[SoftwareSwitchSettings] = None, **changes: Any
+    ) -> None:
+        if switches:
+            self._update(switches)
+        else:
+            self._update(dataclasses.replace(self.switches, **changes))
+
+    def _update(self: Self, switches: SoftwareSwitchSettings) -> None:
+        self.switches = switches
+        self._language.value = language(switches)
+        self._software_select_response.value = software_select_response(switches)
+        self._lf_when_line_full.value = lf_when_line_full(switches)
         self._print_commands_include_lf_ff.value = print_commands_include_lf_ff(
-            software_switches
+            switches
         )
-        self._auto_lf_after_cr.value = auto_lf_after_cr(software_switches)
-        self._slashed_zero.value = slashed_zero(software_switches)
-        self._perforation_skip.value = perforation_skip(software_switches)
-        self._eighth_data_bit.value = eighth_data_bit(software_switches)
+        self._auto_lf_after_cr.value = auto_lf_after_cr(switches)
+        self._slashed_zero.value = slashed_zero(switches)
+        self._perforation_skip.value = perforation_skip(switches)
+        self._eighth_data_bit.value = eighth_data_bit(switches)
 
     def apply(self: Self) -> None:
-        self.software_switches = SoftwareSwitchSettings(
+        self.switches = SoftwareSwitchSettings(
             language={
                 "American": Language.AMERICAN,
                 "British": Language.BRITISH,
@@ -258,7 +264,7 @@ class Settings(widgets.VBox):
         )
 
         if self.connection:
-            commands = force_software_switch_settings(self.software_switches)
+            commands = force_software_switch_settings(self.switches)
             try:
                 for cmd in commands:
                     self.connection.port.write(bytes(cmd))
