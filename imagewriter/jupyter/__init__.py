@@ -21,10 +21,16 @@ class ControlPanel(widgets.Tab):
         self.activity = self.connection.activity
 
         super().__init__(
-            titles=["Connection", "Software Switches", "DIP Switches", "Activity"],
+            titles=["Settings", "DIP Switches", "Activity"],
             children=[
-                self.connection,
-                self.software_switches,
+                widgets.VBox(
+                    [
+                        widgets.Label(value="Connection:", font_weight="bold"),
+                        self.connection,
+                        widgets.Label(value="Software Switches:", font_weight="bold"),
+                        self.software_switches,
+                    ]
+                ),
                 self.dip_switches,
                 self.connection.activity,
             ],
