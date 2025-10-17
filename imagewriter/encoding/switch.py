@@ -58,6 +58,11 @@ class CloseSoftwareSwitches(SetSoftwareSwitches):
 def update_software_switch_settings(
     settings: SoftwareSwitchSettings, **changes: Any
 ) -> Tuple[SoftwareSwitchSettings, List[Command]]:
+    """
+    Update software switch settings, under the assumption that the current
+    settings are accurate.
+    """
+
     replaced = dataclasses.replace(settings, **changes)
 
     closed_before = settings.switches()
@@ -76,3 +81,14 @@ def update_software_switch_settings(
         commands.append(CloseSoftwareSwitches(to_close))
 
     return (replaced, commands)
+
+
+def force_software_switch_settings(settings: SoftwareSwitchSettings) -> List[Command]:
+    """
+    Fully write out software switch settings, regardless of their prior state.
+    """
+
+    to_close = settings.switches()
+    to_open = SoftwareSwitch.difference(to_close)
+
+    return [OpenSoftwareSwitches(to_open), CloseSoftwareSwitches(to_close)]
