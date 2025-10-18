@@ -38,10 +38,7 @@ class State:
         self.unidirectional_printing: bool = False
         self.tab_stops: TabStops = TabStops(self.pitch)
         self.exact_print_head_position: Optional[int] = None
-        self.lines_per_inch: LinesPerInch = (
-            6  # TODO: How does this relate to distance between lines?
-        )
-        self._distance_between_lines: Distance = Point(1)
+        self._distance_between_lines: Distance = Inch(1 / 6)
         self.lf_direction: LineFeedDirection = LineFeedDirection.FORWARD
         self.carriage_return_insertion: bool = False
         self.color: Color = Color.BLACK  # TODO: Separate color from encoding
@@ -108,6 +105,10 @@ class State:
     def spacing(self: Self) -> Optional[int]:
         return self._spacing if self.pitch.is_proportional else None
 
+    @spacing.setter
+    def spacing(self: Self, spacing: int) -> None:
+        self.spacing = spacing
+
     @property
     def left_margin(self: Self) -> Distance:
         return self._left_margin
@@ -127,6 +128,14 @@ class State:
         self._distance_between_lines = length_to_distance(
             distance, Distance.from_vertical
         )
+
+    @property
+    def lines_per_inch(self: Self) -> float:
+        return 72 / self._distance_between_lines.points
+
+    @lines_per_inch.setter
+    def lines_per_inch(self: Self, lines: LinesPerInch) -> None:
+        self._distance_between_lines = Point(12 if lines == 6 else 9)
 
     @property
     def page_length(self: Self) -> Distance:
