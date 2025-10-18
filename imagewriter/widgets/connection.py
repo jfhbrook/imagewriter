@@ -5,7 +5,7 @@ import serial
 from serial.tools.list_ports import comports
 
 import imagewriter.debug as debug
-from imagewriter.jupyter.base import Label
+from imagewriter.widgets.base import Label
 
 
 class SerialStateObserver(debug.SerialStateObserver):

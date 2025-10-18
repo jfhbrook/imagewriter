@@ -3,9 +3,9 @@ from typing import Any, List, Optional, Self
 import ipywidgets as widgets
 import serial
 
-from imagewriter.jupyter.base import header
-from imagewriter.jupyter.connection import Activity, Connection
-from imagewriter.jupyter.switch import DIPSwitches, Settings
+from imagewriter.widgets.base import header
+from imagewriter.widgets.connection import Activity, Connection
+from imagewriter.widgets.switch import DIPSwitches, Settings
 from imagewriter.switch import DIPSwitchSettings, SoftwareSwitchSettings
 
 

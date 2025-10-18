@@ -4,8 +4,8 @@ from typing import Any, cast, Optional, Self
 import ipywidgets as widgets
 
 from imagewriter.encoding.switch import force_software_switch_settings
-from imagewriter.jupyter.base import Label
-from imagewriter.jupyter.connection import Connection
+from imagewriter.widgets.base import Label
+from imagewriter.widgets.connection import Connection
 from imagewriter.language import Language
 from imagewriter.switch import DIPSwitchSettings, SoftwareSwitchSettings
 
