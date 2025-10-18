@@ -1,5 +1,6 @@
 from typing import List
 
+from imagewriter.connection import Connection
 from imagewriter.identification import (
     FEAT_COLOR_RIBBON,
     FEAT_SHEET_FEEDER,
@@ -10,6 +11,7 @@ from imagewriter.language import Language
 from imagewriter.pitch import Pitch
 from imagewriter.quality import Quality
 from imagewriter.serial import Serial, SerialProtocol
+from imagewriter.state import State
 from imagewriter.switch import (
     DIPSwitch,
     DIPSwitches,
@@ -29,6 +31,7 @@ from imagewriter.units import (
 )
 
 __all__: List[str] = [
+    "Connection",
     "FEAT_COLOR_RIBBON",
     "FEAT_SHEET_FEEDER",
     "Feature",
@@ -38,6 +41,7 @@ __all__: List[str] = [
     "Quality",
     "Serial",
     "SerialProtocol",
+    "State",
     "DIPSwitch",
     "DIPSwitches",
     "SoftwareSwitch",
