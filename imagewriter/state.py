@@ -1,3 +1,4 @@
+import dataclasses
 from typing import Optional, Self
 
 from imagewriter.color import Color
@@ -76,33 +77,85 @@ class State:
     def language(self: Self) -> Language:
         return self.software_switches.language
 
+    @language.setter
+    def language(self: Self, language: Language) -> None:
+        self.software_switches = dataclasses.replace(
+            self.software_switches, language=language
+        )
+
     @property
     def software_select_response(self: Self) -> bool:
         return not self.software_switches.software_select_response_disabled
+
+    @software_select_response.setter
+    def software_select_response(self: Self, software_select_response: bool) -> None:
+        self.software_switches = dataclasses.replace(
+            self.software_switches,
+            software_select_response_disabled=not software_select_response,
+        )
 
     @property
     def lf_when_line_full(self: Self) -> bool:
         return self.software_switches.lf_when_line_full
 
+    @lf_when_line_full.setter
+    def lf_when_line_full(self: Self, lf_when_line_full: bool) -> None:
+        self.software_switches = dataclasses.replace(
+            self.software_switches, lf_when_line_full=lf_when_line_full
+        )
+
     @property
     def print_commands_include_lf_ff(self: Self) -> bool:
         return self.software_switches.print_commands_include_lf_ff
+
+    @print_commands_include_lf_ff.setter
+    def print_commands_include_lf_ff(
+        self: Self, print_commands_include_lf_ff: bool
+    ) -> None:
+        self.software_switches = dataclasses.replace(
+            self.software_switches,
+            print_commands_include_lf_ff=print_commands_include_lf_ff,
+        )
 
     @property
     def auto_lf_after_cr(self: Self) -> bool:
         return self.software_switches.auto_lf_after_cr
 
+    @auto_lf_after_cr.setter
+    def auto_lf_after_cr(self: Self, auto_lf_after_cr: bool) -> None:
+        self.software_switches = dataclasses.replace(
+            self.software_switches, auto_lf_after_cr=auto_lf_after_cr
+        )
+
     @property
     def slashed_zero(self: Self) -> bool:
         return self.software_switches.slashed_zero
+
+    @slashed_zero.setter
+    def slashed_zero(self: Self, slashed_zero: bool) -> None:
+        self.software_switches = dataclasses.replace(
+            self.software_switches, slashed_zero=slashed_zero
+        )
 
     @property
     def perforation_skip(self: Self) -> bool:
         return not self.software_switches.perforation_skip_disabled
 
+    @perforation_skip.setter
+    def perforation_skip(self: Self, perforation_skip: bool) -> None:
+        self.software_switches = dataclasses.replace(
+            self.software_switches, perforation_skip=perforation_skip
+        )
+
     @property
     def ignore_eighth_data_bit(self: Self) -> bool:
         return self.software_switches.ignore_eighth_data_bit
+
+    @ignore_eighth_data_bit.setter
+    def ignore_eighth_data_bit(self: Self, ignore_eighth_data_bit: bool) -> None:
+        self.software_switches = dataclasses.replace(
+            self.software_switches, ignore_eighth_data_bit=ignore_eighth_data_bit
+        )
 
     # boundaries
     @property
