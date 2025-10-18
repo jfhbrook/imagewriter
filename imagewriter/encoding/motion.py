@@ -1,5 +1,4 @@
-import dataclasses
-from typing import List, Self, Sequence, Tuple, Type
+from typing import List, Self, Sequence, Type
 
 from imagewriter.encoding.base import (
     Bytes,
@@ -13,7 +12,6 @@ from imagewriter.encoding.base import (
 from imagewriter.encoding.switch import (
     CloseSoftwareSwitches,
     OpenSoftwareSwitches,
-    SoftwareSwitches,
 )
 from imagewriter.motion import LinesPerInch
 from imagewriter.pitch import Pitch
@@ -197,9 +195,7 @@ class LineFeedEncoder:
         return Esc("r")
 
     @classmethod
-    def set_auto_after_cr(
-        cls: Type[Self], settings: SoftwareSwitches, enabled: bool
-    ) -> Tuple[SoftwareSwitches, Command]:
+    def set_auto_after_cr(cls: Type[Self], enabled: bool) -> Command:
         """
         Enable or disable an automatic LF after a CR, as per page 34 of the
         ImageWriter II Technical Reference Manual.
@@ -207,15 +203,10 @@ class LineFeedEncoder:
 
         cmd_cls = CloseSoftwareSwitches if enabled else OpenSoftwareSwitches
 
-        return (
-            dataclasses.replace(settings, auto_lf_after_cr=enabled),
-            cmd_cls({SoftwareSwitch.AUTO_LF_AFTER_CR}),
-        )
+        return cmd_cls({SoftwareSwitch.AUTO_LF_AFTER_CR})
 
     @classmethod
-    def set_auto_when_line_full(
-        cls: Type[Self], settings: SoftwareSwitches, enabled: bool
-    ) -> Tuple[SoftwareSwitches, Command]:
+    def set_auto_when_line_full(cls: Type[Self], enabled: bool) -> Command:
         """
         Configure the automatic insertion of a line feed when the line is full,
         as per page 34 of the ImageWriter II Technical Reference Manual.
@@ -223,15 +214,10 @@ class LineFeedEncoder:
 
         cmd_cls = CloseSoftwareSwitches if enabled else OpenSoftwareSwitches
 
-        return (
-            dataclasses.replace(settings, lf_when_line_full=enabled),
-            cmd_cls({SoftwareSwitch.LF_WHEN_LINE_FULL}),
-        )
+        return cmd_cls({SoftwareSwitch.LF_WHEN_LINE_FULL})
 
 
-def set_perforation_skip(
-    settings: SoftwareSwitches, enabled: bool
-) -> Tuple[SoftwareSwitches, Command]:
+def set_perforation_skip(enabled: bool) -> Command:
     """
     Configure automatic perforation skip, as per page 34 of the ImageWriter II
     Technical Reference Manual.
@@ -239,7 +225,4 @@ def set_perforation_skip(
 
     cmd_cls = OpenSoftwareSwitches if enabled else CloseSoftwareSwitches
 
-    return (
-        dataclasses.replace(settings, perforation_skip_disabled=not enabled),
-        cmd_cls({SoftwareSwitch.PERFORATION_SKIP_DISABLED}),
-    )
+    return cmd_cls({SoftwareSwitch.PERFORATION_SKIP_DISABLED})
