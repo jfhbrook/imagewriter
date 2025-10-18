@@ -1,6 +1,6 @@
 from typing import Optional, Self
 
-from imagewriter.encoding.color import Color
+from imagewriter.color import Color
 from imagewriter.language import Language
 from imagewriter.motion import LineFeedDirection, LinesPerInch, TabStops
 from imagewriter.pitch import Pitch
