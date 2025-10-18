@@ -41,9 +41,6 @@ class SetUnidirectionalPrinting(Esc):
 class TabStopEncoder:
     """
     Tab stops, as per page 65 of the ImageWriter II Technical Reference Manual.
-
-    Note that, if the character pitch changes, the tab stops remain the same.
-    It is a good idea to clear and reset tab stops
     """
 
     def _to_list(self: Self, stops: Sequence[int]) -> bytes:
