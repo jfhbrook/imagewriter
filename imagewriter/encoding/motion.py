@@ -25,6 +25,8 @@ from imagewriter.units import (
     length_to_int,
 )
 
+LinesPerInch = Literal[6] | Literal[8]
+
 CR = Bytes(b"\r")
 LF = Bytes(b"\n")
 FF = Ctrl("L")
@@ -199,7 +201,7 @@ class LineFeed:
         )
 
     @classmethod
-    def set_lines_per_inch(cls: Type[Self], lines: Literal[6] | Literal[8]) -> Command:
+    def set_lines_per_inch(cls: Type[Self], lines: LinesPerInch) -> Command:
         """
         Set lines per inch to either 6 or 8, as per page 71 of the ImageWriter
         II Technical Reference Manual.
