@@ -1,7 +1,7 @@
 from typing import Self
 
 from imagewriter.encoding.base import Command, esc, number
-from imagewriter.encoding.motion import LineFeed
+from imagewriter.encoding.motion import LineFeedEncoder
 from imagewriter.units import Point
 
 
@@ -37,4 +37,4 @@ def set_graphics_distance_between_lines() -> Command:
     details.
     """
 
-    return LineFeed.set_distance_between_lines(Point(1))
+    return LineFeedEncoder.set_distance_between_lines(Point(1))

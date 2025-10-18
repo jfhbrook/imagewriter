@@ -53,6 +53,10 @@ class Distance(ABC):
 
         return int(self.inches * VERTICAL_RESOLUTION)
 
+    @classmethod
+    def from_vertical(cls: Type[Self], vertical: int) -> "Distance":
+        return Inch(vertical / VERTICAL_RESOLUTION)
+
     def horizontal_dpi(self: Self, pitch: Pitch) -> int:
         """
         The distance in horizontal dots per inch, as in graphics mode.
@@ -66,6 +70,10 @@ class Distance(ABC):
         """
 
         return int(self.inches * pitch.characters_per_inch)
+
+    @classmethod
+    def from_characters(cls: Type[Self], cpi: int, pitch: Pitch) -> "Distance":
+        return Inch(cpi / pitch.characters_per_inch)
 
     @classmethod
     def from_(cls: Type[Self], from_: "Distance") -> Self:

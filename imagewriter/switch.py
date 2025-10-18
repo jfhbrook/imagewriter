@@ -6,6 +6,8 @@ from imagewriter.language import Language
 from imagewriter.pitch import Pitch
 from imagewriter.serial import BaudRate, SerialProtocol
 
+FormLength = Literal[11] | Literal[12]
+
 
 class DIPSwitch(Enum):
     """
@@ -34,7 +36,7 @@ class DIPSwitches:
     """
 
     language: Language
-    form_length: Literal[11] | Literal[12]
+    form_length: FormLength
     perforation_skip: bool
     pitch: Pitch
     auto_lf_after_cr: bool
