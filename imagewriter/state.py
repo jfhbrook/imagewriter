@@ -1,7 +1,6 @@
 import dataclasses
 from typing import Optional, Self
 
-from imagewriter.color import Color
 from imagewriter.language import Language
 from imagewriter.motion import LineFeedDirection, LinesPerInch, TabStops
 from imagewriter.pitch import Pitch
@@ -28,20 +27,9 @@ class State:
             else SoftwareSwitches.defaults(self.dip_switches)
         )
 
-        # attributes
-        self.double_width: bool = False
-        self.underline: bool = False
-        self.boldface: bool = False
-        self.half_height: bool = False
-        self.superscript: bool = False
-        self.subscript: bool = False
-
         # boundaries
         self._left_margin: Distance = Inch(0)
         self._page_length: Distance = Inch(self.dip_switches.form_length)
-
-        # color
-        self.color: Color = Color.BLACK
 
         # insertion
         self.carriage_return_insertion: bool = False
