@@ -32,6 +32,18 @@ class Container:
         software_switches: SoftwareSwitchesFactory = software_switches_factory,
         serial: SerialFactory = serial_factory,
     ) -> None:
-        self.dip_switches: DIPSwitches = dip_switches
-        self.software_switches: SoftwareSwitches = software_switches(dip_switches)
-        self.port: Serial = serial(port, dip_switches)
+        self._dip_switches: DIPSwitches = dip_switches
+        self._software_switches: SoftwareSwitches = software_switches(dip_switches)
+        self._port: Serial = serial(port, dip_switches)
+
+    @property
+    def dip_switches(self: Self) -> DIPSwitches:
+        return self._dip_switches
+
+    @property
+    def software_switches(self: Self) -> SoftwareSwitches:
+        return self._software_switches
+
+    @property
+    def port(self: Self) -> Serial:
+        return self._port
