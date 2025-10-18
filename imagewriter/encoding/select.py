@@ -20,15 +20,15 @@ from typing import Tuple
 
 from imagewriter.encoding.base import Command, Ctrl
 from imagewriter.encoding.switch import CloseSoftwareSwitches, OpenSoftwareSwitches
-from imagewriter.switch import SoftwareSwitch, SoftwareSwitchSettings
+from imagewriter.switch import SoftwareSwitch, SoftwareSwitches
 
 SELECT = Ctrl("Q")
 DESELECT = Ctrl("S")
 
 
 def set_software_select_response(
-    settings: SoftwareSwitchSettings, enabled: bool
-) -> Tuple[SoftwareSwitchSettings, Command]:
+    settings: SoftwareSwitches, enabled: bool
+) -> Tuple[SoftwareSwitches, Command]:
     """
     Configure Software Select-Deselect Response, as per page 34 of the
     ImageWriter II Technical Reference Manual.

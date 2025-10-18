@@ -13,7 +13,7 @@ from imagewriter.encoding.base import (
 from imagewriter.encoding.switch import (
     CloseSoftwareSwitches,
     OpenSoftwareSwitches,
-    SoftwareSwitchSettings,
+    SoftwareSwitches,
 )
 from imagewriter.pitch import Pitch
 from imagewriter.switch import SoftwareSwitch
@@ -243,8 +243,8 @@ class LineFeed:
 
     @classmethod
     def set_auto_after_cr(
-        cls: Type[Self], settings: SoftwareSwitchSettings, enabled: bool
-    ) -> Tuple[SoftwareSwitchSettings, Command]:
+        cls: Type[Self], settings: SoftwareSwitches, enabled: bool
+    ) -> Tuple[SoftwareSwitches, Command]:
         """
         Enable or disable an automatic LF after a CR, as per page 34 of the
         ImageWriter II Technical Reference Manual.
@@ -259,8 +259,8 @@ class LineFeed:
 
     @classmethod
     def set_auto_when_line_full(
-        cls: Type[Self], settings: SoftwareSwitchSettings, enabled: bool
-    ) -> Tuple[SoftwareSwitchSettings, Command]:
+        cls: Type[Self], settings: SoftwareSwitches, enabled: bool
+    ) -> Tuple[SoftwareSwitches, Command]:
         """
         Configure the automatic insertion of a line feed when the line is full,
         as per page 34 of the ImageWriter II Technical Reference Manual.
@@ -275,8 +275,8 @@ class LineFeed:
 
 
 def set_perforation_skip(
-    settings: SoftwareSwitchSettings, enabled: bool
-) -> Tuple[SoftwareSwitchSettings, Command]:
+    settings: SoftwareSwitches, enabled: bool
+) -> Tuple[SoftwareSwitches, Command]:
     """
     Configure automatic perforation skip, as per page 34 of the ImageWriter II
     Technical Reference Manual.

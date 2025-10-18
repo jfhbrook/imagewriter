@@ -2,7 +2,7 @@ import dataclasses
 
 from imagewriter.encoding.base import esc
 from imagewriter.encoding.switch import update_software_switch_settings
-from imagewriter.switch import SoftwareSwitch, SoftwareSwitchSettings
+from imagewriter.switch import SoftwareSwitch, SoftwareSwitches
 
 
 def test_toggle() -> None:
@@ -16,8 +16,8 @@ def test_toggle() -> None:
         SoftwareSwitch.IGNORE_EIGHTH_DATA_BIT,
     }
 
-    before = SoftwareSwitchSettings.from_switches(SoftwareSwitch.difference(switches))
-    after = SoftwareSwitchSettings.from_switches(switches)
+    before = SoftwareSwitches.from_switches(SoftwareSwitch.difference(switches))
+    after = SoftwareSwitches.from_switches(switches)
 
     print(before)
     print(after)

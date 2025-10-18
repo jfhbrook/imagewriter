@@ -3,21 +3,21 @@ from typing import Any, List, Optional, Self
 import ipywidgets as widgets
 import serial
 
-from imagewriter.switch import DIPSwitchSettings, SoftwareSwitchSettings
+import imagewriter.switch as switch
 from imagewriter.widgets.base import header
 from imagewriter.widgets.connection import Activity, Connection
-from imagewriter.widgets.switch import DIPSwitches, Settings
+from imagewriter.widgets.switch import DIPSwitches, SoftwareSwitches
 
 
 class ControlPanel(widgets.Tab):
     def __init__(
         self: Self,
-        dip_switches: DIPSwitchSettings,
-        software_switches: SoftwareSwitchSettings,
+        dip_switches: switch.DIPSwitches,
+        software_switches: switch.SoftwareSwitches,
     ) -> None:
         self.connection = Connection()
         self.dip_switches = DIPSwitches(dip_switches)
-        self.software_switches = Settings(software_switches, self.connection)
+        self.software_switches = SoftwareSwitches(software_switches, self.connection)
 
         self.activity = self.connection.activity
 
@@ -48,7 +48,7 @@ class ControlPanel(widgets.Tab):
         self.connection.close_port()
 
     def update(
-        self: Self, switches: Optional[SoftwareSwitchSettings] = None, **changes: Any
+        self: Self, switches: Optional[switch.SoftwareSwitches] = None, **changes: Any
     ) -> None:
         self.software_switches.update(switches, **changes)
 
@@ -59,5 +59,5 @@ class ControlPanel(widgets.Tab):
 __all__: List[str] = [
     "Activity",
     "Connection",
-    "Settings",
+    "SoftwareSwitches",
 ]

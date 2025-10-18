@@ -3,12 +3,12 @@ from typing import Tuple
 
 from imagewriter.encoding.base import Command
 from imagewriter.encoding.switch import CloseSoftwareSwitches, OpenSoftwareSwitches
-from imagewriter.switch import SoftwareSwitch, SoftwareSwitchSettings
+from imagewriter.switch import SoftwareSwitch, SoftwareSwitches
 
 
 def set_print_commands_include_lf_ff(
-    settings: SoftwareSwitchSettings, enabled: bool
-) -> Tuple[SoftwareSwitchSettings, Command]:
+    settings: SoftwareSwitches, enabled: bool
+) -> Tuple[SoftwareSwitches, Command]:
     """
     Configure the treatment of LF and FF as print commands, as per page 34
     of the ImageWriter II Technical Reference Manual.

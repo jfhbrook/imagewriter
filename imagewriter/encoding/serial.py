@@ -3,12 +3,12 @@ from typing import Tuple
 
 from imagewriter.encoding.base import Command
 from imagewriter.encoding.switch import CloseSoftwareSwitches, OpenSoftwareSwitches
-from imagewriter.switch import SoftwareSwitch, SoftwareSwitchSettings
+from imagewriter.switch import SoftwareSwitch, SoftwareSwitches
 
 
 def ignore_eighth_data_bit(
-    settings: SoftwareSwitchSettings,
-) -> Tuple[SoftwareSwitchSettings, Command]:
+    settings: SoftwareSwitches,
+) -> Tuple[SoftwareSwitches, Command]:
     """
     Ignore the eighth data bit of each byte sent, as per page 34 of the
     ImageWriter II Technical Reference Manual.
@@ -30,8 +30,8 @@ def ignore_eighth_data_bit(
 
 
 def include_eighth_data_bit(
-    settings: SoftwareSwitchSettings,
-) -> Tuple[SoftwareSwitchSettings, Command]:
+    settings: SoftwareSwitches,
+) -> Tuple[SoftwareSwitches, Command]:
     """
     Include the eighth data bit of each byte sent, as per page 34 of the
     ImageWriter II Technical Reference Manual.

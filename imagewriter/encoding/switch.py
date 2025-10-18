@@ -3,7 +3,7 @@ import dataclasses
 from typing import Any, List, Self, Set, Tuple
 
 from imagewriter.encoding.base import Command, esc
-from imagewriter.switch import SoftwareSwitch, SoftwareSwitchSettings
+from imagewriter.switch import SoftwareSwitch, SoftwareSwitches
 
 
 class SetSoftwareSwitches(Command, ABC):
@@ -56,8 +56,8 @@ class CloseSoftwareSwitches(SetSoftwareSwitches):
 
 
 def update_software_switch_settings(
-    settings: SoftwareSwitchSettings, **changes: Any
-) -> Tuple[SoftwareSwitchSettings, List[Command]]:
+    settings: SoftwareSwitches, **changes: Any
+) -> Tuple[SoftwareSwitches, List[Command]]:
     """
     Update software switch settings, under the assumption that the current
     settings are accurate.
@@ -83,7 +83,7 @@ def update_software_switch_settings(
     return (replaced, commands)
 
 
-def force_software_switch_settings(settings: SoftwareSwitchSettings) -> List[Command]:
+def force_software_switch_settings(settings: SoftwareSwitches) -> List[Command]:
     """
     Fully write out software switch settings, regardless of their prior state.
     """

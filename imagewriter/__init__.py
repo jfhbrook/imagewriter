@@ -12,9 +12,9 @@ from imagewriter.quality import Quality
 from imagewriter.serial import Serial, SerialProtocol
 from imagewriter.switch import (
     DIPSwitch,
-    DIPSwitchSettings,
+    DIPSwitches,
     SoftwareSwitch,
-    SoftwareSwitchSettings,
+    SoftwareSwitches,
 )
 from imagewriter.units import (
     Centimeter,
@@ -39,9 +39,9 @@ __all__: List[str] = [
     "Serial",
     "SerialProtocol",
     "DIPSwitch",
-    "DIPSwitchSettings",
+    "DIPSwitches",
     "SoftwareSwitch",
-    "SoftwareSwitchSettings",
+    "SoftwareSwitches",
     "Centimeter",
     "Distance",
     "Inch",

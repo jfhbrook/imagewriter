@@ -27,7 +27,7 @@ class DIPSwitch(Enum):
 
 
 @dataclass
-class DIPSwitchSettings:
+class DIPSwitches:
     """
     DIP switch settings, as per Chapter 2 of the ImageWriter II Technical
     Reference Manual
@@ -164,7 +164,7 @@ class SoftwareSwitch(Enum):
 
     @classmethod
     def defaults(
-        cls: Type[Self], dip_switch_settings: Optional[DIPSwitchSettings] = None
+        cls: Type[Self], dip_switch_settings: Optional[DIPSwitches] = None
     ) -> "Set[SoftwareSwitch]":
         """
         Returns software switches which are closed by default, as per page 32
@@ -176,8 +176,8 @@ class SoftwareSwitch(Enum):
         North America.
         """
 
-        settings: DIPSwitchSettings = (
-            dip_switch_settings if dip_switch_settings else DIPSwitchSettings.defaults()
+        settings: DIPSwitches = (
+            dip_switch_settings if dip_switch_settings else DIPSwitches.defaults()
         )
 
         defaults: "Set[SoftwareSwitch]" = {
@@ -226,7 +226,7 @@ class SoftwareSwitch(Enum):
 
 
 @dataclass
-class SoftwareSwitchSettings:
+class SoftwareSwitches:
     language: Language
     software_select_response_disabled: bool
     lf_when_line_full: bool
@@ -238,7 +238,7 @@ class SoftwareSwitchSettings:
 
     @classmethod
     def defaults(
-        cls: Type[Self], dip_switch_settings: Optional[DIPSwitchSettings] = None
+        cls: Type[Self], dip_switch_settings: Optional[DIPSwitches] = None
     ) -> Self:
         return cls.from_switches(SoftwareSwitch.defaults(dip_switch_settings))
 
