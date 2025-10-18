@@ -1,5 +1,5 @@
 from contextlib import contextmanager
-from typing import Generator, Self, Sequence
+from typing import Generator, List, Optional, Self, Sequence
 
 from imagewriter.encoding import Command
 from imagewriter.serial import Serial, SerialProtocol
@@ -8,6 +8,10 @@ from imagewriter.serial import Serial, SerialProtocol
 class Connection:
     def __init__(self: Self, port: Serial) -> None:
         self._port: Serial = port
+
+        self._command_buffer: List[Command] = list()
+        self._bytes_buffer: Optional[bytes] = None
+
         self.paused: bool = False
 
     @property
