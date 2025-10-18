@@ -9,6 +9,17 @@ Receiving the response has a number of additional caveats. See the
 `imagewriter.identification` module for more details.
 """
 
+from typing import Self
+
 from imagewriter.encoding.base import Esc
 
-REQUEST_SELF_IDENTIFY = Esc("?")
+
+class RequestSelfIdentify(Esc):
+    def __init__(self: Self) -> None:
+        return super().__init__("?")
+
+    def __repr__(self: Self) -> str:
+        return "RequestSelfIdentify()"
+
+
+REQUEST_SELF_IDENTIFY = RequestSelfIdentify()

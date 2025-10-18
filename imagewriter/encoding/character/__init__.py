@@ -40,7 +40,36 @@ MOUSETEXT_CHARACTERS: Dict[str, MouseTextCharacter] = {
     "▏": MouseTextCharacter.LEFT_ONE_EIGHTH_BLOCK,
 }
 
-DISABLE_MODE = Esc("$")
+
+class DisableMode(Esc):
+    def __init__(self: Self) -> None:
+        super().__init__("$")
+
+    def __repr__(self: Self) -> str:
+        return "DisableMode()"
+
+
+DISABLE_MODE = DisableMode()
+
+
+class EnableMouseTextMappingMode(Esc):
+    def __init__(self: Self) -> None:
+        super().__init__("&")
+
+    def __repr__(self: Self) -> str:
+        return "EnableMouseTextMappingMode()"
+
+
+ENABLE_MOUSE_TEXT_MAPPING_MODE = EnableMouseTextMappingMode()
+
+
+class EnableCustomCharacterMode(Esc):
+    def __init__(self: Self, map: bool) -> None:
+        self._map = map
+        super().__init__("*" if map else "'")
+
+    def __repr__(self: Self) -> str:
+        return f"EnableCustomCharacterMode(map={self._map})"
 
 
 class Mode(ABC):
@@ -83,7 +112,7 @@ class MouseTextMode(Mode):
         self.map: bool = map
 
     def enable(self: Self) -> List[Command]:
-        return [Esc("&")] if self.map else list()
+        return [ENABLE_MOUSE_TEXT_MAPPING_MODE] if self.map else list()
 
     def disable(self: Self) -> List[Command]:
         return [DISABLE_MODE] if self.map else list()
@@ -97,7 +126,7 @@ class CustomCharacterMode(Mode):
         self.map: bool = map
 
     def enable(self: Self) -> List[Command]:
-        return [Esc("*") if self.map else Esc("'")]
+        return [EnableCustomCharacterMode(self.map)]
 
     def disable(self: Self) -> List[Command]:
         return [DISABLE_MODE]
@@ -186,6 +215,9 @@ class CharacterEncoder:
 
         return encoded
 
+    def _bytes(self: Self, buffer: bytes) -> List[Command]:
+        return [Bytes(bytes([byte])) for byte in buffer]
+
     def encode(self: Self, *text: Text) -> List[Command]:
         encoded: List[Command] = list()
         mode: Mode = self.language_mode
@@ -197,7 +229,7 @@ class CharacterEncoder:
 
             # If the mode is changing, add the buffer to the encoded output
             if mode != self.mode:
-                encoded.append(Bytes(buffer))
+                encoded += self._bytes(buffer)
                 buffer = b""
 
             # Set the new mode
@@ -213,7 +245,7 @@ class CharacterEncoder:
                 buffer += bytes([ch.point])
 
         # Attach the final buffer
-        encoded.append(Bytes(buffer))
+        encoded += self._bytes(buffer)
         encoded += self.mode.disable()
 
         # Enable the default language if need be

@@ -27,6 +27,10 @@ class PrintGraphicsData(Command):
 
         return encoded
 
+    def __repr__(self: Self) -> str:
+        data = " ".join([bin(byte) for byte in self._data])
+        return f"PrintGraphicsData({data})"
+
 
 def set_graphics_distance_between_lines() -> Command:
     """

@@ -9,20 +9,58 @@ from imagewriter.encoding.base import (
     Esc,
     number,
 )
-from imagewriter.encoding.switch import (
-    CloseSoftwareSwitches,
-    OpenSoftwareSwitches,
-)
+from imagewriter.encoding.switch import SetSoftwareSwitches
 from imagewriter.motion import LinesPerInch
 from imagewriter.pitch import Pitch
 from imagewriter.switch import SoftwareSwitch
 from imagewriter.units import Length, length_to_int
 
-CR = Bytes(b"\r")
-LF = Bytes(b"\n")
-FF = Ctrl("L")
-BACKSPACE = Ctrl("H")
-TAB = Bytes(b"\t")
+
+class CarriageReturn(Bytes):
+    def __init__(self: Self) -> None:
+        super().__init__(b"\r")
+
+    def __repr__(self: Self) -> str:
+        return "\\r"
+
+
+class LineFeed(Bytes):
+    def __init__(self: Self) -> None:
+        super().__init__(b"\n")
+
+    def __repr__(self: Self) -> str:
+        return "\\n"
+
+
+class FormFeed(Ctrl):
+    def __init__(self: Self) -> None:
+        super().__init__("L")
+
+    def __repr__(self: Self) -> str:
+        return "FormFeed()"
+
+
+class Backspace(Ctrl):
+    def __init__(self: Self) -> None:
+        super().__init__("H")
+
+    def __repr__(self: Self) -> str:
+        return "Backspace()"
+
+
+class Tab(Bytes):
+    def __init__(self: Self) -> None:
+        super().__init__(b"\t")
+
+    def __repr__(self: Self) -> str:
+        return "\\t"
+
+
+CR = CarriageReturn()
+LF = LineFeed()
+FF = FormFeed()
+BACKSPACE = Backspace()
+TAB = Tab()
 
 
 class SetUnidirectionalPrinting(Esc):
@@ -32,8 +70,61 @@ class SetUnidirectionalPrinting(Esc):
     """
 
     def __init__(self: Self, is_unidirectional: bool) -> None:
+        self.is_unidirectional = is_unidirectional
         code = ">" if is_unidirectional else "<"
         super().__init__(code)
+
+    def __repr__(self: Self) -> str:
+        return f"SetUnidirectionalPrinting(is_unidirectional={self.is_unidirectional})"
+
+
+def encode_tab_stops(stops: Sequence[int]) -> bytes:
+    tab_stops: List[int] = list(stops)
+    tab_stops.sort()
+
+    encoded: bytes = b""
+
+    for stop in tab_stops:
+        encoded += bytes(f"{number(stop, 3)},", encoding="ascii")
+
+    encoded = encoded[:-1] + b"."
+
+    return encoded
+
+
+class SetManyTabs(Bytes):
+    def __init__(self: Self, stops: List[int]) -> None:
+        self._stops = stops
+        super().__init__(esc("(") + encode_tab_stops(stops))
+
+    def __repr__(self: Self) -> str:
+        return f"SetManyTabs({self._stops})"
+
+
+class SetOneTab(Bytes):
+    def __init__(self: Self, stop: int) -> None:
+        self._stop = stop
+        super().__init__(esc("U") + number(stop, 3))
+
+    def __repr__(self: Self) -> str:
+        return f"SetOneTab({self._stop})"
+
+
+class ClearManyTabs(Bytes):
+    def __init__(self: Self, stops: List[int]) -> None:
+        self._stops = stops
+        super().__init__(esc(")") + encode_tab_stops(stops))
+
+    def __repr__(self: Self) -> str:
+        return f"ClearManyTabs({self._stops})"
+
+
+class ClearAllTabs(Esc):
+    def __init__(self: Self) -> None:
+        super().__init__("0")
+
+    def __repr__(self: Self) -> str:
+        return "ClearAllTabs()"
 
 
 class TabStopEncoder:
@@ -41,26 +132,13 @@ class TabStopEncoder:
     Tab stops, as per page 65 of the ImageWriter II Technical Reference Manual.
     """
 
-    def _to_list(self: Self, stops: Sequence[int]) -> bytes:
-        tab_stops: List[int] = list(stops)
-        tab_stops.sort()
-
-        encoded: bytes = b""
-
-        for stop in tab_stops:
-            encoded += bytes(f"{number(stop, 3)},", encoding="ascii")
-
-        encoded = encoded[:-1] + b"."
-
-        return encoded
-
     def set_many(self: Self, stops: Sequence[int]) -> Command:
         """
         Set multiple tab stops, as per page 65 of the ImageWriter II Technical
         Reference Manual.
         """
 
-        return Bytes(esc("(") + self._to_list(stops))
+        return SetManyTabs(list(stops))
 
     def set_one(self: Self, stop: int) -> Command:
         """
@@ -68,7 +146,7 @@ class TabStopEncoder:
         Reference Manual.
         """
 
-        return Bytes(esc("U") + number(stop, 3))
+        return SetOneTab(stop)
 
     def clear_many(self: Self, stops: Sequence[int]) -> Command:
         """
@@ -76,7 +154,7 @@ class TabStopEncoder:
         Technical Reference Manual.
         """
 
-        return Bytes(esc(")") + self._to_list(stops))
+        return ClearManyTabs(list(stops))
 
     def clear_all(self: Self) -> Command:
         """
@@ -84,7 +162,7 @@ class TabStopEncoder:
         Reference Manual.
         """
 
-        return Esc("0")
+        return ClearAllTabs()
 
     def reset(self: Self, stops: Sequence[int]) -> List[Command]:
         """
@@ -124,8 +202,94 @@ class PlaceExactPrintHeadPosition(Command):
     def __bytes__(self: Self) -> bytes:
         return esc("F") + number(self.position, 4)
 
+    def __repr__(self: Self) -> str:
+        return f"PlaceExactPrintHeadPosition({self.position})"
 
-SET_TOP_OF_FORM = Esc("v")
+
+class SetTopOfForm(Esc):
+    def __init__(self: Self) -> None:
+        super().__init__("v")
+
+    def __repr__(self: Self) -> str:
+        return "SetTopOfForm()"
+
+
+SET_TOP_OF_FORM = SetTopOfForm()
+
+
+class FeedMany(Bytes):
+    def __init__(self: Self, lines: int) -> None:
+        self._lines = lines
+        super().__init__(
+            ctrl("_")
+            + bytes(
+                {10: ":", 11: ";", 12: "<", 13: "=", 14: ">", 15: "?"}.get(
+                    lines, str(lines)
+                ),
+                encoding="ascii",
+            )
+        )
+
+    def __repr__(self: Self) -> str:
+        return f"FeedMany({self._lines})"
+
+
+class SetLinesPerInch(Esc):
+    def __init__(self: Self, lines: LinesPerInch) -> None:
+        self._lines = lines
+        code = "A" if lines == 6 else "B"
+        super().__init__(code)
+
+    def __repr__(self: Self) -> str:
+        return f"SetLinesPerInch({self._lines})"
+
+
+class SetDistanceBetweenLines(Bytes):
+    def __init__(self: Self, distance: int) -> None:
+        self._distance: int = distance
+
+        super().__init__(esc("T") + number(distance, 2))
+
+    def __repr__(self: Self) -> str:
+        return f"SetDistanceBetweenLines({self._distance})"
+
+
+class LineFeedForward(Esc):
+    def __init__(self: Self) -> None:
+        super().__init__("f")
+
+    def __repr__(self: Self) -> str:
+        return "LineFeedForward()"
+
+
+class LineFeedReverse(Esc):
+    def __init__(self: Self) -> None:
+        super().__init__("r")
+
+    def __repr__(self: Self) -> str:
+        return "LineFeedReverse()"
+
+
+class SetAutoLFAfterCR(SetSoftwareSwitches):
+
+    def __init__(self: Self, enabled: bool) -> None:
+        self._enabled = enabled
+        super().__init__(enabled, {SoftwareSwitch.AUTO_LF_AFTER_CR})
+
+    def __repr__(self: Self) -> str:
+        packed = self.pack()
+        return f"SetAutoLFAfterCr({self._enabled}, {packed[0]:b} {packed[1]:b})"
+
+
+class SetLFWhenLineFull(SetSoftwareSwitches):
+
+    def __init__(self: Self, enabled: bool) -> None:
+        self._enabled = enabled
+        super().__init__(enabled, {SoftwareSwitch.LF_WHEN_LINE_FULL})
+
+    def __repr__(self: Self) -> str:
+        packed = self.pack()
+        return f"SetLFWhenLineFull({self._enabled}, {packed[0]:b} {packed[1]:b})"
 
 
 class LineFeedEncoder:
@@ -141,15 +305,7 @@ class LineFeedEncoder:
         if lines == 1:
             return LF
 
-        return Bytes(
-            ctrl("_")
-            + bytes(
-                {10: ":", 11: ";", 12: "<", 13: "=", 14: ">", 15: "?"}.get(
-                    lines, str(lines)
-                ),
-                encoding="ascii",
-            )
-        )
+        return FeedMany(lines)
 
     @classmethod
     def set_lines_per_inch(cls: Type[Self], lines: LinesPerInch) -> Command:
@@ -160,10 +316,7 @@ class LineFeedEncoder:
 
         assert lines == 6 or lines == 8, "May only set 6 or 8 lines per inch"
 
-        if lines == 6:
-            return Esc("A")
-        else:
-            return Esc("B")
+        return SetLinesPerInch(lines)
 
     @classmethod
     def set_distance_between_lines(cls: Type[Self], distance: Length) -> Command:
@@ -174,7 +327,7 @@ class LineFeedEncoder:
 
         dist: int = length_to_int(distance, lambda d: d.vertical)
 
-        return Bytes(esc("T") + number(dist, 2))
+        return SetDistanceBetweenLines(dist)
 
     @classmethod
     def forward(cls: Type[Self]) -> Command:
@@ -183,7 +336,7 @@ class LineFeedEncoder:
         ImageWriter II Technical Reference Manual.
         """
 
-        return Esc("f")
+        return LineFeedForward()
 
     @classmethod
     def reverse(cls: Type[Self]) -> Command:
@@ -192,7 +345,7 @@ class LineFeedEncoder:
         Technical Reference Manual.
         """
 
-        return Esc("r")
+        return LineFeedReverse()
 
     @classmethod
     def set_auto_after_cr(cls: Type[Self], enabled: bool) -> Command:
@@ -201,9 +354,7 @@ class LineFeedEncoder:
         ImageWriter II Technical Reference Manual.
         """
 
-        cmd_cls = CloseSoftwareSwitches if enabled else OpenSoftwareSwitches
-
-        return cmd_cls({SoftwareSwitch.AUTO_LF_AFTER_CR})
+        return SetAutoLFAfterCR(enabled)
 
     @classmethod
     def set_auto_when_line_full(cls: Type[Self], enabled: bool) -> Command:
@@ -212,17 +363,19 @@ class LineFeedEncoder:
         as per page 34 of the ImageWriter II Technical Reference Manual.
         """
 
-        cmd_cls = CloseSoftwareSwitches if enabled else OpenSoftwareSwitches
-
-        return cmd_cls({SoftwareSwitch.LF_WHEN_LINE_FULL})
+        return SetLFWhenLineFull(enabled)
 
 
-def set_perforation_skip(enabled: bool) -> Command:
+class SetPerforationSkip(SetSoftwareSwitches):
     """
     Configure automatic perforation skip, as per page 34 of the ImageWriter II
     Technical Reference Manual.
     """
 
-    cmd_cls = OpenSoftwareSwitches if enabled else CloseSoftwareSwitches
+    def __init__(self: Self, enabled: bool) -> None:
+        self._enabled = enabled
+        super().__init__(not enabled, {SoftwareSwitch.PERFORATION_SKIP_DISABLED})
 
-    return cmd_cls({SoftwareSwitch.PERFORATION_SKIP_DISABLED})
+    def __repr__(self: Self) -> str:
+        packed = self.pack()
+        return f"SetPerforationSkip({self._enabled}, {packed[0]:b} {packed[1]:b})"

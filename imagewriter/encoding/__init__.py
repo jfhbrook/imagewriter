@@ -14,7 +14,7 @@ from imagewriter.encoding.attributes import (
     STOP_SUPERSCRIPT,
     STOP_UNDERLINE,
 )
-from imagewriter.encoding.base import Bytes, Command, ctrl, Ctrl, esc, Esc, NULL
+from imagewriter.encoding.base import Bytes, Command, ctrl, Ctrl, esc, Esc
 from imagewriter.encoding.boundaries import SetLeftMargin, SetPageLength
 from imagewriter.encoding.cancel import CANCEL_CURRENT_LINE
 from imagewriter.encoding.character import CharacterEncoder, Text
@@ -40,21 +40,18 @@ from imagewriter.encoding.motion import (
     LineFeedEncoder,
     PlaceExactPrintHeadPosition,
     SET_TOP_OF_FORM,
+    SetPerforationSkip,
     SetUnidirectionalPrinting,
     TAB,
     TabStopEncoder,
 )
 from imagewriter.encoding.paper import DISABLE_PAPER_OUT_SENSOR, ENABLE_PAPER_OUT_SENSOR
-from imagewriter.encoding.pitch import insert_spaces, set_pitch, set_spacing
-from imagewriter.encoding.quality import select_quality
+from imagewriter.encoding.pitch import InsertSpaces, SetPitch, SetSpacing
+from imagewriter.encoding.quality import SelectQuality
 from imagewriter.encoding.repeat import repeat
 from imagewriter.encoding.reset import RESET
-from imagewriter.encoding.select import DESELECT, SELECT
-from imagewriter.encoding.switch import (
-    CloseSoftwareSwitches,
-    OpenSoftwareSwitches,
-    SoftwareSwitch,
-)
+from imagewriter.encoding.select import DESELECT, SELECT, SetSoftwareSelectResponse
+from imagewriter.encoding.switch import CloseSoftwareSwitches, OpenSoftwareSwitches
 
 __all__: List[str] = [
     "START_DOUBLE_WIDTH",
@@ -74,7 +71,6 @@ __all__: List[str] = [
     "Ctrl",
     "esc",
     "Esc",
-    "NULL",
     "Command",
     "SetLeftMargin",
     "SetPageLength",
@@ -96,20 +92,21 @@ __all__: List[str] = [
     "LineFeedEncoder",
     "PlaceExactPrintHeadPosition",
     "SET_TOP_OF_FORM",
+    "SetPerforationSkip",
     "SetUnidirectionalPrinting",
     "TAB",
     "TabStopEncoder",
     "DISABLE_PAPER_OUT_SENSOR",
     "ENABLE_PAPER_OUT_SENSOR",
-    "insert_spaces",
-    "set_pitch",
-    "set_spacing",
-    "select_quality",
+    "InsertSpaces",
+    "SetPitch",
+    "SetSpacing",
+    "SelectQuality",
     "repeat",
     "RESET",
     "DESELECT",
     "SELECT",
+    "SetSoftwareSelectResponse",
     "CloseSoftwareSwitches",
     "OpenSoftwareSwitches",
-    "SoftwareSwitch",
 ]
