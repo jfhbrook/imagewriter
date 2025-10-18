@@ -16,29 +16,18 @@ class State:
         dip_switches: Optional[DIPSwitches] = None,
         software_switches: Optional[SoftwareSwitches] = None,
     ) -> None:
+        # dip switches
         self.dip_switches: DIPSwitches = (
             dip_switches if dip_switches else DIPSwitches.defaults()
         )
+        # software switches
         self.software_switches: SoftwareSwitches = (
             software_switches
             if software_switches
             else SoftwareSwitches.defaults(self.dip_switches)
         )
 
-        self._pitch: Pitch = self.dip_switches.pitch
-        self.quality: Quality = Quality.DRAFT
-        self._spacing: int = 0
-        self.paper_out_sensor: bool = True
-        self.unidirectional_printing: bool = False
-        self.tab_stops: TabStops = TabStops(self.pitch)
-        self.exact_print_head_position: Optional[int] = None
-        self._distance_between_lines: Distance = Inch(1 / 6)
-        self.lf_direction: LineFeedDirection = LineFeedDirection.FORWARD
-        self.carriage_return_insertion: bool = False
-        self.color: Color = Color.BLACK  # TODO: Separate color from encoding
-        self._left_margin: Distance = Inch(0)
-        self._page_length: Distance = Inch(self.dip_switches.form_length)
-
+        # attributes
         self.double_width: bool = False
         self.underline: bool = False
         self.boldface: bool = False
@@ -46,6 +35,34 @@ class State:
         self.superscript: bool = False
         self.subscript: bool = False
 
+        # boundaries
+        self._left_margin: Distance = Inch(0)
+        self._page_length: Distance = Inch(self.dip_switches.form_length)
+
+        # color
+        self.color: Color = Color.BLACK
+
+        # insertion
+        self.carriage_return_insertion: bool = False
+
+        # motion
+        self.unidirectional_printing: bool = False
+        self.tab_stops: TabStops = TabStops(self.pitch)
+        self._distance_between_lines: Distance = Inch(1 / 6)
+        self.lf_direction: LineFeedDirection = LineFeedDirection.FORWARD
+        self.exact_print_head_position: Optional[int] = None
+
+        # paper
+        self.paper_out_sensor: bool = True
+
+        # pitch
+        self._pitch: Pitch = self.dip_switches.pitch
+        self._spacing: int = 0
+
+        # quality
+        self.quality: Quality = Quality.DRAFT
+
+    # dip switches
     @property
     def baud_rate(self: Self) -> BaudRate:
         return self.dip_switches.baud_rate
@@ -54,6 +71,7 @@ class State:
     def protocol(self: Self) -> SerialProtocol:
         return self.dip_switches.protocol
 
+    # software switches
     @property
     def language(self: Self) -> Language:
         return self.software_switches.language
@@ -86,23 +104,7 @@ class State:
     def ignore_eighth_data_bit(self: Self) -> bool:
         return self.software_switches.ignore_eighth_data_bit
 
-    @property
-    def pitch(self: Self) -> Pitch:
-        return self._pitch
-
-    @pitch.setter
-    def pitch(self: Self, pitch: Pitch) -> None:
-        self._pitch = pitch
-        self.tab_stops.pitch = pitch
-
-    @property
-    def spacing(self: Self) -> Optional[int]:
-        return self._spacing if self.pitch.is_proportional else None
-
-    @spacing.setter
-    def spacing(self: Self, spacing: int) -> None:
-        self.spacing = spacing
-
+    # boundaries
     @property
     def left_margin(self: Self) -> Distance:
         return self._left_margin
@@ -113,6 +115,15 @@ class State:
             distance, lambda cpi: Distance.from_characters(cpi, self.pitch)
         )
 
+    @property
+    def page_length(self: Self) -> Distance:
+        return self._page_length
+
+    @page_length.setter
+    def page_length(self: Self, length: Length) -> None:
+        self._page_length = length_to_distance(length, Distance.from_vertical)
+
+    # motion
     @property
     def distance_between_lines(self: Self) -> Distance:
         return self._distance_between_lines
@@ -131,10 +142,20 @@ class State:
     def lines_per_inch(self: Self, lines: LinesPerInch) -> None:
         self._distance_between_lines = Point(12 if lines == 6 else 9)
 
+    # pitch
     @property
-    def page_length(self: Self) -> Distance:
-        return self._page_length
+    def pitch(self: Self) -> Pitch:
+        return self._pitch
 
-    @page_length.setter
-    def page_length(self: Self, length: Length) -> None:
-        self._page_length = length_to_distance(length, Distance.from_vertical)
+    @pitch.setter
+    def pitch(self: Self, pitch: Pitch) -> None:
+        self._pitch = pitch
+        self.tab_stops.pitch = pitch
+
+    @property
+    def spacing(self: Self) -> Optional[int]:
+        return self._spacing if self.pitch.is_proportional else None
+
+    @spacing.setter
+    def spacing(self: Self, spacing: int) -> None:
+        self.spacing = spacing
