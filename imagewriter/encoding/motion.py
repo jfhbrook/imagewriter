@@ -133,7 +133,7 @@ class PlaceExactPrintHeadPosition(Command):
 SET_TOP_OF_FORM = Esc("v")
 
 
-class LineFeed:
+class LineFeedEncoder:
     @classmethod
     def feed(cls: Type[Self], lines: int = 1) -> Command:
         """
