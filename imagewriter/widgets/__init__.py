@@ -3,10 +3,10 @@ from typing import Any, List, Optional, Self
 import ipywidgets as widgets
 import serial
 
+from imagewriter.switch import DIPSwitchSettings, SoftwareSwitchSettings
 from imagewriter.widgets.base import header
 from imagewriter.widgets.connection import Activity, Connection
 from imagewriter.widgets.switch import DIPSwitches, Settings
-from imagewriter.switch import DIPSwitchSettings, SoftwareSwitchSettings
 
 
 class ControlPanel(widgets.Tab):

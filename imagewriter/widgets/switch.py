@@ -4,10 +4,10 @@ from typing import Any, cast, Optional, Self
 import ipywidgets as widgets
 
 from imagewriter.encoding.switch import force_software_switch_settings
-from imagewriter.widgets.base import Label
-from imagewriter.widgets.connection import Connection
 from imagewriter.language import Language
 from imagewriter.switch import DIPSwitchSettings, SoftwareSwitchSettings
+from imagewriter.widgets.base import Label
+from imagewriter.widgets.connection import Connection
 
 
 def language(switches: DIPSwitchSettings | SoftwareSwitchSettings) -> str:

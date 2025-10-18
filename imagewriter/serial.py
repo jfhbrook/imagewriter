@@ -56,9 +56,7 @@ class SerialProtocol(Enum):
 
 class Serial(serial.Serial):
     """
-    A serial connection supporting the particular semantics of the ImageWriter
-    II. In particular, it attempts to de-assert the RTS line (or accomplish
-    similar ends with XON/XOFF) when data is not being sent.
+    A serial connection.
     """
 
     def __init__(
@@ -82,8 +80,18 @@ class Serial(serial.Serial):
             inter_byte_timeout=inter_byte_timeout,
             exclusive=exclusive,
             dsrdtr=True,
-            rtscts=False,
-            xonxoff=False,
+            rtscts=protocol == SerialProtocol.HARDWARE_HANDSHAKE,
+            xonxoff=protocol == SerialProtocol.XONXOFF,
         )
 
         self._protocol: SerialProtocol = protocol
+
+    @property
+    def protocol(self: Self) -> SerialProtocol:
+        return self._protocol
+
+    @protocol.setter
+    def protocol(self: Self, protocol: SerialProtocol) -> None:
+        self._protocol = protocol
+        self.rtscts = protocol == SerialProtocol.HARDWARE_HANDSHAKE
+        self.xonxoff = protocol == SerialProtocol.XONXOFF
