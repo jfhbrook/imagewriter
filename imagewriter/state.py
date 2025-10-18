@@ -39,7 +39,6 @@ class State:
         self.tab_stops: TabStops = TabStops(self.pitch)
         self._distance_between_lines: Distance = Inch(1 / 6)
         self.lf_direction: LineFeedDirection = LineFeedDirection.FORWARD
-        self.exact_print_head_position: Optional[int] = None
 
         # paper
         self.paper_out_sensor: bool = True
