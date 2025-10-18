@@ -42,7 +42,7 @@ from imagewriter.encoding.motion import (
     SET_TOP_OF_FORM,
     SetUnidirectionalPrinting,
     TAB,
-    TabStops,
+    TabStopEncoder,
 )
 from imagewriter.encoding.paper import DISABLE_PAPER_OUT_SENSOR, ENABLE_PAPER_OUT_SENSOR
 from imagewriter.encoding.pitch import insert_spaces, set_pitch, set_spacing
@@ -98,7 +98,7 @@ __all__: List[str] = [
     "SET_TOP_OF_FORM",
     "SetUnidirectionalPrinting",
     "TAB",
-    "TabStops",
+    "TabStopEncoder",
     "DISABLE_PAPER_OUT_SENSOR",
     "ENABLE_PAPER_OUT_SENSOR",
     "insert_spaces",

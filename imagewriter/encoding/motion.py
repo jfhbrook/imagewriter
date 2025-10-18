@@ -1,5 +1,5 @@
 import dataclasses
-from typing import List, Literal, Self, Sequence, Tuple, Type
+from typing import List, Self, Sequence, Tuple, Type
 
 from imagewriter.encoding.base import (
     Bytes,
@@ -15,17 +15,10 @@ from imagewriter.encoding.switch import (
     OpenSoftwareSwitches,
     SoftwareSwitches,
 )
+from imagewriter.motion import LinesPerInch
 from imagewriter.pitch import Pitch
 from imagewriter.switch import SoftwareSwitch
-from imagewriter.units import (
-    Distance,
-    Inch,
-    Length,
-    length_to_distance,
-    length_to_int,
-)
-
-LinesPerInch = Literal[6] | Literal[8]
+from imagewriter.units import Length, length_to_int
 
 CR = Bytes(b"\r")
 LF = Bytes(b"\n")
@@ -45,7 +38,7 @@ class SetUnidirectionalPrinting(Esc):
         super().__init__(code)
 
 
-class TabStops:
+class TabStopEncoder:
     """
     Tab stops, as per page 65 of the ImageWriter II Technical Reference Manual.
 
@@ -53,22 +46,8 @@ class TabStops:
     It is a good idea to clear and reset tab stops
     """
 
-    def __init__(self: Self, pitch: Pitch) -> None:
-        self.pitch: Pitch = pitch
-        self.stops: List[Distance] = list()
-
-    def _to_int(self: Self, length: Length) -> int:
-        stop: int = length_to_int(length, lambda lg: lg.characters(self.pitch))
-
-        return min(stop, self.pitch.max_character_position)
-
-    def _to_distance(self: Self, length: Length) -> Distance:
-        return length_to_distance(
-            length, lambda lg: Inch(lg / self.pitch.characters_per_inch)
-        )
-
-    def _to_list(self: Self, stops: Sequence[Length]) -> bytes:
-        tab_stops: List[int] = [self._to_int(st) for st in stops]
+    def _to_list(self: Self, stops: Sequence[int]) -> bytes:
+        tab_stops: List[int] = list(stops)
         tab_stops.sort()
 
         encoded: bytes = b""
@@ -80,47 +59,27 @@ class TabStops:
 
         return encoded
 
-    def _sort_stops(self: Self) -> None:
-        self.stops.sort(key=self._to_int)
-
-    def set_many(self: Self, stops: Sequence[Length]) -> Command:
+    def set_many(self: Self, stops: Sequence[int]) -> Command:
         """
         Set multiple tab stops, as per page 65 of the ImageWriter II Technical
         Reference Manual.
         """
 
-        self.stops = [self._to_distance(st) for st in stops]
-        self._sort_stops()
-
         return Bytes(esc("(") + self._to_list(stops))
 
-    def set_one(self: Self, stop: Length) -> Command:
+    def set_one(self: Self, stop: int) -> Command:
         """
         Set a single tab stop, as per page 65 of the ImageWriter II Technical
         Reference Manual.
         """
 
-        self.stops.append(self._to_distance(stop))
-        self._sort_stops()
+        return Bytes(esc("U") + number(stop, 3))
 
-        tab_stop = self._to_int(stop)
-
-        return Bytes(esc("U") + number(tab_stop, 3))
-
-    def clear_many(self: Self, stops: Sequence[Length]) -> Command:
+    def clear_many(self: Self, stops: Sequence[int]) -> Command:
         """
         Clear multiple tab stops, as per page 65 of the ImageWriter II
         Technical Reference Manual.
         """
-
-        self.stops = [
-            self._to_distance(st)
-            for st in (
-                {self._to_int(st) for st in self.stops}
-                - {self._to_int(st) for st in stops}
-            )
-        ]
-        self._sort_stops()
 
         return Bytes(esc(")") + self._to_list(stops))
 
@@ -130,13 +89,11 @@ class TabStops:
         Reference Manual.
         """
 
-        self.stops = list()
-
         return Esc("0")
 
-    def set_pitch(self: Self, pitch: Pitch) -> List[Command]:
+    def reset(self: Self, stops: Sequence[int]) -> List[Command]:
         """
-        Set the pitch used for tab stops and reset all stored tab stops.
+        Clear and then set stops, effectively resetting them.
 
         As per page 68 of the ImageWriter II Technical Reference Manual, if
         the pitch is changed, the tab stops remain in their existing locations
@@ -144,8 +101,7 @@ class TabStops:
         when changing the pitch, it is recommended to reset tab positions.
         """
 
-        self.pitch = pitch
-        return [self.clear_all(), self.set_many(self.stops)]
+        return [self.clear_all(), self.set_many(stops)]
 
 
 class PlaceExactPrintHeadPosition(Command):

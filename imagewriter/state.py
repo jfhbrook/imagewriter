@@ -2,8 +2,8 @@ from enum import Enum
 from typing import Optional, Self
 
 from imagewriter.encoding.color import Color
-from imagewriter.encoding.motion import LinesPerInch, TabStops
 from imagewriter.language import Language
+from imagewriter.motion import LinesPerInch, TabStops
 from imagewriter.pitch import Pitch
 from imagewriter.quality import Quality
 from imagewriter.serial import BaudRate, SerialProtocol
@@ -36,9 +36,7 @@ class State:
         self._spacing: int = 0
         self.paper_out_sensor: bool = True
         self.unidirectional_printing: bool = False
-        self.tab_stops: TabStops = TabStops(
-            self.pitch
-        )  # TODO: Separate state from stops
+        self.tab_stops: TabStops = TabStops(self.pitch)
         self.exact_print_head_position: Optional[int] = None
         self.lines_per_inch: LinesPerInch = (
             6  # TODO: How does this relate to distance between lines?
@@ -104,7 +102,7 @@ class State:
     @pitch.setter
     def pitch(self: Self, pitch: Pitch) -> None:
         self._pitch = pitch
-        self.tab_stops = TabStops(pitch)
+        self.tab_stops.pitch = pitch
 
     @property
     def spacing(self: Self) -> Optional[int]:
