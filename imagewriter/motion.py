@@ -1,9 +1,15 @@
+from enum import Enum
 from typing import List, Literal, Self, Sequence
 
 from imagewriter.pitch import Pitch
 from imagewriter.units import Distance, Inch, Length, length_to_distance, length_to_int
 
 LinesPerInch = Literal[6] | Literal[8]
+
+
+class LineFeedDirection(Enum):
+    FORWARD = "Forward"
+    REVERSE = "Reverse"
 
 
 class TabStops:

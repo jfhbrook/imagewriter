@@ -1,19 +1,13 @@
-from enum import Enum
 from typing import Optional, Self
 
 from imagewriter.encoding.color import Color
 from imagewriter.language import Language
-from imagewriter.motion import LinesPerInch, TabStops
+from imagewriter.motion import LineFeedDirection, LinesPerInch, TabStops
 from imagewriter.pitch import Pitch
 from imagewriter.quality import Quality
 from imagewriter.serial import BaudRate, SerialProtocol
 from imagewriter.switch import DIPSwitches, SoftwareSwitches
 from imagewriter.units import Distance, Inch, Length, length_to_distance, Point
-
-
-class LineFeedDirection(Enum):
-    FORWARD = "Forward"
-    REVERSE = "Reverse"
 
 
 class State:
