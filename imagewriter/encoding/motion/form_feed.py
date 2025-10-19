@@ -48,11 +48,10 @@ class SetPerforationSkip(SetSoftwareSwitches):
     """
 
     def __init__(self: Self, enabled: bool) -> None:
-        self._enabled = enabled
         super().__init__(not enabled, {SoftwareSwitch.PERFORATION_SKIP_DISABLED})
 
     def __repr__(self: Self) -> str:
-        position = fmt_switch_position(not self._enabled)
+        position = fmt_switch_position(self.closed)
         banks = fmt_switch_banks(self.pack())
 
-        return f"SetPerforationSkip({position}, {banks})"
+        return f"SetPerforationSkip({not self.closed}, {position}, {banks})"

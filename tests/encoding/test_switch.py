@@ -5,7 +5,11 @@ import pytest
 from imagewriter.encoding.attributes import PRINT_SLASHED_ZERO, PRINT_UNSLASHED_ZERO
 from imagewriter.encoding.base import esc
 from imagewriter.encoding.language import set_language
-from imagewriter.encoding.motion import SetAutoLFAfterCR, SetLFWhenLineFull
+from imagewriter.encoding.motion import (
+    SetAutoLFAfterCR,
+    SetLFWhenLineFull,
+    SetPerforationSkip,
+)
 from imagewriter.encoding.print import SetPrintCommands
 from imagewriter.encoding.select import SetSoftwareSelectResponse
 from imagewriter.encoding.serial import IGNORE_EIGHTH_DATA_BIT, INCLUDE_EIGHTH_DATA_BIT
@@ -75,6 +79,14 @@ SET_LANGUAGE_DANISH = set_language(Language.DANISH)
         (
             SetLFWhenLineFull(False),
             "SetLFWhenLineFull(False, OPEN, [0b00000100, 0b00000000])",
+        ),
+        (
+            SetPerforationSkip(True),
+            "SetPerforationSkip(True, OPEN, [0b00000000, 0b00100000])",
+        ),
+        (
+            SetPerforationSkip(False),
+            "SetPerforationSkip(False, CLOSE, [0b00000000, 0b00100000])",
         ),
         (
             SetPrintCommands(PrintCommands.CR_LF_AND_FF),
