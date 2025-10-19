@@ -11,7 +11,7 @@ def fmt_switch_position(closed: bool) -> str:
 
 
 def fmt_switch_banks(banks: bytes) -> str:
-    return f"[0b{banks[0]:08b} 0b{banks[1]:08b}]"
+    return f"[0b{banks[0]:08b}, 0b{banks[1]:08b}]"
 
 
 class SetSoftwareSwitches(Command, ABC):
