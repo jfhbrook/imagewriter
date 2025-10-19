@@ -29,7 +29,7 @@ def test_attributes(control: ControlPanel) -> Markdown:
 
     control.port.flush()
 
-    return Markdown('✅ "Attributes test"')
+    return Markdown("✅ Attributes demo")
 
 
 def test_memory(control: ControlPanel, print_buffer_size: int) -> Markdown:
