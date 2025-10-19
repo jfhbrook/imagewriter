@@ -49,10 +49,20 @@ class OpenSoftwareSwitches(SetSoftwareSwitches):
     def __init__(self: Self, switches: Set[SoftwareSwitch]) -> None:
         return super().__init__(False, switches)
 
+    def __repr__(self: Self) -> str:
+        packed = self.pack()
+
+        return f"OpenSoftwareSwitches({packed[0]:b} {packed[1]:b}"
+
 
 class CloseSoftwareSwitches(SetSoftwareSwitches):
     def __init__(self: Self, switches: Set[SoftwareSwitch]) -> None:
         return super().__init__(True, switches)
+
+    def __repr__(self: Self) -> str:
+        packed = self.pack()
+
+        return f"CloseSoftwareSwitches({packed[0]:b} {packed[1]:b}"
 
 
 def update_software_switch_settings(

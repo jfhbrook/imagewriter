@@ -15,20 +15,55 @@ them, open the "software select response" software switch.
 See page 87 of the ImageWriter II Technical Reference Manual for more details.
 """
 
-from imagewriter.encoding.base import Command, Ctrl
-from imagewriter.encoding.switch import CloseSoftwareSwitches, OpenSoftwareSwitches
+from typing import Self
+
+from imagewriter.encoding.base import Ctrl
+from imagewriter.encoding.switch import SetSoftwareSwitches
 from imagewriter.switch import SoftwareSwitch
 
-SELECT = Ctrl("Q")
-DESELECT = Ctrl("S")
+
+class Select(Ctrl):
+    """
+    Select the ImageWriter II.
+    """
+
+    def __init__(self: Self) -> None:
+        super().__init__("Q")
+
+    def __repr__(self: Self) -> str:
+        return "Select()"
 
 
-def set_software_select_response(enabled: bool) -> Command:
+class Deselect(Ctrl):
+    """
+    Deselect the ImageWriter II.
+    """
+
+    def __init__(self: Self) -> None:
+        super().__init__("S")
+
+    def __repr__(self: Self) -> str:
+        return "Deselect()"
+
+
+SELECT = Select()
+DESELECT = Deselect()
+
+
+class SetSoftwareSelectResponse(SetSoftwareSwitches):
     """
     Configure Software Select-Deselect Response, as per page 34 of the
     ImageWriter II Technical Reference Manual.
     """
 
-    cmd_cls = OpenSoftwareSwitches if enabled else CloseSoftwareSwitches
+    def __init__(self: Self, enabled: bool) -> None:
+        self._enabled = enabled
+        super().__init__(
+            not enabled, {SoftwareSwitch.SOFTWARE_SELECT_RESPONSE_DISABLED}
+        )
 
-    return cmd_cls({SoftwareSwitch.SOFTWARE_SELECT_RESPONSE_DISABLED})
+    def __repr__(self: Self) -> str:
+        packed = self.pack()
+        return (
+            f"SetSoftwareSelectResponse({self._enabled}, {packed[0]:b} {packed[1]:b})"
+        )

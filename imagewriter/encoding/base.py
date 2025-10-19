@@ -40,17 +40,11 @@ class Command(ABC):
     def __bytes__(self: Self) -> bytes:
         pass
 
+    def __str__(self: Self) -> str:
+        return bytes(self).decode(encoding="ascii")
 
-class Null(Command):
-    """
-    An empty packet.
-    """
-
-    def __bytes__(self: Self) -> bytes:
-        return b""
-
-
-NULL = Null()
+    def __repr__(self: Self) -> str:
+        return f"Command({str(self)})"
 
 
 class Bytes(Command):
@@ -64,6 +58,9 @@ class Bytes(Command):
     def __bytes__(self: Self) -> bytes:
         return self.bytes
 
+    def __repr__(self: Self) -> str:
+        return f"Bytes({str(self)})"
+
 
 class Ctrl(Command):
     """
@@ -76,17 +73,23 @@ class Ctrl(Command):
     def __bytes__(self: Self) -> bytes:
         return self.character
 
+    def __repr__(self: Self) -> str:
+        return f"Ctrl({self.character})"
+
 
 class Esc(Command):
     """
     A packet containing a single escape code.
     """
 
-    def __init__(self: Self, character: str) -> None:
-        self.code = esc(character)
+    def __init__(self: Self, code: str) -> None:
+        self.code = code
 
     def __bytes__(self: Self) -> bytes:
-        return self.code
+        return esc(self.code)
+
+    def __repr__(self: Self) -> str:
+        return f"Esc({self.code})"
 
 
 def number(n: int, width: int = 0) -> bytes:

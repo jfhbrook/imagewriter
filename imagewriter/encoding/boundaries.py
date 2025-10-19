@@ -34,6 +34,9 @@ class SetLeftMargin(Command):
     def __bytes__(self: Self) -> bytes:
         return esc("L") + number(self.width, 3)
 
+    def __repr__(self: Self) -> str:
+        return f"SetLeftMargin({self.width})"
+
 
 class SetPageLength(Command):
     """
@@ -62,3 +65,6 @@ class SetPageLength(Command):
 
     def __bytes__(self: Self) -> bytes:
         return esc("H") + number(self.length, 4)
+
+    def __repr__(self: Self) -> str:
+        return f"SetPageLength({self.length})"
