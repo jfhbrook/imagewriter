@@ -60,7 +60,7 @@ from imagewriter.encoding.motion import (
 )
 from imagewriter.encoding.paper import DISABLE_PAPER_OUT_SENSOR, ENABLE_PAPER_OUT_SENSOR
 from imagewriter.encoding.pitch import InsertSpaces, SetPitch, SetSpacing
-from imagewriter.encoding.print import SetPrintCommandsIncludeLFFF
+from imagewriter.encoding.print import SetPrintCommands
 from imagewriter.encoding.quality import SelectQuality
 from imagewriter.encoding.repeat import repeat
 from imagewriter.encoding.reset import RESET
@@ -130,7 +130,7 @@ __all__: List[str] = [
     "InsertSpaces",
     "SetPitch",
     "SetSpacing",
-    "SetPrintCommandsIncludeLFFF",
+    "SetPrintCommands",
     "SelectQuality",
     "repeat",
     "RESET",

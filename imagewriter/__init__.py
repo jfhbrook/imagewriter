@@ -9,6 +9,7 @@ from imagewriter.identification import (
 )
 from imagewriter.language import Language
 from imagewriter.pitch import Pitch
+from imagewriter.print import PrintCommands
 from imagewriter.quality import Quality
 from imagewriter.serial import Serial, SerialProtocol
 from imagewriter.state import State
@@ -38,6 +39,7 @@ __all__: List[str] = [
     "Identification",
     "Language",
     "Pitch",
+    "PrintCommands",
     "Quality",
     "Serial",
     "SerialProtocol",

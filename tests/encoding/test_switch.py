@@ -6,7 +6,7 @@ from imagewriter.encoding.attributes import PRINT_SLASHED_ZERO, PRINT_UNSLASHED_
 from imagewriter.encoding.base import esc
 from imagewriter.encoding.language import set_language
 from imagewriter.encoding.motion import SetAutoLFAfterCR, SetLFWhenLineFull
-from imagewriter.encoding.print import SetPrintCommandsIncludeLFFF
+from imagewriter.encoding.print import SetPrintCommands
 from imagewriter.encoding.select import SetSoftwareSelectResponse
 from imagewriter.encoding.serial import IGNORE_EIGHTH_DATA_BIT, INCLUDE_EIGHTH_DATA_BIT
 from imagewriter.encoding.switch import (
@@ -14,6 +14,7 @@ from imagewriter.encoding.switch import (
     update_software_switch_settings,
 )
 from imagewriter.language import Language
+from imagewriter.print import PrintCommands
 from imagewriter.switch import SoftwareSwitch, SoftwareSwitches
 
 
@@ -76,12 +77,14 @@ SET_LANGUAGE_DANISH = set_language(Language.DANISH)
             "SetLFWhenLineFull(False, OPEN, [0b00000100, 0b00000000])",
         ),
         (
-            SetPrintCommandsIncludeLFFF(True),
-            "SetPrintCommandsIncludeLFFF(True, CLOSE, [0b00000010, 0b00000000])",
+            SetPrintCommands(PrintCommands.CR_LF_AND_FF),
+            "SetPrintCommands(PrintCommands.CR_LF_AND_FF, "
+            "CLOSE, [0b00000010, 0b00000000])",
         ),
         (
-            SetPrintCommandsIncludeLFFF(False),
-            "SetPrintCommandsIncludeLFFF(False, OPEN, [0b00000010, 0b00000000])",
+            SetPrintCommands(PrintCommands.CR_ONLY),
+            "SetPrintCommands(PrintCommands.CR_ONLY, "
+            "OPEN, [0b00000010, 0b00000000])",
         ),
         (
             SetSoftwareSelectResponse(True),

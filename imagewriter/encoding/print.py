@@ -5,20 +5,24 @@ from imagewriter.encoding.switch import (
     fmt_switch_position,
     SetSoftwareSwitches,
 )
+from imagewriter.print import PrintCommands
 from imagewriter.switch import SoftwareSwitch
 
 
-class SetPrintCommandsIncludeLFFF(SetSoftwareSwitches):
+class SetPrintCommands(SetSoftwareSwitches):
     """
-    Configure the treatment of LF and FF as print commands, as per page 34
-    of the ImageWriter II Technical Reference Manual.
+    Configure print commands, as per page 34 of the ImageWriter II Technical
+    Reference Manual.
     """
 
-    def __init__(self: Self, enabled: bool) -> None:
-        super().__init__(enabled, {SoftwareSwitch.PRINT_COMMANDS_INCLUDE_LF_FF})
+    def __init__(self: Self, print_commands: PrintCommands) -> None:
+        self._print_commands = print_commands
+        super().__init__(
+            print_commands.value, {SoftwareSwitch.PRINT_COMMANDS_INCLUDE_LF_FF}
+        )
 
     def __repr__(self: Self) -> str:
         position = fmt_switch_position(self.closed)
         banks = fmt_switch_banks(self.pack())
 
-        return f"SetPrintCommandsIncludeLFFF({self.closed}, {position}, {banks})"
+        return f"SetPrintCommands({self._print_commands}, {position}, {banks})"
