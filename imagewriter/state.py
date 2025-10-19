@@ -20,6 +20,7 @@ class State:
         self.dip_switches: DIPSwitches = (
             dip_switches if dip_switches else DIPSwitches.defaults()
         )
+
         # software switches
         self.software_switches: SoftwareSwitches = (
             software_switches
@@ -31,14 +32,12 @@ class State:
         self._left_margin: Distance = Inch(0)
         self._page_length: Distance = Inch(self.dip_switches.form_length)
 
-        # insertion
-        self.carriage_return_insertion: bool = False
-
         # motion
         self.unidirectional_printing: bool = False
         self.tab_stops: TabStops = TabStops(self.pitch)
         self._distance_between_lines: Distance = Inch(1 / 6)
         self.lf_direction: LineFeedDirection = LineFeedDirection.FORWARD
+        self.carriage_return_insertion: bool = False
 
         # paper
         self.paper_out_sensor: bool = True
