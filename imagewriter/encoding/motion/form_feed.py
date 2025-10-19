@@ -1,7 +1,11 @@
 from typing import Self
 
 from imagewriter.encoding.base import Ctrl, Esc
-from imagewriter.encoding.switch import SetSoftwareSwitches
+from imagewriter.encoding.switch import (
+    fmt_switch_banks,
+    fmt_switch_position,
+    SetSoftwareSwitches,
+)
 from imagewriter.switch import SoftwareSwitch
 
 
@@ -48,5 +52,7 @@ class SetPerforationSkip(SetSoftwareSwitches):
         super().__init__(not enabled, {SoftwareSwitch.PERFORATION_SKIP_DISABLED})
 
     def __repr__(self: Self) -> str:
-        packed = self.pack()
-        return f"SetPerforationSkip({self._enabled}, {packed[0]:b} {packed[1]:b})"
+        position = fmt_switch_position(not self._enabled)
+        banks = fmt_switch_banks(self.pack())
+
+        return f"SetPerforationSkip({position}, {banks})"

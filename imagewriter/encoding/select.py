@@ -18,7 +18,11 @@ See page 87 of the ImageWriter II Technical Reference Manual for more details.
 from typing import Self
 
 from imagewriter.encoding.base import Ctrl
-from imagewriter.encoding.switch import SetSoftwareSwitches
+from imagewriter.encoding.switch import (
+    fmt_switch_banks,
+    fmt_switch_position,
+    SetSoftwareSwitches,
+)
 from imagewriter.switch import SoftwareSwitch
 
 
@@ -63,7 +67,7 @@ class SetSoftwareSelectResponse(SetSoftwareSwitches):
         )
 
     def __repr__(self: Self) -> str:
-        packed = self.pack()
-        return (
-            f"SetSoftwareSelectResponse({self._enabled}, {packed[0]:b} {packed[1]:b})"
-        )
+        position = fmt_switch_position(not self._enabled)
+        banks = fmt_switch_banks(self.pack())
+
+        return f"SetSoftwareSelectResponse({self._enabled}, {position}, {banks})"

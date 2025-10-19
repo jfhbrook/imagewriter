@@ -6,6 +6,14 @@ from imagewriter.encoding.base import Command, esc
 from imagewriter.switch import SoftwareSwitch, SoftwareSwitches
 
 
+def fmt_switch_position(closed: bool) -> str:
+    return "CLOSE" if closed else "OPEN"
+
+
+def fmt_switch_banks(banks: bytes) -> str:
+    return f"[0b{banks[0]:08b} 0b{banks[1]:08b}]"
+
+
 class SetSoftwareSwitches(Command, ABC):
     def __init__(self: Self, closed: bool, switches: Set[SoftwareSwitch]) -> None:
         self._closed: bool = closed
@@ -52,7 +60,7 @@ class OpenSoftwareSwitches(SetSoftwareSwitches):
     def __repr__(self: Self) -> str:
         packed = self.pack()
 
-        return f"OpenSoftwareSwitches({packed[0]:b} {packed[1]:b}"
+        return f"OpenSoftwareSwitches({fmt_switch_banks(packed)})"
 
 
 class CloseSoftwareSwitches(SetSoftwareSwitches):
@@ -62,7 +70,7 @@ class CloseSoftwareSwitches(SetSoftwareSwitches):
     def __repr__(self: Self) -> str:
         packed = self.pack()
 
-        return f"CloseSoftwareSwitches({packed[0]:b} {packed[1]:b}"
+        return f"CloseSoftwareSwitches({fmt_switch_banks(packed)})"
 
 
 def update_software_switch_settings(

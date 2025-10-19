@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Self
+from typing import Any, Self
 
 ESC = bytes([27])
 
@@ -40,6 +40,11 @@ class Command(ABC):
     def __bytes__(self: Self) -> bytes:
         pass
 
+    def __eq__(self: Self, other: Any) -> bool:
+        if not isinstance(other, Command):
+            return False
+        return bytes(self) == bytes(other)
+
     def __str__(self: Self) -> str:
         return bytes(self).decode(encoding="ascii")
 
@@ -59,7 +64,7 @@ class Bytes(Command):
         return self.bytes
 
     def __repr__(self: Self) -> str:
-        return f"Bytes({str(self)})"
+        return repr(bytes(self))
 
 
 class Ctrl(Command):

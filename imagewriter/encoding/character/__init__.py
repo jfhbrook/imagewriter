@@ -5,6 +5,7 @@ from imagewriter.encoding.base import Bytes, Command, Esc
 from imagewriter.encoding.character.custom import CustomCharacter, CustomCharacters
 from imagewriter.encoding.character.mousetext import MouseText, MouseTextCharacter
 from imagewriter.encoding.language import set_language
+from imagewriter.encoding.motion import CR, LF, TAB
 from imagewriter.language import Language
 
 Text = str | MouseText | CustomCharacters
@@ -215,8 +216,18 @@ class CharacterEncoder:
 
         return encoded
 
-    def _bytes(self: Self, buffer: bytes) -> List[Command]:
-        return [Bytes(bytes([byte])) for byte in buffer]
+    def _from_buffer(self: Self, buffer: bytes) -> List[Command]:
+        def _to_command(byte: int) -> Command:
+            data = byte.to_bytes(byteorder="big")
+            if data == b"\r":
+                return CR
+            if data == b"\n":
+                return LF
+            if data == b"\t":
+                return TAB
+            return Bytes(data)
+
+        return [_to_command(byte) for byte in buffer]
 
     def encode(self: Self, *text: Text) -> List[Command]:
         encoded: List[Command] = list()
@@ -229,7 +240,7 @@ class CharacterEncoder:
 
             # If the mode is changing, add the buffer to the encoded output
             if mode != self.mode:
-                encoded += self._bytes(buffer)
+                encoded += self._from_buffer(buffer)
                 buffer = b""
 
             # Set the new mode
@@ -245,7 +256,7 @@ class CharacterEncoder:
                 buffer += bytes([ch.point])
 
         # Attach the final buffer
-        encoded += self._bytes(buffer)
+        encoded += self._from_buffer(buffer)
         encoded += self.mode.disable()
 
         # Enable the default language if need be

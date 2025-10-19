@@ -1,6 +1,11 @@
 from typing import List
 
 from imagewriter.encoding.attributes import (
+    boldface,
+    double_width,
+    half_height,
+    PRINT_SLASHED_ZERO,
+    PRINT_UNSLASHED_ZERO,
     START_BOLDFACE,
     START_DOUBLE_WIDTH,
     START_HALF_HEIGHT,
@@ -13,6 +18,7 @@ from imagewriter.encoding.attributes import (
     STOP_SUBSCRIPT,
     STOP_SUPERSCRIPT,
     STOP_UNDERLINE,
+    underline,
 )
 from imagewriter.encoding.base import Bytes, Command, ctrl, Ctrl, esc, Esc
 from imagewriter.encoding.boundaries import SetLeftMargin, SetPageLength
@@ -61,6 +67,11 @@ from imagewriter.encoding.select import DESELECT, SELECT, SetSoftwareSelectRespo
 from imagewriter.encoding.switch import CloseSoftwareSwitches, OpenSoftwareSwitches
 
 __all__: List[str] = [
+    "boldface",
+    "double_width",
+    "half_height",
+    "PRINT_SLASHED_ZERO",
+    "PRINT_UNSLASHED_ZERO",
     "START_DOUBLE_WIDTH",
     "STOP_DOUBLE_WIDTH",
     "START_UNDERLINE",
@@ -73,6 +84,7 @@ __all__: List[str] = [
     "STOP_SUPERSCRIPT",
     "START_SUBSCRIPT",
     "STOP_SUBSCRIPT",
+    "underline",
     "Bytes",
     "ctrl",
     "Ctrl",
