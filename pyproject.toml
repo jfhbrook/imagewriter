@@ -68,7 +68,7 @@ addopts = "--verbose -s"
 testpaths = [ "tests" ]
 
 [tool.setuptools]
-packages = [ "imagewriter" ]
+packages = [ "imagewriter", "tests" ]
 
 [tool.setuptools.dynamic]
 dependencies = { file = ["requirements.txt"] }
