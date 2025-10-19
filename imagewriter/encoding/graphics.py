@@ -1,7 +1,7 @@
 from typing import Self
 
 from imagewriter.encoding.base import Command, esc, number
-from imagewriter.encoding.motion import LineFeedEncoder
+from imagewriter.encoding.motion import SetDistanceBetweenLines
 from imagewriter.units import Point
 
 
@@ -32,13 +32,9 @@ class PrintGraphicsData(Command):
         return f"PrintGraphicsData({data})"
 
 
-def set_graphics_distance_between_lines() -> Command:
-    """
-    Set the distance between lines such that two adjacent graphics lines are
-    flush with each other, given the pitch.
+# Set the distance between lines such that two adjacent graphics lines are
+# flush with each other, given the pitch.
 
-    See page 112 of the ImageWriter II Technical Reference Manual for more
-    details.
-    """
-
-    return LineFeedEncoder.set_distance_between_lines(Point(1))
+# See page 112 of the ImageWriter II Technical Reference Manual for more
+# details.
+SET_GRAPHICS_DISTANCE_BETWEEN_LINES = SetDistanceBetweenLines(Point(1))

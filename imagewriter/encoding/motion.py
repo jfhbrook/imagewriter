@@ -1,4 +1,4 @@
-from typing import List, Self, Sequence, Type
+from typing import List, Self, Sequence
 
 from imagewriter.encoding.base import (
     Bytes,
@@ -17,6 +17,10 @@ from imagewriter.units import Length, length_to_int
 
 
 class CarriageReturn(Bytes):
+    """
+    A carriage return (\\r).
+    """
+
     def __init__(self: Self) -> None:
         super().__init__(b"\r")
 
@@ -24,15 +28,42 @@ class CarriageReturn(Bytes):
         return "\\r"
 
 
+def _encode_line_feed_count(lines: int) -> bytes:
+    return bytes(
+        {10: ":", 11: ";", 12: "<", 13: "=", 14: ">", 15: "?"}.get(lines, str(lines)),
+        encoding="ascii",
+    )
+
+
 class LineFeed(Bytes):
-    def __init__(self: Self) -> None:
-        super().__init__(b"\n")
+    """
+    Feed paper from 1 to 15 lines, as per page 70 of the ImageWriter II
+    Technical Reference Manual.
+    """
+
+    def __init__(self: Self, lines: int) -> None:
+        assert 1 <= lines <= 15, "Must feed between 1 and 15 lines"
+
+        self._lines = lines
+
+        if lines == 1:
+            super().__init__(b"\n")
+        else:
+
+            super().__init__(ctrl("_") + _encode_line_feed_count(lines))
 
     def __repr__(self: Self) -> str:
-        return "\\n"
+        if self._lines == 1:
+            return "\\n"
+
+        return f"LineFeed({self._lines})"
 
 
 class FormFeed(Ctrl):
+    """
+    A form feed. When encountered, feeds the paper up to a new sheet.
+    """
+
     def __init__(self: Self) -> None:
         super().__init__("L")
 
@@ -41,6 +72,10 @@ class FormFeed(Ctrl):
 
 
 class Backspace(Ctrl):
+    """
+    A backspace.
+    """
+
     def __init__(self: Self) -> None:
         super().__init__("H")
 
@@ -49,6 +84,10 @@ class Backspace(Ctrl):
 
 
 class Tab(Bytes):
+    """
+    A tab character (\\t).
+    """
+
     def __init__(self: Self) -> None:
         super().__init__(b"\t")
 
@@ -57,7 +96,7 @@ class Tab(Bytes):
 
 
 CR = CarriageReturn()
-LF = LineFeed()
+LF = LineFeed(1)
 FF = FormFeed()
 BACKSPACE = Backspace()
 TAB = Tab()
@@ -78,7 +117,7 @@ class SetUnidirectionalPrinting(Esc):
         return f"SetUnidirectionalPrinting(is_unidirectional={self.is_unidirectional})"
 
 
-def encode_tab_stops(stops: Sequence[int]) -> bytes:
+def _encode_tab_stops(stops: Sequence[int]) -> bytes:
     tab_stops: List[int] = list(stops)
     tab_stops.sort()
 
@@ -93,15 +132,25 @@ def encode_tab_stops(stops: Sequence[int]) -> bytes:
 
 
 class SetManyTabs(Bytes):
+    """
+    Set multiple tab stops, as per page 65 of the ImageWriter II Technical
+    Reference Manual.
+    """
+
     def __init__(self: Self, stops: List[int]) -> None:
         self._stops = stops
-        super().__init__(esc("(") + encode_tab_stops(stops))
+        super().__init__(esc("(") + _encode_tab_stops(stops))
 
     def __repr__(self: Self) -> str:
         return f"SetManyTabs({self._stops})"
 
 
 class SetOneTab(Bytes):
+    """
+    Set a single tab stop, as per page 65 of the ImageWriter II Technical
+    Reference Manual.
+    """
+
     def __init__(self: Self, stop: int) -> None:
         self._stop = stop
         super().__init__(esc("U") + number(stop, 3))
@@ -111,15 +160,25 @@ class SetOneTab(Bytes):
 
 
 class ClearManyTabs(Bytes):
+    """
+    Clear multiple tab stops, as per page 65 of the ImageWriter II
+    Technical Reference Manual.
+    """
+
     def __init__(self: Self, stops: List[int]) -> None:
         self._stops = stops
-        super().__init__(esc(")") + encode_tab_stops(stops))
+        super().__init__(esc(")") + _encode_tab_stops(stops))
 
     def __repr__(self: Self) -> str:
         return f"ClearManyTabs({self._stops})"
 
 
 class ClearAllTabs(Esc):
+    """
+    Clear all tab stops, as per page 65 of the ImageWriter II Technical
+    Reference Manual.
+    """
+
     def __init__(self: Self) -> None:
         super().__init__("0")
 
@@ -127,54 +186,20 @@ class ClearAllTabs(Esc):
         return "ClearAllTabs()"
 
 
-class TabStopEncoder:
+def reset_tabs(stops: List[int]) -> List[Command]:
     """
-    Tab stops, as per page 65 of the ImageWriter II Technical Reference Manual.
+    Clear and then set stops, effectively resetting them.
+
+    As per page 68 of the ImageWriter II Technical Reference Manual, if
+    the pitch is changed, the tab stops remain in their existing locations
+    and no longer correspond to character column positions. Therefore,
+    when changing the pitch, it is recommended to reset tab positions.
     """
 
-    def set_many(self: Self, stops: Sequence[int]) -> Command:
-        """
-        Set multiple tab stops, as per page 65 of the ImageWriter II Technical
-        Reference Manual.
-        """
+    clear_all: Command = ClearAllTabs()
+    set_many: Command = SetManyTabs(stops)
 
-        return SetManyTabs(list(stops))
-
-    def set_one(self: Self, stop: int) -> Command:
-        """
-        Set a single tab stop, as per page 65 of the ImageWriter II Technical
-        Reference Manual.
-        """
-
-        return SetOneTab(stop)
-
-    def clear_many(self: Self, stops: Sequence[int]) -> Command:
-        """
-        Clear multiple tab stops, as per page 65 of the ImageWriter II
-        Technical Reference Manual.
-        """
-
-        return ClearManyTabs(list(stops))
-
-    def clear_all(self: Self) -> Command:
-        """
-        Clear all tab stops, as per page 65 of the ImageWriter II Technical
-        Reference Manual.
-        """
-
-        return ClearAllTabs()
-
-    def reset(self: Self, stops: Sequence[int]) -> List[Command]:
-        """
-        Clear and then set stops, effectively resetting them.
-
-        As per page 68 of the ImageWriter II Technical Reference Manual, if
-        the pitch is changed, the tab stops remain in their existing locations
-        and no longer correspond to character column positions. Therefore,
-        when changing the pitch, it is recommended to reset tab positions.
-        """
-
-        return [self.clear_all(), self.set_many(stops)]
+    return [clear_all, set_many]
 
 
 class PlaceExactPrintHeadPosition(Command):
@@ -217,25 +242,15 @@ class SetTopOfForm(Esc):
 SET_TOP_OF_FORM = SetTopOfForm()
 
 
-class FeedMany(Bytes):
-    def __init__(self: Self, lines: int) -> None:
-        self._lines = lines
-        super().__init__(
-            ctrl("_")
-            + bytes(
-                {10: ":", 11: ";", 12: "<", 13: "=", 14: ">", 15: "?"}.get(
-                    lines, str(lines)
-                ),
-                encoding="ascii",
-            )
-        )
-
-    def __repr__(self: Self) -> str:
-        return f"FeedMany({self._lines})"
-
-
 class SetLinesPerInch(Esc):
+    """
+    Set lines per inch to either 6 or 8, as per page 71 of the ImageWriter
+    II Technical Reference Manual.
+    """
+
     def __init__(self: Self, lines: LinesPerInch) -> None:
+        assert lines == 6 or lines == 8, "May only set 6 or 8 lines per inch"
+
         self._lines = lines
         code = "A" if lines == 6 else "B"
         super().__init__(code)
@@ -245,16 +260,27 @@ class SetLinesPerInch(Esc):
 
 
 class SetDistanceBetweenLines(Bytes):
-    def __init__(self: Self, distance: int) -> None:
-        self._distance: int = distance
+    """
+    Set the distance between lines, as per page 71 of the ImageWriter II
+    Technical Reference Manual.
+    """
 
-        super().__init__(esc("T") + number(distance, 2))
+    def __init__(self: Self, distance: Length) -> None:
+        dist: int = length_to_int(distance, lambda d: d.vertical)
+        self._distance: int = dist
+
+        super().__init__(esc("T") + number(dist, 2))
 
     def __repr__(self: Self) -> str:
         return f"SetDistanceBetweenLines({self._distance})"
 
 
 class LineFeedForward(Esc):
+    """
+    Set lines to feed forward (the default) as per page 71 of the
+    ImageWriter II Technical Reference Manual.
+    """
+
     def __init__(self: Self) -> None:
         super().__init__("f")
 
@@ -263,6 +289,11 @@ class LineFeedForward(Esc):
 
 
 class LineFeedReverse(Esc):
+    """
+    Set lines to feed in reverse as per page 71 of the ImageWriter II
+    Technical Reference Manual.
+    """
+
     def __init__(self: Self) -> None:
         super().__init__("r")
 
@@ -271,6 +302,10 @@ class LineFeedReverse(Esc):
 
 
 class SetAutoLFAfterCR(SetSoftwareSwitches):
+    """
+    Enable or disable an automatic LF after a CR, as per page 34 of the
+    ImageWriter II Technical Reference Manual.
+    """
 
     def __init__(self: Self, enabled: bool) -> None:
         self._enabled = enabled
@@ -282,6 +317,10 @@ class SetAutoLFAfterCR(SetSoftwareSwitches):
 
 
 class SetLFWhenLineFull(SetSoftwareSwitches):
+    """
+    Configure the automatic insertion of a line feed when the line is full,
+    as per page 34 of the ImageWriter II Technical Reference Manual.
+    """
 
     def __init__(self: Self, enabled: bool) -> None:
         self._enabled = enabled
@@ -290,80 +329,6 @@ class SetLFWhenLineFull(SetSoftwareSwitches):
     def __repr__(self: Self) -> str:
         packed = self.pack()
         return f"SetLFWhenLineFull({self._enabled}, {packed[0]:b} {packed[1]:b})"
-
-
-class LineFeedEncoder:
-    @classmethod
-    def feed(cls: Type[Self], lines: int = 1) -> Command:
-        """
-        Feed paper from 1 to 15 lines, as per page 70 of the ImageWriter II
-        Technical Reference Manual.
-        """
-
-        assert 1 <= lines <= 15, "Must feed between 1 and 15 lines"
-
-        if lines == 1:
-            return LF
-
-        return FeedMany(lines)
-
-    @classmethod
-    def set_lines_per_inch(cls: Type[Self], lines: LinesPerInch) -> Command:
-        """
-        Set lines per inch to either 6 or 8, as per page 71 of the ImageWriter
-        II Technical Reference Manual.
-        """
-
-        assert lines == 6 or lines == 8, "May only set 6 or 8 lines per inch"
-
-        return SetLinesPerInch(lines)
-
-    @classmethod
-    def set_distance_between_lines(cls: Type[Self], distance: Length) -> Command:
-        """
-        Set the distance between lines, as per page 71 of the ImageWriter II
-        Technical Reference Manual.
-        """
-
-        dist: int = length_to_int(distance, lambda d: d.vertical)
-
-        return SetDistanceBetweenLines(dist)
-
-    @classmethod
-    def forward(cls: Type[Self]) -> Command:
-        """
-        Set lines to feed forward (the default) as per page 71 of the
-        ImageWriter II Technical Reference Manual.
-        """
-
-        return LineFeedForward()
-
-    @classmethod
-    def reverse(cls: Type[Self]) -> Command:
-        """
-        Set lines to feed in reverse as per page 71 of the ImageWriter II
-        Technical Reference Manual.
-        """
-
-        return LineFeedReverse()
-
-    @classmethod
-    def set_auto_after_cr(cls: Type[Self], enabled: bool) -> Command:
-        """
-        Enable or disable an automatic LF after a CR, as per page 34 of the
-        ImageWriter II Technical Reference Manual.
-        """
-
-        return SetAutoLFAfterCR(enabled)
-
-    @classmethod
-    def set_auto_when_line_full(cls: Type[Self], enabled: bool) -> Command:
-        """
-        Configure the automatic insertion of a line feed when the line is full,
-        as per page 34 of the ImageWriter II Technical Reference Manual.
-        """
-
-        return SetLFWhenLineFull(enabled)
 
 
 class SetPerforationSkip(SetSoftwareSwitches):
