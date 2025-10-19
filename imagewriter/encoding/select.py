@@ -61,13 +61,12 @@ class SetSoftwareSelectResponse(SetSoftwareSwitches):
     """
 
     def __init__(self: Self, enabled: bool) -> None:
-        self._enabled = enabled
         super().__init__(
             not enabled, {SoftwareSwitch.SOFTWARE_SELECT_RESPONSE_DISABLED}
         )
 
     def __repr__(self: Self) -> str:
-        position = fmt_switch_position(not self._enabled)
+        position = fmt_switch_position(self.closed)
         banks = fmt_switch_banks(self.pack())
 
-        return f"SetSoftwareSelectResponse({self._enabled}, {position}, {banks})"
+        return f"SetSoftwareSelectResponse({not self.closed}, {position}, {banks})"

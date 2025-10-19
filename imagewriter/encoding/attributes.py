@@ -145,7 +145,7 @@ class PrintSlashedZero(CloseSoftwareSwitches):
         super().__init__({SoftwareSwitch.SLASHED_ZERO})
 
     def __repr__(self: Self) -> str:
-        position = fmt_switch_position(False)
+        position = fmt_switch_position(self.closed)
         banks = fmt_switch_banks(self.pack())
 
         return f"PrintSlashedZero({position}, {banks})"
@@ -156,7 +156,7 @@ class PrintUnslashedZero(OpenSoftwareSwitches):
         super().__init__({SoftwareSwitch.SLASHED_ZERO})
 
     def __repr__(self: Self) -> str:
-        position = fmt_switch_position(True)
+        position = fmt_switch_position(self.closed)
         banks = fmt_switch_banks(self.pack())
 
         return f"PrintUnslashedZero({position}, {banks})"

@@ -1,7 +1,11 @@
 from typing import Self
 
 from imagewriter.encoding.base import Esc
-from imagewriter.encoding.switch import SetSoftwareSwitches
+from imagewriter.encoding.switch import (
+    fmt_switch_banks,
+    fmt_switch_position,
+    SetSoftwareSwitches,
+)
 from imagewriter.switch import SoftwareSwitch
 
 
@@ -12,12 +16,13 @@ class SetAutoLFAfterCR(SetSoftwareSwitches):
     """
 
     def __init__(self: Self, enabled: bool) -> None:
-        self._enabled = enabled
         super().__init__(enabled, {SoftwareSwitch.AUTO_LF_AFTER_CR})
 
     def __repr__(self: Self) -> str:
-        packed = self.pack()
-        return f"SetAutoLFAfterCr({self._enabled}, {packed[0]:b} {packed[1]:b})"
+        position = fmt_switch_position(self.closed)
+        banks = fmt_switch_banks(self.pack())
+
+        return f"SetAutoLFAfterCR({self.closed}, {position}, {banks})"
 
 
 class SetCarriageReturnInsertion(Esc):
@@ -49,9 +54,9 @@ class SetLFWhenLineFull(SetSoftwareSwitches):
     """
 
     def __init__(self: Self, enabled: bool) -> None:
-        self._enabled = enabled
         super().__init__(enabled, {SoftwareSwitch.LF_WHEN_LINE_FULL})
 
     def __repr__(self: Self) -> str:
-        packed = self.pack()
-        return f"SetLFWhenLineFull({self._enabled}, {packed[0]:b} {packed[1]:b})"
+        position = fmt_switch_position(self.closed)
+        banks = fmt_switch_banks(self.pack())
+        return f"SetLFWhenLineFull({self.closed}, {position}, {banks})"
