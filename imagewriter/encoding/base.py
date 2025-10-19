@@ -82,14 +82,14 @@ class Esc(Command):
     A packet containing a single escape code.
     """
 
-    def __init__(self: Self, character: str) -> None:
-        self.character = character
+    def __init__(self: Self, code: str) -> None:
+        self.code = code
 
     def __bytes__(self: Self) -> bytes:
-        return esc(self.character)
+        return esc(self.code)
 
     def __repr__(self: Self) -> str:
-        return f"Esc({self.character})"
+        return f"Esc({self.code})"
 
 
 def number(n: int, width: int = 0) -> bytes:
