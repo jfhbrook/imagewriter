@@ -29,10 +29,6 @@ from imagewriter.encoding.graphics import (
     PrintGraphicsData,
     SET_GRAPHICS_DISTANCE_BETWEEN_LINES,
 )
-from imagewriter.encoding.insertion import (
-    DISABLE_CARRIAGE_RETURN_INSERTION,
-    ENABLE_CARRIAGE_RETURN_INSERTION,
-)
 from imagewriter.encoding.motion import (
     BACKSPACE,
     ClearAllTabs,
@@ -46,6 +42,7 @@ from imagewriter.encoding.motion import (
     reset_tabs,
     SET_TOP_OF_FORM,
     SetAutoLFAfterCR,
+    SetCarriageReturnInsertion,
     SetDistanceBetweenLines,
     SetLFWhenLineFull,
     SetLinesPerInch,
@@ -94,8 +91,6 @@ __all__: List[str] = [
     "Color",
     "PrintGraphicsData",
     "SET_GRAPHICS_DISTANCE_BETWEEN_LINES",
-    "DISABLE_CARRIAGE_RETURN_INSERTION",
-    "ENABLE_CARRIAGE_RETURN_INSERTION",
     "BACKSPACE",
     "ClearAllTabs",
     "ClearManyTabs",
@@ -107,6 +102,7 @@ __all__: List[str] = [
     "PlaceExactPrintHeadPosition",
     "SET_TOP_OF_FORM",
     "SetAutoLFAfterCR",
+    "SetCarriageReturnInsertion",
     "SetDistanceBetweenLines",
     "SetLFWhenLineFull",
     "SetLinesPerInch",
