@@ -123,6 +123,5 @@ SET_LANGUAGE_DANISH = set_language(Language.DANISH)
 def test_command(command: SetSoftwareSwitches, repr_: str) -> None:
     packed: bytes = command.pack()
     assert len(packed) == 2
-    assert 0 <= packed[0] <= 0b11111111
 
     assert repr(command) == repr_
