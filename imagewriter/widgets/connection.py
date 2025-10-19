@@ -5,6 +5,7 @@ import serial
 from serial.tools.list_ports import comports
 
 import imagewriter.debug as debug
+from imagewriter.serial import SerialError
 from imagewriter.widgets.base import Label
 
 
@@ -122,7 +123,7 @@ class Connection(widgets.VBox):
         if self._port:
             return self._port
         else:
-            raise AttributeError("Serial port is closed")
+            raise SerialError("Serial port is closed")
 
     def _connect(self: Self) -> serial.Serial:
         return serial.Serial(
@@ -138,7 +139,7 @@ class Connection(widgets.VBox):
 
     def open_port(self: Self) -> None:
         if self._port:
-            raise AttributeError("Serial port is already open")
+            raise SerialError("Serial port is already open")
 
         self._port = self._connect()
         self.activity.reload()
@@ -146,7 +147,7 @@ class Connection(widgets.VBox):
 
     def close_port(self: Self) -> None:
         if not self._port:
-            raise AttributeError("Serial port is already closed")
+            raise SerialError("Serial port is already closed")
         self._port.close()
         self._port = None
         self.activity.reload()

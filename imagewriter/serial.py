@@ -25,6 +25,14 @@ AVAILABLE_WHEN_CTS_LOW = 27
 AVAILABLE_WHEN_CTS_HIGH = 100
 
 
+class SerialError(Exception):
+    """
+    A serial port related error.
+    """
+
+    pass
+
+
 class SerialProtocol(Enum):
     """
     The ImageWriter II supports two flow contrl protocols - hardware handshake
