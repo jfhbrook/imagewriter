@@ -3,7 +3,7 @@ from typing import Any, cast, Optional, Self
 
 import ipywidgets as widgets
 
-from imagewriter.encoding.switch import force_software_switch_settings
+from imagewriter.encoding.switch import apply_software_switches
 from imagewriter.language import Language
 from imagewriter.print import PrintCommands
 import imagewriter.switch as switch
@@ -266,7 +266,7 @@ class SoftwareSwitches(widgets.VBox):
         )
 
         if self.connection:
-            commands = force_software_switch_settings(self.switches)
+            commands = apply_software_switches(self.switches)
             try:
                 for cmd in commands:
                     self.connection.port.write(bytes(cmd))

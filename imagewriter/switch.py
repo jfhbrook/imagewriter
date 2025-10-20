@@ -167,7 +167,7 @@ class SoftwareSwitch(Enum):
 
     @classmethod
     def defaults(
-        cls: Type[Self], dip_switch_settings: Optional[DIPSwitches] = None
+        cls: Type[Self], dip_switches: Optional[DIPSwitches] = None
     ) -> "Set[SoftwareSwitch]":
         """
         Returns software switches which are closed by default, as per page 32
@@ -179,9 +179,7 @@ class SoftwareSwitch(Enum):
         North America.
         """
 
-        settings: DIPSwitches = (
-            dip_switch_settings if dip_switch_settings else DIPSwitches.defaults()
-        )
+        settings: DIPSwitches = dip_switches if dip_switches else DIPSwitches.defaults()
 
         defaults: "Set[SoftwareSwitch]" = {
             SoftwareSwitch.SOFTWARE_SELECT_RESPONSE_DISABLED,
@@ -240,10 +238,8 @@ class SoftwareSwitches:
     ignore_eighth_data_bit: bool
 
     @classmethod
-    def defaults(
-        cls: Type[Self], dip_switch_settings: Optional[DIPSwitches] = None
-    ) -> Self:
-        return cls.from_switches(SoftwareSwitch.defaults(dip_switch_settings))
+    def defaults(cls: Type[Self], dip_switches: Optional[DIPSwitches] = None) -> Self:
+        return cls.from_switches(SoftwareSwitch.defaults(dip_switches))
 
     @classmethod
     def language_from_switches(
