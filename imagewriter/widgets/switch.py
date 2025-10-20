@@ -5,6 +5,7 @@ import ipywidgets as widgets
 
 from imagewriter.encoding.switch import force_software_switch_settings
 from imagewriter.language import Language
+from imagewriter.print import PrintCommands
 import imagewriter.switch as switch
 from imagewriter.widgets.base import Label
 from imagewriter.widgets.connection import Connection
@@ -26,8 +27,12 @@ def lf_when_line_full(switches: switch.SoftwareSwitches) -> str:
     return "Yes" if switches.lf_when_line_full else "No"
 
 
-def print_commands_include_lf_ff(switches: switch.SoftwareSwitches) -> str:
-    return "Yes" if switches.print_commands_include_lf_ff else "No"
+def print_commands(switches: switch.SoftwareSwitches) -> str:
+    return (
+        "CR, LF and FF"
+        if switches.print_commands == PrintCommands.CR_LF_AND_FF
+        else "CR only"
+    )
 
 
 def auto_lf_after_cr(switches: switch.DIPSwitches | switch.SoftwareSwitches) -> str:
@@ -58,7 +63,7 @@ def protocol(switches: switch.DIPSwitches) -> str:
 
 
 def eighth_data_bit(switches: switch.SoftwareSwitches) -> str:
-    return "Ignored" if switches.ignore_eighth_data_bit else "Respected"
+    return "Ignored" if switches.ignore_eighth_data_bit else "Included"
 
 
 class DIPSwitches(widgets.VBox):
@@ -163,9 +168,9 @@ class SoftwareSwitches(widgets.VBox):
             description="LF when full:",
             disabled=False,
         )
-        self._print_commands_include_lf_ff = widgets.Dropdown(
+        self._print_commands = widgets.Dropdown(
             options=["Yes", "No"],
-            value=print_commands_include_lf_ff(switches),
+            value=print_commands(switches),
             description="LF/FF print:",
             disabled=False,
         )
@@ -205,7 +210,7 @@ class SoftwareSwitches(widgets.VBox):
                 self._language,
                 self._software_select_response,
                 self._lf_when_line_full,
-                self._print_commands_include_lf_ff,
+                self._print_commands,
                 self._auto_lf_after_cr,
                 self._slashed_zero,
                 self._perforation_skip,
@@ -232,9 +237,7 @@ class SoftwareSwitches(widgets.VBox):
         self._language.value = language(switches)
         self._software_select_response.value = software_select_response(switches)
         self._lf_when_line_full.value = lf_when_line_full(switches)
-        self._print_commands_include_lf_ff.value = print_commands_include_lf_ff(
-            switches
-        )
+        self._print_commands.value = print_commands(switches)
         self._auto_lf_after_cr.value = auto_lf_after_cr(switches)
         self._slashed_zero.value = slashed_zero(switches)
         self._perforation_skip.value = perforation_skip(switches)
@@ -255,8 +258,7 @@ class SoftwareSwitches(widgets.VBox):
             software_select_response_disabled=self._software_select_response
             == "Disabled",
             lf_when_line_full=self._lf_when_line_full.value == "Yes",
-            print_commands_include_lf_ff=self._print_commands_include_lf_ff.value
-            == "Yes",
+            print_commands=self._print_commands.value == "CR, LF and FF",
             auto_lf_after_cr=self._auto_lf_after_cr.value == "Yes",
             slashed_zero=self._slashed_zero.value == "Slashed",
             perforation_skip_disabled=self._perforation_skip.value == "Disabled",

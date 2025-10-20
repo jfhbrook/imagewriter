@@ -12,7 +12,7 @@ from imagewriter.pitch import Pitch
 from imagewriter.print import PrintCommands
 from imagewriter.quality import Quality
 from imagewriter.serial import Serial, SerialProtocol
-from imagewriter.state import State
+from imagewriter.settings import Settings
 from imagewriter.switch import (
     DIPSwitch,
     DIPSwitches,
@@ -43,7 +43,7 @@ __all__: List[str] = [
     "Quality",
     "Serial",
     "SerialProtocol",
-    "State",
+    "Settings",
     "DIPSwitch",
     "DIPSwitches",
     "SoftwareSwitch",

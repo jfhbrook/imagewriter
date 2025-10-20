@@ -4,6 +4,7 @@ from typing import Dict, Literal, Optional, Self, Set, Type
 
 from imagewriter.language import Language
 from imagewriter.pitch import Pitch
+from imagewriter.print import PrintCommands
 from imagewriter.serial import BaudRate, SerialProtocol
 
 FormLength = Literal[11] | Literal[12]
@@ -232,7 +233,7 @@ class SoftwareSwitches:
     language: Language
     software_select_response_disabled: bool
     lf_when_line_full: bool
-    print_commands_include_lf_ff: bool
+    print_commands: PrintCommands
     auto_lf_after_cr: bool
     slashed_zero: bool
     perforation_skip_disabled: bool
@@ -280,8 +281,11 @@ class SoftwareSwitches:
             )
             in switches,
             lf_when_line_full=SoftwareSwitch.LF_WHEN_LINE_FULL in switches,
-            print_commands_include_lf_ff=SoftwareSwitch.PRINT_COMMANDS_INCLUDE_LF_FF
-            in switches,
+            print_commands=(
+                PrintCommands.CR_LF_AND_FF
+                if SoftwareSwitch.PRINT_COMMANDS_INCLUDE_LF_FF in switches
+                else PrintCommands.CR_ONLY
+            ),
             auto_lf_after_cr=SoftwareSwitch.AUTO_LF_AFTER_CR in switches,
             slashed_zero=SoftwareSwitch.SLASHED_ZERO in switches,
             perforation_skip_disabled=SoftwareSwitch.PERFORATION_SKIP_DISABLED
@@ -296,7 +300,7 @@ class SoftwareSwitches:
             switches.add(SoftwareSwitch.SOFTWARE_SELECT_RESPONSE_DISABLED)
         if self.lf_when_line_full:
             switches.add(SoftwareSwitch.LF_WHEN_LINE_FULL)
-        if self.print_commands_include_lf_ff:
+        if self.print_commands == PrintCommands.CR_LF_AND_FF:
             switches.add(SoftwareSwitch.PRINT_COMMANDS_INCLUDE_LF_FF)
         if self.auto_lf_after_cr:
             switches.add(SoftwareSwitch.AUTO_LF_AFTER_CR)
