@@ -7,6 +7,7 @@ from imagewriter.identification import (
     Feature,
     Identification,
 )
+from imagewriter.job import Job
 from imagewriter.language import Language
 from imagewriter.pitch import Pitch
 from imagewriter.print import PrintCommands
@@ -37,6 +38,7 @@ __all__: List[str] = [
     "FEAT_SHEET_FEEDER",
     "Feature",
     "Identification",
+    "Job",
     "Language",
     "Pitch",
     "PrintCommands",

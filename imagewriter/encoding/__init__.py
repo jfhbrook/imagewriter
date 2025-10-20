@@ -65,6 +65,7 @@ from imagewriter.encoding.quality import SetQuality
 from imagewriter.encoding.repeat import repeat
 from imagewriter.encoding.reset import RESET
 from imagewriter.encoding.select import DESELECT, SELECT, SetSoftwareSelectResponse
+from imagewriter.encoding.settings import apply_settings
 from imagewriter.encoding.switch import CloseSoftwareSwitches, OpenSoftwareSwitches
 
 __all__: List[str] = [
@@ -135,6 +136,7 @@ __all__: List[str] = [
     "RESET",
     "DESELECT",
     "SELECT",
+    "apply_settings",
     "SetSoftwareSelectResponse",
     "CloseSoftwareSwitches",
     "OpenSoftwareSwitches",
