@@ -2,7 +2,6 @@ from imagewriter.language import Language
 from imagewriter.pitch import Pitch
 from imagewriter.print import PrintCommands
 from imagewriter.quality import Quality
-from imagewriter.serial import SerialProtocol
 from imagewriter.settings import Settings
 from imagewriter.switch import DIPSwitches, SoftwareSwitches
 
@@ -10,15 +9,13 @@ from imagewriter.switch import DIPSwitches, SoftwareSwitches
 def test_default_settings() -> None:
     dip_switches = DIPSwitches.defaults()
     software_switches = SoftwareSwitches.defaults(dip_switches)
-    settings = Settings()
+    settings = Settings.defaults(dip_switches)
 
     # dip switches
     assert settings.language == dip_switches.language
     assert settings.page_length.inches == dip_switches.form_length
     assert settings.perforation_skip == dip_switches.perforation_skip
     assert settings.pitch == dip_switches.pitch
-    assert settings.baud_rate == dip_switches.baud_rate
-    assert settings.protocol == dip_switches.protocol
 
     # software switches
     assert settings.language == software_switches.language
@@ -56,6 +53,4 @@ def test_default_settings() -> None:
     # select
     assert not settings.software_select_response
     # serial
-    assert settings.baud_rate == 9600
-    assert settings.protocol == SerialProtocol.HARDWARE_HANDSHAKE
     assert not settings.include_eighth_data_bit

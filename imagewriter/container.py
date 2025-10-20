@@ -26,15 +26,7 @@ class ConnectionFactory(Protocol):
 
 
 class SettingsFactory(Protocol):
-    def __call__(
-        self: Self, dip_switches: DIPSwitches, software_switches: SoftwareSwitches
-    ) -> Settings: ...
-
-
-def software_switches_factory(
-    dip_switches: DIPSwitches,
-) -> SoftwareSwitches:
-    return SoftwareSwitches.defaults(dip_switches)
+    def __call__(self: Self, dip_switches: DIPSwitches) -> Settings: ...
 
 
 def serial_factory(port: str, dip_switches: DIPSwitches) -> Serial:
@@ -43,14 +35,9 @@ def serial_factory(port: str, dip_switches: DIPSwitches) -> Serial:
     )
 
 
-def settings_factory(
-    dip_switches: DIPSwitches, software_switches: SoftwareSwitches
-) -> Settings:
-    return Settings(
-        # dip switches
-        dip_switches=dip_switches,
-        # software switches
-        software_switches=software_switches,
+def settings_factory(dip_switches: DIPSwitches) -> Settings:
+    return Settings.replace(
+        Settings.defaults(dip_switches),
         # boundaries
         # left_margin=Inch(0),
         # page_length=Inch(11),
@@ -83,24 +70,18 @@ class Container:
         self: Self,
         port: str,
         dip_switches: DIPSwitches = DIPSwitches.defaults(),
-        software_switches: SoftwareSwitchesFactory = software_switches_factory,
         serial: SerialFactory = serial_factory,
         connection: ConnectionFactory = Connection,
         settings: SettingsFactory = settings_factory,
     ) -> None:
         self._dip_switches: DIPSwitches = dip_switches
-        self._software_switches: SoftwareSwitches = software_switches(dip_switches)
         self._port: Serial = serial(port, self._dip_switches)
         self._connection: Connection = connection(self._port)
-        self._settings: Settings = settings(dip_switches, self._software_switches)
+        self._settings: Settings = settings(dip_switches)
 
     @property
     def dip_switches(self: Self) -> DIPSwitches:
         return self._dip_switches
-
-    @property
-    def software_switches(self: Self) -> SoftwareSwitches:
-        return self._software_switches
 
     @property
     def port(self: Self) -> Serial:
