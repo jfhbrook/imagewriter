@@ -58,10 +58,10 @@ from imagewriter.encoding.motion import (
     SetUnidirectionalPrinting,
     TAB,
 )
-from imagewriter.encoding.paper import DISABLE_PAPER_OUT_SENSOR, ENABLE_PAPER_OUT_SENSOR
+from imagewriter.encoding.paper import SetPaperOutSensor
 from imagewriter.encoding.pitch import InsertSpaces, SetPitch, SetSpacing
 from imagewriter.encoding.print import SetPrintCommands
-from imagewriter.encoding.quality import SelectQuality
+from imagewriter.encoding.quality import SetQuality
 from imagewriter.encoding.repeat import repeat
 from imagewriter.encoding.reset import RESET
 from imagewriter.encoding.select import DESELECT, SELECT, SetSoftwareSelectResponse
@@ -125,13 +125,12 @@ __all__: List[str] = [
     "SetUnidirectionalPrinting",
     "TAB",
     "reset_tabs",
-    "DISABLE_PAPER_OUT_SENSOR",
-    "ENABLE_PAPER_OUT_SENSOR",
+    "SetPaperOutSensor",
     "InsertSpaces",
     "SetPitch",
     "SetSpacing",
     "SetPrintCommands",
-    "SelectQuality",
+    "SetQuality",
     "repeat",
     "RESET",
     "DESELECT",

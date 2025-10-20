@@ -105,4 +105,9 @@ def reset_tabs(stops: List[int]) -> List[Command]:
     clear_all: Command = ClearAllTabs()
     set_many: Command = SetManyTabs(stops)
 
-    return [clear_all, set_many]
+    commands: List[Command] = [clear_all]
+
+    if stops:
+        commands.append(set_many)
+
+    return commands

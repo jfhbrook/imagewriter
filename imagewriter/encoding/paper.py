@@ -1,3 +1,5 @@
+from typing import Self
+
 from imagewriter.encoding.base import Esc
 
 """
@@ -11,5 +13,12 @@ Note that installing a SheetFeeder will change the behavior to trigger sheet
 feeds.
 """
 
-ENABLE_PAPER_OUT_SENSOR = Esc("O")
-DISABLE_PAPER_OUT_SENSOR = Esc("o")
+
+class SetPaperOutSensor(Esc):
+    def __init__(self: Self, enabled: bool) -> None:
+        self.enabled = enabled
+
+        super().__init__("O" if enabled else "o")
+
+    def __repr__(self: Self) -> str:
+        return f"SetPaperOutSensor({self.enabled})"

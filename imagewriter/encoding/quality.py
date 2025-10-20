@@ -14,7 +14,7 @@ def _quality_code(quality: Quality, scribe_mode: bool) -> str:
     return "a" + quality.value
 
 
-class SelectQuality(Esc):
+class SetQuality(Esc):
     """
     Select a Print-Quality Font, as per page 39 of the ImageWriter II
     Technical Reference Manual.
@@ -30,4 +30,4 @@ class SelectQuality(Esc):
         super().__init__(_quality_code(quality, scribe_mode))
 
     def __repr__(self: Self) -> str:
-        return f"SelectQuality({self._quality}, scribe_mode={self._scribe_mode})"
+        return f"SetQuality({self._quality}, scribe_mode={self._scribe_mode})"
