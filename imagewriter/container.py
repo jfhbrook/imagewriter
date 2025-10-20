@@ -38,30 +38,9 @@ def serial_factory(port: str, dip_switches: DIPSwitches) -> Serial:
 def settings_factory(dip_switches: DIPSwitches) -> Settings:
     return Settings.replace(
         Settings.defaults(dip_switches),
-        # boundaries
-        # left_margin=Inch(0),
-        # page_length=Inch(11),
-        # fonts and pitch
-        # language=Language.AMERICAN,
-        # slashed_zero=False,
-        # pitch=Pitch.ELITE,
-        # motion and insertion
-        # tab_stops = list()
-        # distance_between_lines = Pica(1),
         lf_when_line_full=True,
-        # auto_lf_after_cr = False,
-        # carriage_return_insertion=False,
         perforation_skip=True,
-        # paper
-        # paper_out_sensor=True,
-        # print commands
-        # print_commands=PrintCommands.CR_LF_AND_FF,
-        # quality
-        # quality=Quality.DRAFT,
-        # select
-        # software_select_response=False,
-        # serial
-        include_eighth_data_bit=True,  # OVERRIDE
+        include_eighth_data_bit=True,
     )
 
 
