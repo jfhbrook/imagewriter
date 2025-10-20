@@ -1,6 +1,5 @@
 from abc import ABC
-import dataclasses
-from typing import Any, List, Self, Set, Tuple
+from typing import List, Self, Set
 
 from imagewriter.encoding.base import Command, esc
 from imagewriter.switch import SoftwareSwitch, SoftwareSwitches
@@ -73,40 +72,19 @@ class CloseSoftwareSwitches(SetSoftwareSwitches):
         return f"CloseSoftwareSwitches({fmt_switch_banks(packed)})"
 
 
-def update_software_switch_settings(
-    settings: SoftwareSwitches, **changes: Any
-) -> Tuple[SoftwareSwitches, List[Command]]:
+def apply_software_switches(switches: SoftwareSwitches) -> List[Command]:
     """
-    Update software switch settings, under the assumption that the current
-    settings are accurate.
+    Apply current software switches, resolving any drift.
     """
-
-    replaced = dataclasses.replace(settings, **changes)
-
-    closed_before = settings.switches()
-    open_before = SoftwareSwitch.difference(closed_before)
-    closed_after = replaced.switches()
-    open_after = SoftwareSwitch.difference(closed_after)
-
-    to_open = open_after - open_before
-    to_close = closed_after - closed_before
 
     commands: List[Command] = list()
+    to_close = switches.switches()
+    to_open = SoftwareSwitch.difference(to_close)
 
     if to_open:
         commands.append(OpenSoftwareSwitches(to_open))
+
     if to_close:
         commands.append(CloseSoftwareSwitches(to_close))
 
-    return (replaced, commands)
-
-
-def force_software_switch_settings(settings: SoftwareSwitches) -> List[Command]:
-    """
-    Fully write out software switch settings, regardless of their prior state.
-    """
-
-    to_close = settings.switches()
-    to_open = SoftwareSwitch.difference(to_close)
-
-    return [OpenSoftwareSwitches(to_open), CloseSoftwareSwitches(to_close)]
+    return commands

@@ -1,12 +1,12 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import Dict, Literal, Optional, Self, Set, Type
+from typing import Dict, Optional, Self, Set, Type
 
 from imagewriter.language import Language
+from imagewriter.motion import FormLength
 from imagewriter.pitch import Pitch
+from imagewriter.print import PrintCommands
 from imagewriter.serial import BaudRate, SerialProtocol
-
-FormLength = Literal[11] | Literal[12]
 
 
 class DIPSwitch(Enum):
@@ -166,7 +166,7 @@ class SoftwareSwitch(Enum):
 
     @classmethod
     def defaults(
-        cls: Type[Self], dip_switch_settings: Optional[DIPSwitches] = None
+        cls: Type[Self], dip_switches: Optional[DIPSwitches] = None
     ) -> "Set[SoftwareSwitch]":
         """
         Returns software switches which are closed by default, as per page 32
@@ -178,9 +178,7 @@ class SoftwareSwitch(Enum):
         North America.
         """
 
-        settings: DIPSwitches = (
-            dip_switch_settings if dip_switch_settings else DIPSwitches.defaults()
-        )
+        settings: DIPSwitches = dip_switches if dip_switches else DIPSwitches.defaults()
 
         defaults: "Set[SoftwareSwitch]" = {
             SoftwareSwitch.SOFTWARE_SELECT_RESPONSE_DISABLED,
@@ -232,17 +230,15 @@ class SoftwareSwitches:
     language: Language
     software_select_response_disabled: bool
     lf_when_line_full: bool
-    print_commands_include_lf_ff: bool
+    print_commands: PrintCommands
     auto_lf_after_cr: bool
     slashed_zero: bool
     perforation_skip_disabled: bool
     ignore_eighth_data_bit: bool
 
     @classmethod
-    def defaults(
-        cls: Type[Self], dip_switch_settings: Optional[DIPSwitches] = None
-    ) -> Self:
-        return cls.from_switches(SoftwareSwitch.defaults(dip_switch_settings))
+    def defaults(cls: Type[Self], dip_switches: Optional[DIPSwitches] = None) -> Self:
+        return cls.from_switches(SoftwareSwitch.defaults(dip_switches))
 
     @classmethod
     def language_from_switches(
@@ -280,8 +276,11 @@ class SoftwareSwitches:
             )
             in switches,
             lf_when_line_full=SoftwareSwitch.LF_WHEN_LINE_FULL in switches,
-            print_commands_include_lf_ff=SoftwareSwitch.PRINT_COMMANDS_INCLUDE_LF_FF
-            in switches,
+            print_commands=(
+                PrintCommands.CR_LF_AND_FF
+                if SoftwareSwitch.PRINT_COMMANDS_INCLUDE_LF_FF in switches
+                else PrintCommands.CR_ONLY
+            ),
             auto_lf_after_cr=SoftwareSwitch.AUTO_LF_AFTER_CR in switches,
             slashed_zero=SoftwareSwitch.SLASHED_ZERO in switches,
             perforation_skip_disabled=SoftwareSwitch.PERFORATION_SKIP_DISABLED
@@ -296,7 +295,7 @@ class SoftwareSwitches:
             switches.add(SoftwareSwitch.SOFTWARE_SELECT_RESPONSE_DISABLED)
         if self.lf_when_line_full:
             switches.add(SoftwareSwitch.LF_WHEN_LINE_FULL)
-        if self.print_commands_include_lf_ff:
+        if self.print_commands == PrintCommands.CR_LF_AND_FF:
             switches.add(SoftwareSwitch.PRINT_COMMANDS_INCLUDE_LF_FF)
         if self.auto_lf_after_cr:
             switches.add(SoftwareSwitch.AUTO_LF_AFTER_CR)

@@ -1,5 +1,3 @@
-import dataclasses
-
 import pytest
 
 from imagewriter.encoding.attributes import PRINT_SLASHED_ZERO, PRINT_UNSLASHED_ZERO
@@ -14,15 +12,15 @@ from imagewriter.encoding.print import SetPrintCommands
 from imagewriter.encoding.select import SetSoftwareSelectResponse
 from imagewriter.encoding.serial import IGNORE_EIGHTH_DATA_BIT, INCLUDE_EIGHTH_DATA_BIT
 from imagewriter.encoding.switch import (
+    apply_software_switches,
     SetSoftwareSwitches,
-    update_software_switch_settings,
 )
 from imagewriter.language import Language
 from imagewriter.print import PrintCommands
 from imagewriter.switch import SoftwareSwitch, SoftwareSwitches
 
 
-def test_toggle() -> None:
+def test_apply() -> None:
     switches = {
         SoftwareSwitch.LANGUAGE_1,
         SoftwareSwitch.SOFTWARE_SELECT_RESPONSE_DISABLED,
@@ -33,10 +31,9 @@ def test_toggle() -> None:
         SoftwareSwitch.IGNORE_EIGHTH_DATA_BIT,
     }
 
-    before = SoftwareSwitches.from_switches(SoftwareSwitch.difference(switches))
-    after = SoftwareSwitches.from_switches(switches)
+    switches = SoftwareSwitches.from_switches(switches)
 
-    _, commands = update_software_switch_settings(before, **dataclasses.asdict(after))
+    commands = apply_software_switches(switches)
 
     assert len(commands) == 2, "Should be an open and a close command"
 
