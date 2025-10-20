@@ -1,13 +1,12 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import Dict, Literal, Optional, Self, Set, Type
+from typing import Dict, Optional, Self, Set, Type
 
 from imagewriter.language import Language
+from imagewriter.motion import FormLength
 from imagewriter.pitch import Pitch
 from imagewriter.print import PrintCommands
 from imagewriter.serial import BaudRate, SerialProtocol
-
-FormLength = Literal[11] | Literal[12]
 
 
 class DIPSwitch(Enum):

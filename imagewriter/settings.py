@@ -8,7 +8,7 @@ from imagewriter.print import PrintCommands
 from imagewriter.quality import Quality
 from imagewriter.serial import BaudRate, SerialProtocol
 from imagewriter.switch import DIPSwitches, SoftwareSwitches
-from imagewriter.units import Distance, Inch, Length, length_to_distance, Point
+from imagewriter.units import Distance, Inch, Length, length_to_distance, Pica, Point
 
 
 class Settings:
@@ -24,23 +24,22 @@ class Settings:
         # fonts and pitch
         language: Optional[Language] = None,
         slashed_zero: Optional[bool] = None,
+        pitch: Optional[Pitch] = None,
         # motion and insertion
         tab_stops: Optional[List[Distance]] = None,
-        distance_between_lines: Distance = Inch(1 / 6),
-        lf_when_line_full: Optional[bool] = False,
-        auto_lf_after_cr: Optional[bool] = False,
+        distance_between_lines: Distance = Pica(1),
+        lf_when_line_full: Optional[bool] = None,
+        auto_lf_after_cr: Optional[bool] = None,
         carriage_return_insertion: bool = False,
         perforation_skip: Optional[bool] = None,
         # paper
         paper_out_sensor: bool = True,
-        # pitch
-        pitch: Optional[Pitch] = None,
         # print commands
         print_commands: Optional[PrintCommands] = None,
         # quality
         quality: Quality = Quality.DRAFT,
         # select
-        software_select_response: Optional[bool] = False,
+        software_select_response: Optional[bool] = None,
         # serial
         include_eighth_data_bit: Optional[bool] = None,
     ) -> None:
@@ -55,9 +54,6 @@ class Settings:
             if software_switches
             else SoftwareSwitches.defaults(self.dip_switches)
         )
-
-        if include_eighth_data_bit is not None:
-            self.include_eighth_data_bit = include_eighth_data_bit
 
         # boundaries
         self._left_margin: Distance = left_margin
@@ -106,6 +102,8 @@ class Settings:
             self.software_select_response = software_select_response
 
         # serial
+        if include_eighth_data_bit is not None:
+            self.include_eighth_data_bit = include_eighth_data_bit
 
     # dip switches
     @property
@@ -231,19 +229,19 @@ class Settings:
         return not self.software_switches.software_select_response_disabled
 
     @software_select_response.setter
-    def software_select_response(self: Self, software_select_response: bool) -> None:
+    def software_select_response(self: Self, respond: bool) -> None:
         self.software_switches = dataclasses.replace(
             self.software_switches,
-            software_select_response_disabled=not software_select_response,
+            software_select_response_disabled=not respond,
         )
 
     # serial
     @property
-    def ignore_eighth_data_bit(self: Self) -> bool:
-        return self.software_switches.ignore_eighth_data_bit
+    def include_eighth_data_bit(self: Self) -> bool:
+        return not self.software_switches.ignore_eighth_data_bit
 
-    @ignore_eighth_data_bit.setter
-    def ignore_eighth_data_bit(self: Self, ignore_eighth_data_bit: bool) -> None:
+    @include_eighth_data_bit.setter
+    def include_eighth_data_bit(self: Self, include: bool) -> None:
         self.software_switches = dataclasses.replace(
-            self.software_switches, ignore_eighth_data_bit=ignore_eighth_data_bit
+            self.software_switches, ignore_eighth_data_bit=not include
         )
