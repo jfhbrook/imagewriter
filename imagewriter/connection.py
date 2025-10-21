@@ -21,21 +21,13 @@ class Interrupted(Exception):
 
 class Connection:
     def __init__(self: Self, port: Serial) -> None:
-        self._port: Serial = port
+        self.port: Serial = port
         self._executor: Executor = ThreadPoolExecutor()
         self._command_queue: queue.Queue[Command] = queue.Queue(maxsize=0)
         self._interrupt_queue: queue.Queue[Interrupt] = queue.Queue(maxsize=1)
 
         self._running: bool = True
         self._executor.submit(self._worker)
-
-    @property
-    def port(self: Self) -> Serial:
-        """
-        The underlying serial port.
-        """
-
-        return self._port
 
     def shutdown(self: Self) -> None:
         """
