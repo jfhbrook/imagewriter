@@ -12,6 +12,7 @@ from imagewriter.encoding.pitch import SetPitch
 from imagewriter.encoding.quality import SetQuality
 from imagewriter.encoding.switch import apply_software_switches
 from imagewriter.settings import Settings
+from imagewriter.units import length_to_int
 
 
 def apply_settings(settings: Settings) -> List[Command]:
@@ -24,5 +25,10 @@ def apply_settings(settings: Settings) -> List[Command]:
         SetLeftMargin(settings.left_margin, settings.pitch),
         SetPageLength(settings.page_length),
         SetDistanceBetweenLines(settings.distance_between_lines),
-        *reset_tabs([stop.characters(settings.pitch) for stop in settings.tab_stops]),
+        *reset_tabs(
+            [
+                length_to_int(stop, lambda st: st.characters(settings.pitch))
+                for stop in settings.tab_stops
+            ]
+        ),
     ]

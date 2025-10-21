@@ -6,7 +6,7 @@ from imagewriter.pitch import Pitch
 from imagewriter.print import PrintCommands
 from imagewriter.quality import Quality
 from imagewriter.switch import DIPSwitches, SoftwareSwitches
-from imagewriter.units import Distance, Inch, Pica, Point
+from imagewriter.units import Distance, Inch, Length, Pica, Point
 
 
 @dataclasses.dataclass
@@ -19,7 +19,7 @@ class Settings:
     slashed_zero: bool
     pitch: Pitch
     # motion and insertion
-    tab_stops: List[Distance]
+    tab_stops: List[Length]
     distance_between_lines: Distance
     lf_when_line_full: bool
     auto_lf_after_cr: bool
