@@ -57,6 +57,7 @@ from imagewriter.encoding.motion import (
     SetPerforationSkip,
     SetUnidirectionalPrinting,
     TAB,
+    to_tab_stops,
 )
 from imagewriter.encoding.paper import SetPaperOutSensor
 from imagewriter.encoding.pitch import InsertSpaces, SetPitch, SetSpacing
@@ -114,6 +115,7 @@ __all__: List[str] = [
     "LineFeedForward",
     "LineFeedReverse",
     "PlaceExactPrintHeadPosition",
+    "reset_tabs",
     "SET_TOP_OF_FORM",
     "SetAutoLFAfterCR",
     "SetCarriageReturnInsertion",
@@ -125,7 +127,7 @@ __all__: List[str] = [
     "SetPerforationSkip",
     "SetUnidirectionalPrinting",
     "TAB",
-    "reset_tabs",
+    "to_tab_stops",
     "SetPaperOutSensor",
     "InsertSpaces",
     "SetPitch",

@@ -7,6 +7,8 @@ from imagewriter.encoding.base import (
     Esc,
     number,
 )
+from imagewriter.pitch import Pitch
+from imagewriter.units import Length, length_to_int
 
 
 class Tab(Bytes):
@@ -22,6 +24,10 @@ class Tab(Bytes):
 
 
 TAB = Tab()
+
+
+def to_tab_stops(stops: List[Length], pitch: Pitch) -> List[int]:
+    return [length_to_int(stop, lambda st: st.characters(pitch)) for stop in stops]
 
 
 def _encode_tab_stops(stops: List[int]) -> bytes:

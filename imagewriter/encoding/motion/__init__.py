@@ -33,6 +33,7 @@ from imagewriter.encoding.motion.tab import (
     SetManyTabs,
     SetOneTab,
     TAB,
+    to_tab_stops,
 )
 from imagewriter.pitch import Pitch
 from imagewriter.units import Distance, Length, length_to_int
@@ -130,4 +131,5 @@ __all__: List[str] = [
     "SetManyTabs",
     "SetOneTab",
     "TAB",
+    "to_tab_stops",
 ]
