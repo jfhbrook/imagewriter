@@ -10,13 +10,13 @@ class ListNumberStyle(Enum):
     Style of list numbers.
     """
 
-    DEFAULT = 0
-    EXAMPLE = 1
-    DECIMAL = 2
-    LOWER_ROMAN = 3
-    UPPER_ROMAN = 4
-    LOWER_ALPHA = 5
-    UPPER_ALPHA = 6
+    DEFAULT = "DefaultStyle"
+    EXAMPLE = "Example"
+    DECIMAL = "Decimal"
+    LOWER_ROMAN = "LowerRoman"
+    UPPER_ROMAN = "UpperRoman"
+    LOWER_ALPHA = "LowerAlpha"
+    UPPER_ALPHA = "UpperAlpha"
 
 
 class ListNumberDelim(Enum):
@@ -24,10 +24,10 @@ class ListNumberDelim(Enum):
     Delimiter of list numbers.
     """
 
-    DEFAULT = 0
-    PERIOD = 1
-    ONE_PAREN = 2
-    TWO_PARENS = 3
+    DEFAULT = "DefaultDelim"
+    PERIOD = "Period"
+    ONE_PAREN = "OneParen"
+    TWO_PARENS = "TwoParens"
 
 
 @dataclass

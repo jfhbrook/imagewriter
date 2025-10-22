@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import List
+from typing import List, Optional
 
 from imagewriter.document.base import Attr, Block
 
@@ -10,10 +10,10 @@ class Alignment(Enum):
     Alignment of a table column.
     """
 
-    LEFT = 0
-    RIGHT = 1
-    CENTER = 2
-    DEFAULT = 3
+    LEFT = "AlignLeft"
+    RIGHT = "AlignRight"
+    CENTER = "AlignCenter"
+    DEFAULT = "AlignDefault"
 
 
 @dataclass
@@ -23,7 +23,7 @@ class ColSpec:
     """
 
     alignment: Alignment
-    width: float = 1.0  # TODO: Is this a sensible default?
+    width: Optional[float]
 
 
 @dataclass
