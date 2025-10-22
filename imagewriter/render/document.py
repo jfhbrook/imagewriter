@@ -1,5 +1,6 @@
 from typing import Self
 
+from imagewriter.color import Color
 from imagewriter.document import (
     BlockQuote,
     BlockVisitor,
@@ -87,7 +88,7 @@ class DocumentRenderer(BlockVisitor[None], InlineVisitor[None]):
         raise NotImplementedError("visit_cite")
 
     def visit_code(self: Self, element: Code) -> None:
-        raise NotImplementedError("visit_code")
+        self.job.code(element.contents)
 
     def visit_space(self: Self, element: Space) -> None:
         self.job.text(" ")
@@ -105,7 +106,9 @@ class DocumentRenderer(BlockVisitor[None], InlineVisitor[None]):
         raise NotImplementedError("visit_raw_inline")
 
     def visit_link(self: Self, element: Link) -> None:
-        raise NotImplementedError("visit_link")
+        # TODO: What attributes may a link have?
+        with self.job.color(Color.PURPLE):
+            self.job.text(element.target.title)
 
     def visit_image(self: Self, element: Image) -> None:
         raise NotImplementedError("visit_image")
@@ -119,43 +122,55 @@ class DocumentRenderer(BlockVisitor[None], InlineVisitor[None]):
             el.accept(self)
 
     def visit_plain(self: Self, element: Plain) -> None:
-        pass
+        for el in element.contents:
+            el.accept(self)
 
     def visit_para(self: Self, element: Para) -> None:
-        pass
+        for el in element.contents:
+            el.accept(self)
+
+        self.job.text("\r\n\r\n")
 
     def visit_line_block(self: Self, element: LineBlock) -> None:
-        pass
+        for line in element.contents:
+            for el in line:
+                el.accept(self)
+            self.job.text("\r\n")
 
     def visit_code_block(self: Self, element: CodeBlock) -> None:
-        pass
+        with self.job.code_block():
+            self.job.text(element.contents)
 
     def visit_raw_block(self: Self, element: RawBlock) -> None:
-        pass
+        raise NotImplementedError("visit_raw_block")
 
     def visit_block_quote(self: Self, element: BlockQuote) -> None:
-        pass
+        # TODO: Implement context manager block quote
+        raise NotImplementedError("visit_block_quote")
 
     def visit_ordered_list(self: Self, element: OrderedList) -> None:
-        pass
+        raise NotImplementedError("visit_ordered_list")
 
     def visit_bullet_list(self: Self, element: BulletList) -> None:
-        pass
+        raise NotImplementedError("visit_bullet_list")
 
     def visit_definition_list(self: Self, element: DefinitionList) -> None:
-        pass
+        raise NotImplementedError("visit_definition_list")
 
     def visit_header(self: Self, element: Header) -> None:
-        pass
+        raise NotImplementedError("visit_header")
 
     def visit_horizontal_rule(self: Self, element: HorizontalRule) -> None:
-        pass
+        # TODO: Something nicer
+        self.job.text("\r\n---\r\n")
 
     def visit_table(self: Self, element: Table) -> None:
-        pass
+        raise NotImplementedError("visit_table")
 
     def visit_figure(self: Self, element: Figure) -> None:
-        pass
+        raise NotImplementedError("visit_figure")
 
     def visit_div(self: Self, element: Div) -> None:
-        pass
+        # TODO: What attrs can a div have?
+        for el in element.contents:
+            el.accept(self)

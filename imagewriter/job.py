@@ -1,12 +1,14 @@
 from contextlib import contextmanager
-from typing import Generator, List, Self
+from typing import Generator, List, Self, Sequence
 
+from imagewriter.color import Color
 from imagewriter.encoding import (
     apply_settings,
     CharacterEncoder,
     Command,
     CR,
     reset_tabs,
+    set_color,
     SetPitch,
     START_BOLDFACE,
     START_DOUBLE_WIDTH,
@@ -35,12 +37,10 @@ class Job:
 
     def __init__(self: Self, settings: Settings) -> None:
         self._settings: Settings = settings
-        self._map_mousetext = not settings.include_eighth_data_bit
-        self._map_custom = not settings.include_eighth_data_bit
         self._character_encoder = CharacterEncoder(
-            self._settings.language,
-            map_mousetext=self._map_mousetext,
-            map_custom=self._map_custom,
+            settings.language,
+            map_mousetext=not settings.include_eighth_data_bit,
+            map_custom=not settings.include_eighth_data_bit,
         )
         self._has_header: bool = False
         self._commands: List[Command] = list()
@@ -53,9 +53,9 @@ class Job:
     def settings(self: Self, settings: Settings) -> None:
         self._settings = settings
         self._character_encoder = CharacterEncoder(
-            self._settings.language,
-            map_mousetext=self._map_mousetext,
-            map_custom=self._map_custom,
+            settings.language,
+            map_mousetext=not settings.include_eighth_data_bit,
+            map_custom=not settings.include_eighth_data_bit,
         )
 
     def __len__(self: Self) -> int:
@@ -95,16 +95,16 @@ class Job:
         Set the current pitch.
         """
 
-        self._settings = Settings.replace(self._settings, pitch=pitch)
+        self.settings = Settings.replace(self.settings, pitch=pitch)
         if self._has_header:
             self._commands += [
                 SetPitch(pitch),
-                *reset_tabs(to_tab_stops(self._settings.tab_stops, pitch)),
+                *reset_tabs(to_tab_stops(self.settings.tab_stops, pitch)),
             ]
 
         return self
 
-    def tab_stops(self: Self, tab_stops: List[Length]) -> Self:
+    def tab_stops(self: Self, tab_stops: Sequence[Length]) -> Self:
         """
         Set the current tab stops.
         """
@@ -114,6 +114,10 @@ class Job:
         if self._has_header:
             self._commands += reset_tabs(to_tab_stops(tab_stops, self._settings.pitch))
         return self
+
+    def tab_size(self: Self, size: int) -> Self:
+        tab_stops = list(range(0, self.settings.pitch.max_character_position, size))
+        return self.tab_stops(tab_stops)
 
     def text(self: Self, *text: Text) -> Self:
         """
@@ -201,3 +205,57 @@ class Job:
         yield
 
         self.write(STOP_SUBSCRIPT)
+
+    @contextmanager
+    def color(self: Self, color: Color) -> Generator[None, None, None]:
+        """
+        Write colored text.
+        """
+
+        self.write(set_color(color))
+
+        yield
+
+        self.write(set_color(Color.BLACK))
+
+    @contextmanager
+    def monospace(self: Self) -> Generator[None, None, None]:
+        """
+        Temporarily use a monospace (non-proportional) pitch.
+        """
+
+        pitch = self.settings.pitch
+
+        monospace = {
+            Pitch.PICA_PROPORTIONAL: Pitch.PICA,
+            Pitch.ELITE_PROPORTIONAL: Pitch.ELITE,
+        }.get(pitch, pitch)
+
+        if monospace != pitch:
+            self.pitch(monospace)
+
+        yield
+
+        if monospace != pitch:
+            self.pitch(pitch)
+
+    def code(self: Self, *text: Text) -> Self:
+        """
+        Write inline code.
+        """
+
+        with self.monospace():
+            with self.color(Color.GREEN):
+                self.text(*text)
+
+        return self
+
+    @contextmanager
+    def code_block(self: Self) -> Generator[None, None, None]:
+        """
+        Write a code block.
+        """
+
+        with self.monospace():
+            with self.color(Color.GREEN):
+                yield

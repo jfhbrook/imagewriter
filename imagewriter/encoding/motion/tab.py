@@ -1,4 +1,4 @@
-from typing import List, Self
+from typing import List, Self, Sequence
 
 from imagewriter.encoding.base import (
     Bytes,
@@ -26,7 +26,7 @@ class Tab(Bytes):
 TAB = Tab()
 
 
-def to_tab_stops(stops: List[Length], pitch: Pitch) -> List[int]:
+def to_tab_stops(stops: Sequence[Length], pitch: Pitch) -> List[int]:
     return [length_to_int(stop, lambda st: st.characters(pitch)) for stop in stops]
 
 
