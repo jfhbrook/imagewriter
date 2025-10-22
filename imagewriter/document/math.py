@@ -1,10 +1,6 @@
-from enum import Enum
+from typing import Literal
 
+MathType = Literal["DisplayMath"] | Literal["InlineMath"]
 
-class MathType(Enum):
-    """
-    Type of math element.
-    """
-
-    DISPLAY = 0
-    INLINE = 1
+DISPLAY_MATH: MathType = "DisplayMath"
+INLINE_MATH: MathType = "InlineMath"

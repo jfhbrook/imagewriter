@@ -1,10 +1,6 @@
-from enum import Enum
+from typing import Literal
 
+QuoteType = Literal["SingleQuote"] | Literal["DoubleQuote"]
 
-class QuoteType(Enum):
-    """
-    Type of quotation marks to use in a quoted inline.
-    """
-
-    SINGLE_QUOTE = 0
-    DOUBLE_QUOTE = 1
+SINGLE_QUOTE: QuoteType = "SingleQuote"
+DOUBLE_QUOTE: QuoteType = "DoubleQuote"

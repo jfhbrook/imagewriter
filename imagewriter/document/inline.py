@@ -101,7 +101,7 @@ class Cite(Inline):
     Citation.
     """
 
-    citation: Citation
+    citations: List[Citation]
     contents: List[Inline]
 
 
@@ -191,3 +191,9 @@ class Note(Inline):
     """
 
     contents: List[Block]
+
+
+@dataclass
+class Span(Inline):
+    attr: Attr
+    contents: List[Inline]

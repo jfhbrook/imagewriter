@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List
+from typing import List, Literal
 
 from imagewriter.document.base import Inline
 
@@ -23,12 +23,18 @@ class CitationSuffix(Citation):
     suffix: List[Inline]
 
 
-CITATION_MODES = dict(AUTHOR_IN_TEXT=0, SUPPRESS_AUTHOR=1, NORMAL=2)
+CitationModeType = (
+    Literal["AuthorInText"] | Literal["SuppressAuthor"] | Literal["NormalCitation"]
+)
+
+AUTHOR_IN_TEXT: CitationModeType = "AuthorInText"
+SUPPRESS_AUTHOR: CitationModeType = "SuppressAuthor"
+NORMAL_CITATION: CitationModeType = "NormalCitation"
 
 
 @dataclass
 class CitationMode(Citation):
-    mode: int
+    mode: CitationModeType
 
 
 @dataclass

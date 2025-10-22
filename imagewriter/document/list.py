@@ -1,33 +1,37 @@
 from dataclasses import dataclass
-from enum import Enum
-from typing import List
+from typing import List, Literal
 
 from imagewriter.document.base import Block, Inline
 
+ListNumberStyle = (
+    Literal["DefaultStyle"]
+    | Literal["Example"]
+    | Literal["Decimal"]
+    | Literal["LowerRoman"]
+    | Literal["UpperRoman"]
+    | Literal["LowerAlpha"]
+    | Literal["UpperAlpha"]
+)
 
-class ListNumberStyle(Enum):
-    """
-    Style of list numbers.
-    """
+DEFAULT_STYLE: ListNumberStyle = "DefaultStyle"
+EXAMPLE: ListNumberStyle = "Example"
+DECIMAL: ListNumberStyle = "Decimal"
+LOWER_ROMAN: ListNumberStyle = "LowerRoman"
+UPPER_ROMAN: ListNumberStyle = "UpperRoman"
+LOWER_ALPHA: ListNumberStyle = "LowerAlpha"
+UPPER_ALPHA: ListNumberStyle = "UpperAlpha"
 
-    DEFAULT = "DefaultStyle"
-    EXAMPLE = "Example"
-    DECIMAL = "Decimal"
-    LOWER_ROMAN = "LowerRoman"
-    UPPER_ROMAN = "UpperRoman"
-    LOWER_ALPHA = "LowerAlpha"
-    UPPER_ALPHA = "UpperAlpha"
+ListNumberDelim = (
+    Literal["DefaultDelim"]
+    | Literal["Period"]
+    | Literal["OneParen"]
+    | Literal["TwoParens"]
+)
 
-
-class ListNumberDelim(Enum):
-    """
-    Delimiter of list numbers.
-    """
-
-    DEFAULT = "DefaultDelim"
-    PERIOD = "Period"
-    ONE_PAREN = "OneParen"
-    TWO_PARENS = "TwoParens"
+DEFAULT_DELIM: ListNumberDelim = "DefaultDelim"
+PERIOD: ListNumberDelim = "Period"
+ONE_PAREN: ListNumberDelim = "OneParen"
+TWO_PARENS: ListNumberDelim = "TwoParens"
 
 
 @dataclass
