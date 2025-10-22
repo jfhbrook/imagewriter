@@ -1,3 +1,12 @@
+"""
+A document model. Based on the document model from Pandoc:
+
+    https://hackage.haskell.org/package/pandoc-types-1.23.1/docs/Text-Pandoc-Definition.html
+
+Among other benefits, this makes it straightforward to integrate document parsing from
+Pandoc.
+"""
+
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Any, Dict, List, Literal, Optional, Protocol, Self
@@ -33,10 +42,18 @@ class Inline(ABC):
 
     @abstractmethod
     def accept[T](self: Self, visitor: "InlineVisitor[T]") -> T:
+        """
+        Accept an inline element visitor.
+        """
+
         pass
 
 
 class InlineVisitor[T](Protocol):
+    """
+    A visitor for inline elements.
+    """
+
     def visit_str(self: Self, element: "Str") -> T: ...
     def visit_emph(self: Self, element: "Emph") -> T: ...
     def visit_underline(self: Self, element: "Underline") -> T: ...
@@ -66,10 +83,18 @@ class Block(ABC):
 
     @abstractmethod
     def accept[T](self: Self, visitor: "BlockVisitor[T]") -> T:
+        """
+        Accept a block element visitor.
+        """
+
         pass
 
 
 class BlockVisitor[T](Protocol):
+    """
+    A visitor for block elements.
+    """
+
     def visit_plain(self: Self, element: "Plain") -> T: ...
     def visit_para(self: Self, element: "Para") -> T: ...
     def visit_line_block(self: Self, element: "LineBlock") -> T: ...
