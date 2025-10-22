@@ -1,7 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Literal
-
-from imagewriter.document.base import Block, Inline
+from typing import Literal
 
 ListNumberStyle = (
     Literal["DefaultStyle"]
@@ -43,9 +41,3 @@ class ListAttributes:
     start: int
     style: ListNumberStyle
     delimiter: ListNumberDelim
-
-
-@dataclass
-class DefinitionListItem:
-    term: List[Inline]
-    definitions: List[List[Block]]
