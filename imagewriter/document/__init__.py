@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from typing import Any, Dict, List, Literal, Optional, Protocol, Self
 
 from imagewriter.document.attr import Attr
+from imagewriter.document.format import Format
 from imagewriter.document.link import Target
 from imagewriter.document.list import (
     ListAttributes,
@@ -16,8 +17,6 @@ from imagewriter.document.table import Alignment, ColSpec
 #
 # Base types
 #
-
-Format = str
 
 
 class Inline(ABC):

@@ -46,6 +46,10 @@ _clean-compile:
 # Development tooling - linting, formatting, etc
 #
 
+# Generate format type for Pandoc
+generate:
+  uv run ./scripts/generate-pandoc-formats.py
+
 # Format with black and isort
 format:
   uv run black './imagewriter' ./tests
