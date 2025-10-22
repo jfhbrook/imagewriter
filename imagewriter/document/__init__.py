@@ -3,7 +3,14 @@ from dataclasses import dataclass
 from typing import Any, Dict, List, Literal, Optional, Protocol, Self
 
 from imagewriter.document.attr import Attr
-from imagewriter.document.format import Format
+from imagewriter.document.format import (
+    Format,
+    FORMATS,
+    NATIVE_FORMATS,
+    NativeFormat,
+    PANDOC_FORMATS,
+    PandocFormat,
+)
 from imagewriter.document.link import Target
 from imagewriter.document.list import (
     ListAttributes,
@@ -653,6 +660,11 @@ __all__: List[str] = [
     "Block",
     "Document",
     "Format",
+    "FORMATS",
+    "NATIVE_FORMATS",
+    "NativeFormat",
+    "PANDOC_FORMATS",
+    "PandocFormat",
     "Inline",
     "BlockQuote",
     "BulletList",

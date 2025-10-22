@@ -1,11 +1,13 @@
 import json
 import subprocess
 
-from imagewriter.document import Document, Format
+from imagewriter.document import Document, PANDOC_FORMATS, PandocFormat
 import imagewriter.pandoc.parser as parser
 
 
-def parse_document(document: str, format: Format = "markdown") -> Document:
+def parse_document(document: str, format: PandocFormat = "markdown") -> Document:
+    assert format in PANDOC_FORMATS, f"{format} is not supported by Pandoc."
+
     process = subprocess.run(
         ["pandoc", "-r", format, "-w", "json"],
         input=document,

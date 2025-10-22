@@ -3,6 +3,7 @@ set dotenv-load := true
 # By default, run checks and tests, then format and lint
 default:
   if [ ! -d .venv ]; then just install; fi
+  @just generate
   @just format
   @just check
   @just test
