@@ -1,19 +1,14 @@
 from dataclasses import dataclass
-from enum import Enum
-from typing import List, Optional
+from typing import List, Literal, Optional
 
 from imagewriter.document.base import Attr, Block
 
-
-class Alignment(Enum):
-    """
-    Alignment of a table column.
-    """
-
-    LEFT = "AlignLeft"
-    RIGHT = "AlignRight"
-    CENTER = "AlignCenter"
-    DEFAULT = "AlignDefault"
+Alignment = (
+    Literal["AlignLeft"]
+    | Literal["AlignRight"]
+    | Literal["AlignCenter"]
+    | Literal["AlignDefault"]
+)
 
 
 @dataclass
