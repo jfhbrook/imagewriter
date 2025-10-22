@@ -20,6 +20,7 @@ class Block:
     pass
 
 
+# TODO: Is this a union type, like captions?
 @dataclass
 class Attr:
     """

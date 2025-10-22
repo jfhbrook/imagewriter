@@ -44,6 +44,7 @@ class LineBlock(Block):
     contents: List[List[Inline]]
 
 
+@dataclass
 class CodeBlock(Block):
     """
     Code block (literal) with attributes.
@@ -53,6 +54,7 @@ class CodeBlock(Block):
     contents: str
 
 
+@dataclass
 class RawBlock(Block):
     """
     Raw block.
@@ -62,6 +64,7 @@ class RawBlock(Block):
     contents: str
 
 
+@dataclass
 class BlockQuote(Block):
     """
     Block quote.
@@ -70,6 +73,7 @@ class BlockQuote(Block):
     contents: List[Block]
 
 
+@dataclass
 class OrderedList(Block):
     """
     Ordered list.
@@ -79,6 +83,7 @@ class OrderedList(Block):
     items: List[List[Block]]
 
 
+@dataclass
 class BulletList(Block):
     """
     Bullet list.
@@ -87,6 +92,7 @@ class BulletList(Block):
     items: List[List[Block]]
 
 
+@dataclass
 class DefinitionList(Block):
     """
     Definition list.
@@ -95,6 +101,7 @@ class DefinitionList(Block):
     items: List[DefinitionListItem]
 
 
+@dataclass
 class Header(Block):
     """
     Header.
@@ -105,6 +112,7 @@ class Header(Block):
     contents: List[Inline]
 
 
+@dataclass
 class HorizontalRule(Block):
     """
     Horizontal rule.
@@ -113,6 +121,7 @@ class HorizontalRule(Block):
     pass
 
 
+@dataclass
 class Table(Block):
     """
     Table.
@@ -126,6 +135,7 @@ class Table(Block):
     footer: TableFoot
 
 
+@dataclass
 class Figure(Block):
     """
     Figure.
@@ -136,6 +146,7 @@ class Figure(Block):
     contents: List[Block]
 
 
+@dataclass
 class Div(Block):
     """
     Generic block container.

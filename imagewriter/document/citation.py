@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from enum import Enum
 from typing import List
 
 from imagewriter.document.base import Inline
@@ -24,10 +23,12 @@ class CitationSuffix(Citation):
     suffix: List[Inline]
 
 
-class CitationMode(Enum, Citation):
-    AUTHOR_IN_TEXT = 0
-    SUPPRESS_AUTHOR = 1
-    NORMAL = 2
+CITATION_MODES = dict(AUTHOR_IN_TEXT=0, SUPPRESS_AUTHOR=1, NORMAL=2)
+
+
+@dataclass
+class CitationMode(Citation):
+    mode: int
 
 
 @dataclass
