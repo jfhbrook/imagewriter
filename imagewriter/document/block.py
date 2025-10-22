@@ -1,14 +1,14 @@
 from dataclasses import dataclass
-from typing import List, Tuple
+from typing import List
 
 from imagewriter.document.base import (
     Attr,
     Block,
-    Caption,
     Format,
     Inline,
 )
-from imagewriter.document.list import ListAttributes
+from imagewriter.document.caption import Caption
+from imagewriter.document.list import DefinitionListItem, ListAttributes
 from imagewriter.document.table import (
     ColSpec,
     TableBody,
@@ -92,7 +92,7 @@ class DefinitionList(Block):
     Definition list.
     """
 
-    items: List[Tuple[List[Inline], List[List[Block]]]]
+    items: List[DefinitionListItem]
 
 
 class Header(Block):

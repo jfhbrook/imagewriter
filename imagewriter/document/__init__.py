@@ -3,11 +3,8 @@ from typing import List
 from imagewriter.document.base import (
     Attr,
     Block,
-    Caption,
     Format,
     Inline,
-    MathType,
-    QuoteType,
 )
 from imagewriter.document.block import (
     BlockQuote,
@@ -25,6 +22,7 @@ from imagewriter.document.block import (
     RawBlock,
     Table,
 )
+from imagewriter.document.caption import Caption
 from imagewriter.document.citation import (
     Citation,
     CitationHash,
@@ -56,7 +54,14 @@ from imagewriter.document.inline import (
     Underline,
 )
 from imagewriter.document.link import Target
-from imagewriter.document.list import ListAttributes, ListNumberDelim, ListNumberStyle
+from imagewriter.document.list import (
+    DefinitionListItem,
+    ListAttributes,
+    ListNumberDelim,
+    ListNumberStyle,
+)
+from imagewriter.document.math import MathType
+from imagewriter.document.quote import QuoteType
 from imagewriter.document.table import (
     Alignment,
     Cell,
@@ -70,11 +75,8 @@ from imagewriter.document.table import (
 __all__: List[str] = [
     "Attr",
     "Block",
-    "Caption",
     "Format",
     "Inline",
-    "MathType",
-    "QuoteType",
     "BlockQuote",
     "BulletList",
     "CodeBlock",
@@ -89,6 +91,7 @@ __all__: List[str] = [
     "Plain",
     "RawBlock",
     "Table",
+    "Caption",
     "Citation",
     "CitationHash",
     "CitationId",
@@ -116,9 +119,12 @@ __all__: List[str] = [
     "Superscript",
     "Underline",
     "Target",
+    "DefinitionListItem",
     "ListAttributes",
     "ListNumberDelim",
     "ListNumberStyle",
+    "MathType",
+    "QuoteType",
     "Alignment",
     "Cell",
     "ColSpec",

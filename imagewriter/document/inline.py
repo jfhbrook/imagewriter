@@ -6,11 +6,11 @@ from imagewriter.document.base import (
     Block,
     Format,
     Inline,
-    MathType,
-    QuoteType,
 )
 from imagewriter.document.citation import Citation
 from imagewriter.document.link import Target
+from imagewriter.document.math import MathType
+from imagewriter.document.quote import QuoteType
 
 
 @dataclass

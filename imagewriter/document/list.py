@@ -1,5 +1,8 @@
 from dataclasses import dataclass
 from enum import Enum
+from typing import List
+
+from imagewriter.document.base import Block, Inline
 
 
 class ListNumberStyle(Enum):
@@ -36,3 +39,9 @@ class ListAttributes:
     start: int
     style: ListNumberStyle
     delimiter: ListNumberDelim
+
+
+@dataclass
+class DefinitionListItem:
+    term: List[Inline]
+    definitions: List[List[Block]]
