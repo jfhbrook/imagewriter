@@ -4,6 +4,7 @@ from typing import Generator, List, Self, Sequence
 from imagewriter.color import Color
 from imagewriter.encoding import (
     apply_settings,
+    BACKSPACE,
     CharacterEncoder,
     Command,
     CR,
@@ -129,6 +130,39 @@ class Job:
         return self
 
     @contextmanager
+    def color(self: Self, color: Color) -> Generator[None, None, None]:
+        """
+        Write colored text.
+        """
+
+        self.write(set_color(color))
+
+        yield
+
+        self.write(set_color(Color.BLACK))
+
+    @contextmanager
+    def monospace(self: Self) -> Generator[None, None, None]:
+        """
+        Temporarily use a monospace (non-proportional) pitch.
+        """
+
+        pitch = self.settings.pitch
+
+        monospace = {
+            Pitch.PICA_PROPORTIONAL: Pitch.PICA,
+            Pitch.ELITE_PROPORTIONAL: Pitch.ELITE,
+        }.get(pitch, pitch)
+
+        if monospace != pitch:
+            self.pitch(monospace)
+
+        yield
+
+        if monospace != pitch:
+            self.pitch(pitch)
+
+    @contextmanager
     def double_width(self: Self) -> Generator[None, None, None]:
         """
         Write double width text.
@@ -177,6 +211,32 @@ class Job:
         self.write(STOP_HALF_HEIGHT)
 
     @contextmanager
+    def strikeout(self: Self) -> Generator[None, None, None]:
+        """
+        Strike out text.
+        """
+
+        start = len(self)
+
+        with self.monospace():
+            yield
+
+            self._strikeout(start)
+
+    def _strikeout(self: Self, start: int) -> None:
+        chars = 0
+        for cmd in self._commands[start:]:
+            chars += self._printable_characters(cmd)
+
+        self._commands = [
+            *(BACKSPACE for _ in range(0, chars)),
+            *self._character_encoder.encode(" " * chars),
+        ]
+
+    def _printable_characters(self: Self, command: Command) -> int:
+        raise NotImplementedError("Job._printable_characters")
+
+    @contextmanager
     def superscript(self: Self) -> Generator[None, None, None]:
         """
         Write superscript text.
@@ -205,39 +265,6 @@ class Job:
         yield
 
         self.write(STOP_SUBSCRIPT)
-
-    @contextmanager
-    def color(self: Self, color: Color) -> Generator[None, None, None]:
-        """
-        Write colored text.
-        """
-
-        self.write(set_color(color))
-
-        yield
-
-        self.write(set_color(Color.BLACK))
-
-    @contextmanager
-    def monospace(self: Self) -> Generator[None, None, None]:
-        """
-        Temporarily use a monospace (non-proportional) pitch.
-        """
-
-        pitch = self.settings.pitch
-
-        monospace = {
-            Pitch.PICA_PROPORTIONAL: Pitch.PICA,
-            Pitch.ELITE_PROPORTIONAL: Pitch.ELITE,
-        }.get(pitch, pitch)
-
-        if monospace != pitch:
-            self.pitch(monospace)
-
-        yield
-
-        if monospace != pitch:
-            self.pitch(pitch)
 
     def code(self: Self, *text: Text) -> Self:
         """

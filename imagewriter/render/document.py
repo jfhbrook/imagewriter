@@ -66,7 +66,9 @@ class DocumentRenderer(BlockVisitor[None], InlineVisitor[None]):
                     el.accept(self)
 
     def visit_strikeout(self: Self, element: Strikeout) -> None:
-        raise NotImplementedError("visit_strikeout")
+        with self.job.strikeout():
+            for el in element.contents:
+                el.accept(self)
 
     def visit_subscript(self: Self, element: Subscript) -> None:
         with self.job.subscript():
