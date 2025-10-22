@@ -49,7 +49,7 @@ from imagewriter.document import (
     TableHead,
     Underline,
 )
-from imagewriter.pandoc.parser.base import parse_attr
+from imagewriter.pandoc.parser.attr import parse_attr
 from imagewriter.pandoc.parser.citation import parse_citation
 from imagewriter.pandoc.parser.link import parse_target
 from imagewriter.pandoc.parser.math import parse_math_type

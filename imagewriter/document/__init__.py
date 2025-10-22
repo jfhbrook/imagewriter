@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Any, Dict, List, Literal, Optional, Protocol, Self
 
-from imagewriter.document.base import Attr
+from imagewriter.document.attr import Attr
 from imagewriter.document.link import Target
 from imagewriter.document.list import (
     ListAttributes,
