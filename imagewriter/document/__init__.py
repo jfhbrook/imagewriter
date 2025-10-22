@@ -3,6 +3,7 @@ from typing import List
 from imagewriter.document.base import (
     Attr,
     Block,
+    Document,
     Format,
     Inline,
 )
@@ -75,6 +76,7 @@ from imagewriter.document.table import (
 __all__: List[str] = [
     "Attr",
     "Block",
+    "Document",
     "Format",
     "Inline",
     "BlockQuote",
