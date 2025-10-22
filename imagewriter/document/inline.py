@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List
+from typing import Any, List, Protocol, Self
 
 from imagewriter.document.base import (
     Attr,
@@ -13,6 +13,29 @@ from imagewriter.document.math import MathType
 from imagewriter.document.quote import QuoteType
 
 
+class InlineVisitor[T](Protocol):
+    def visit_str(self: Self, element: "Str") -> T: ...
+    def visit_emph(self: Self, element: "Emph") -> T: ...
+    def visit_underline(self: Self, element: "Underline") -> T: ...
+    def visit_strong(self: Self, element: "Strong") -> T: ...
+    def visit_strikeout(self: Self, element: "Strikeout") -> T: ...
+    def visit_subscript(self: Self, element: "Subscript") -> T: ...
+    def visit_superscript(self: Self, element: "Superscript") -> T: ...
+    def visit_small_caps(self: Self, element: "SmallCaps") -> T: ...
+    def visit_quoted(self: Self, element: "Quoted") -> T: ...
+    def visit_cite(self: Self, element: "Cite") -> T: ...
+    def visit_code(self: Self, element: "Code") -> T: ...
+    def visit_space(self: Self, element: "Space") -> T: ...
+    def visit_soft_break(self: Self, element: "SoftBreak") -> T: ...
+    def visit_line_break(self: Self, element: "LineBreak") -> T: ...
+    def visit_math(self: Self, element: "Math") -> T: ...
+    def visit_raw_inline(self: Self, element: "RawInline") -> T: ...
+    def visit_link(self: Self, element: "Link") -> T: ...
+    def visit_image(self: Self, element: "Image") -> T: ...
+    def visit_note(self: Self, element: "Note") -> T: ...
+    def visit_span(self: Self, element: "Span") -> T: ...
+
+
 @dataclass
 class Str(Inline):
     """
@@ -20,6 +43,9 @@ class Str(Inline):
     """
 
     contents: str
+
+    def accept(self: Self, visitor: Any) -> Any:
+        return visitor.visit_str(self)
 
 
 @dataclass
@@ -30,6 +56,9 @@ class Emph(Inline):
 
     contents: List[Inline]
 
+    def accept(self: Self, visitor: Any) -> Any:
+        return visitor.visit_emph(self)
+
 
 @dataclass
 class Underline(Inline):
@@ -38,6 +67,9 @@ class Underline(Inline):
     """
 
     contents: List[Inline]
+
+    def accept(self: Self, visitor: Any) -> Any:
+        return visitor.visit_underline(self)
 
 
 @dataclass
@@ -48,6 +80,9 @@ class Strong(Inline):
 
     contents: List[Inline]
 
+    def accept(self: Self, visitor: Any) -> Any:
+        return visitor.visit_strong(self)
+
 
 @dataclass
 class Strikeout(Inline):
@@ -56,6 +91,9 @@ class Strikeout(Inline):
     """
 
     contents: List[Inline]
+
+    def accept(self: Self, visitor: Any) -> Any:
+        return visitor.visit_strikeout(self)
 
 
 @dataclass
@@ -66,6 +104,9 @@ class Subscript(Inline):
 
     contents: List[Inline]
 
+    def accept(self: Self, visitor: Any) -> Any:
+        return visitor.visit_subscript(self)
+
 
 @dataclass
 class Superscript(Inline):
@@ -75,6 +116,9 @@ class Superscript(Inline):
 
     contents: List[Inline]
 
+    def accept(self: Self, visitor: Any) -> Any:
+        return visitor.visit_superscript(self)
+
 
 @dataclass
 class SmallCaps(Inline):
@@ -83,6 +127,9 @@ class SmallCaps(Inline):
     """
 
     contents: List[Inline]
+
+    def accept(self: Self, visitor: Any) -> Any:
+        return visitor.visit_small_caps(self)
 
 
 @dataclass
@@ -94,6 +141,9 @@ class Quoted(Inline):
     quote_type: QuoteType
     contents: List[Inline]
 
+    def accept(self: Self, visitor: Any) -> Any:
+        return visitor.visit_quoted(self)
+
 
 @dataclass
 class Cite(Inline):
@@ -103,6 +153,9 @@ class Cite(Inline):
 
     citations: List[Citation]
     contents: List[Inline]
+
+    def accept(self: Self, visitor: Any) -> Any:
+        return visitor.visit_cite(self)
 
 
 @dataclass
@@ -114,6 +167,9 @@ class Code(Inline):
     attr: Attr
     contents: str
 
+    def accept(self: Self, visitor: Any) -> Any:
+        return visitor.visit_code(self)
+
 
 @dataclass
 class Space(Inline):
@@ -121,7 +177,8 @@ class Space(Inline):
     Inter-word space.
     """
 
-    pass
+    def accept(self: Self, visitor: Any) -> Any:
+        return visitor.visit_space(self)
 
 
 @dataclass
@@ -130,7 +187,8 @@ class SoftBreak(Inline):
     Soft line break.
     """
 
-    pass
+    def accept(self: Self, visitor: Any) -> Any:
+        return visitor.visit_soft_break(self)
 
 
 @dataclass
@@ -139,7 +197,8 @@ class LineBreak(Inline):
     Hard line break.
     """
 
-    pass
+    def accept(self: Self, visitor: Any) -> Any:
+        return visitor.visit_line_break(self)
 
 
 @dataclass
@@ -151,6 +210,9 @@ class Math(Inline):
     math_type: MathType
     contents: str
 
+    def accept(self: Self, visitor: Any) -> Any:
+        return visitor.visit_math(self)
+
 
 @dataclass
 class RawInline(Inline):
@@ -160,6 +222,9 @@ class RawInline(Inline):
 
     format: Format
     contents: str
+
+    def accept(self: Self, visitor: Any) -> Any:
+        return visitor.visit_raw_inline(self)
 
 
 @dataclass
@@ -172,6 +237,9 @@ class Link(Inline):
     alt_text: List[Inline]
     target: Target
 
+    def accept(self: Self, visitor: Any) -> Any:
+        return visitor.visit_link(self)
+
 
 @dataclass
 class Image(Inline):
@@ -183,6 +251,9 @@ class Image(Inline):
     alt_text: List[Inline]
     target: Target
 
+    def accept(self: Self, visitor: Any) -> Any:
+        return visitor.visit_image(self)
+
 
 @dataclass
 class Note(Inline):
@@ -192,8 +263,14 @@ class Note(Inline):
 
     contents: List[Block]
 
+    def accept(self: Self, visitor: Any) -> Any:
+        return visitor.visit_note(self)
+
 
 @dataclass
 class Span(Inline):
     attr: Attr
     contents: List[Inline]
+
+    def accept(self: Self, visitor: Any) -> Any:
+        return visitor.visit_span(self)

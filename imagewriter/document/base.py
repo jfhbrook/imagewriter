@@ -1,26 +1,33 @@
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Self, Tuple
 
 Format = str
 
 
-class Inline:
+class Inline(ABC):
     """
     Inline element.
     """
 
-    pass
+    # TODO: This typing is loose to decouple these types from their
+    # definitions. If we combine block and inline into __init__, we should be
+    # able to tighten these types significantly.
+    @abstractmethod
+    def accept(self: Self, visitor: Any) -> Any:
+        pass
 
 
-class Block:
+class Block(ABC):
     """
     Block element.
     """
 
-    pass
+    @abstractmethod
+    def accept(self: Self, visitor: Any) -> Any:
+        pass
 
 
-# TODO: Is this a union type, like captions?
 @dataclass
 class Attr:
     """
