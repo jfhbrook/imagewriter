@@ -234,6 +234,11 @@ class TableFoot:
     rows: List[Row]
 
 
+#
+# Inline elements
+#
+
+
 @dataclass
 class Str(Inline):
     """
@@ -475,7 +480,7 @@ class Span(Inline):
 
 
 #
-# Blocks
+# Block elements
 #
 
 
