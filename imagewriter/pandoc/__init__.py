@@ -3,10 +3,10 @@ import subprocess
 from typing import List
 
 from imagewriter.document import Document
-from imagewriter.pandoc.parser import parse_document
+import imagewriter.pandoc.parser as parser
 
 
-def formats() -> List[str]:
+def pandoc_formats() -> List[str]:
     process = subprocess.run(
         ["pandoc", "--list-input-formats"],
         check=True,
@@ -17,7 +17,7 @@ def formats() -> List[str]:
     return [format for format in process.stdout.split("\n") if format]
 
 
-def parse(document: str, format: str = "markdown") -> Document:
+def parse_document(document: str, format: str = "markdown") -> Document:
     process = subprocess.run(
         ["pandoc", "-r", format, "-w", "json"],
         input=document,
@@ -26,4 +26,4 @@ def parse(document: str, format: str = "markdown") -> Document:
         encoding="utf8",
     )
 
-    return parse_document(json.loads(process.stdout))
+    return parser.parse_document(json.loads(process.stdout))
