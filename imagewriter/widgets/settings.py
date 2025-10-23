@@ -2,6 +2,7 @@ from typing import Optional, Self
 
 import ipywidgets as widgets
 
+from imagewriter.pitch import Pitch
 from imagewriter.print import PrintCommands
 from imagewriter.settings import Settings
 from imagewriter.switch import DIPSwitches
@@ -14,39 +15,35 @@ from imagewriter.widgets.units import DistanceWidget
 
 
 # TODO: Wire event to Pitch
-# TODO: Inherit from DistanceWidget
-class LeftMarginWidget(widgets.HBox):
+class LeftMarginWidget(DistanceWidget):
     def __init__(self: Self, settings: Settings) -> None:
-        max = Inch(8)
+        self._settings = settings
+        super().__init__(settings.left_margin, Inch(8), self._step(settings.pitch))
+        self.layout.width = "50%"
 
-        self._distance_widget = DistanceWidget(
-            settings.left_margin, max, self._step_value(settings)
-        )
-        super().__init__([self._distance_widget])
+    def _step(self: Self, pitch: Pitch) -> Distance:
+        return Inch(1 / pitch.characters_per_inch)
 
-    def _step_value(self: Self, settings: Settings) -> Distance:
-        return Inch(1 / settings.pitch.characters_per_inch)
+    def set_pitch(self: Self, pitch: Pitch) -> None:
+        self.step = self._step(pitch)
 
     @property
     def left_margin(self: Self) -> Distance:
-        return self._distance_widget.distance
+        return self.distance
 
 
-class PageLengthWidget(widgets.HBox):
+class PageLengthWidget(DistanceWidget):
     def __init__(self: Self, settings: Settings) -> None:
-        self._settings = settings
-
-        max_length = Inch(9999 / VERTICAL_RESOLUTION)
-        step = Inch(1 / VERTICAL_RESOLUTION)
-
-        self._distance_widget = DistanceWidget(
-            self._settings.page_length, max_length, step
+        super().__init__(
+            settings.page_length,
+            Inch(9999 / VERTICAL_RESOLUTION),
+            Inch(1 / VERTICAL_RESOLUTION),
         )
-        super().__init__([self._distance_widget])
+        self.layout.width = "50%"
 
     @property
     def page_length(self: Self) -> Distance:
-        return self._distance_widget.distance
+        return self.distance
 
 
 class SlashedZeroWidget(widgets.Dropdown):
@@ -64,19 +61,17 @@ class SlashedZeroWidget(widgets.Dropdown):
         return self.value == "Slashed"
 
 
-class DistanceBetweenLinesWidget(widgets.HBox):
+class DistanceBetweenLinesWidget(DistanceWidget):
     def __init__(self: Self, settings: Settings) -> None:
-        max_distance = Inch(99 / VERTICAL_RESOLUTION)
-        step = Inch(1 / VERTICAL_RESOLUTION)
-
-        self._distance_widget = DistanceWidget(
-            settings.distance_between_lines, max_distance, step
+        super().__init__(
+            settings.distance_between_lines,
+            Inch(99 / VERTICAL_RESOLUTION),
+            Inch(1 / VERTICAL_RESOLUTION),
         )
-        super().__init__([self._distance_widget])
 
     @property
     def distance_between_lines(self: Self) -> Distance:
-        return self._distance_widget.distance
+        return self.distance
 
 
 class LinesPerInchWidget(widgets.Dropdown):
@@ -94,7 +89,6 @@ class LinesPerInchWidget(widgets.Dropdown):
 
 
 class LineSpacingWidget(widgets.HBox):
-    # widgets.Label("Line Spacing")
     def __init__(self: Self, settings: Settings) -> None:
         self._distance_between_lines_widget = DistanceBetweenLinesWidget(settings)
         self._lines_per_inch_widget = LinesPerInchWidget(settings)
