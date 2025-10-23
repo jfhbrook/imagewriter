@@ -1,15 +1,23 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict, Generator, List, Self
 
+from imagewriter.character import (
+    Character,
+    CustomCharacter,
+    map_to_low_ascii,
+    MouseTextCharacter,
+    Text,
+)
 from imagewriter.encoding.base import Bytes, Command, Esc
-from imagewriter.encoding.character.custom import CustomCharacter, CustomCharacters
-from imagewriter.encoding.character.mousetext import MouseText, MouseTextCharacter
+from imagewriter.encoding.character.custom import (
+    BOTTOM_WIRES,
+    LoadCustomCharacters,
+    SetMaxCustomCharacterWidth,
+    TOP_WIRES,
+)
 from imagewriter.encoding.language import set_language
 from imagewriter.encoding.motion import CR, LF, TAB
 from imagewriter.language import Language
-
-Text = str | MouseText | CustomCharacters
-Character = str | MouseTextCharacter | CustomCharacter
 
 # TODO: Print a test page of alternate language characters, figure out what
 # the alternate characters are, and complete this table.
@@ -136,19 +144,6 @@ class CustomCharacterMode(Mode):
         return isinstance(other, MouseTextMode) and self.map == other.map
 
 
-def map_to_low_ascii(point: int) -> int:
-    """
-    Map a code point (either MouseText or a custom character) to low ASCII, as
-    per page 40 (MouseText) and page 45 (custom characters) of the ImageWriter
-    II Technical Reference Manual.
-
-    This is necessary if the eighth data bit is ignored.
-    """
-
-    assert 160 <= point <= 239, "Code point is not valid upper ASCII"
-    return point - 128
-
-
 def extract_characters(*text: Text) -> Generator[Character, None, None]:
     for tx in text:
         if isinstance(tx, str):
@@ -251,9 +246,15 @@ class CharacterEncoder:
                 # Recall that we already extracted MouseText characters
                 buffer += bytes(ch, encoding="ascii")
             elif isinstance(ch, MouseTextCharacter):
-                buffer += bytes([ch.value])
+                if self.map_mousetext:
+                    buffer += bytes([map_to_low_ascii(ch.value)])
+                else:
+                    buffer += bytes([ch.value])
             else:
-                buffer += bytes([ch.point])
+                if self.map_custom:
+                    buffer += bytes([map_to_low_ascii(ch.point)])
+                else:
+                    buffer += bytes([ch.point])
 
         # Attach the final buffer
         encoded += self._from_buffer(buffer)
@@ -264,3 +265,17 @@ class CharacterEncoder:
             encoded += self.default_mode.enable()
 
         return encoded
+
+
+__all__: List[str] = [
+    "SetMaxCustomCharacterWidth",
+    "LoadCustomCharacters",
+    "DisableMode",
+    "DISABLE_MODE",
+    "EnableMouseTextMappingMode",
+    "ENABLE_MOUSE_TEXT_MAPPING_MODE",
+    "EnableCustomCharacterMode",
+    "CharacterEncoder",
+    "TOP_WIRES",
+    "BOTTOM_WIRES",
+]

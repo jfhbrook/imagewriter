@@ -1,6 +1,7 @@
 from contextlib import contextmanager
 from typing import Generator, List, Self, Sequence
 
+from imagewriter.character import Text
 from imagewriter.color import Color
 from imagewriter.encoding import (
     apply_settings,
@@ -23,7 +24,6 @@ from imagewriter.encoding import (
     STOP_SUBSCRIPT,
     STOP_SUPERSCRIPT,
     STOP_UNDERLINE,
-    Text,
     to_tab_stops,
 )
 from imagewriter.pitch import Pitch

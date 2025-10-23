@@ -1,6 +1,7 @@
-from typing import Dict, List, Literal, Self, Sequence, Tuple, Type
+from typing import Dict, Literal, Self, Sequence
 
-from imagewriter.encoding.base import ctrl, esc
+from imagewriter.character import CustomCharacterData
+from imagewriter.encoding.base import Bytes, ctrl, esc, Esc
 
 TOP_WIRES = True
 BOTTOM_WIRES = False
@@ -44,82 +45,58 @@ BOTTOM_WIRE_CHARACTER_WIDTHS: Dict[int, bytes] = {
 }
 
 
-class CustomCharacter:
-    def __init__(self: Self, point: int) -> None:
-        assert (32 <= point <= 126) or (
-            160 <= point <= 239
-        ), "Point must be within either low or high ASCII"
-        self.point: int = point
+CharacterMaxWidth = Literal[8] | Literal[16]
 
-    @classmethod
-    def set_max_width(cls: Type[Self], width: Literal[8] | Literal[16]) -> bytes:
-        """
-        Set the max width for custom characters, as per page 85 of the
-        ImageWriter II Technical Reference Manual. Note that sending such a
-        command will erase existing custom characters from memory.
-        """
 
+class SetMaxCustomCharacterWidth(Esc):
+    def __init__(self: Self, width: CharacterMaxWidth) -> None:
         assert (
             width == 8 or width == 16
         ), "Character width must be either 8 or 16 dots wide"
 
+        self.width = width
+
         if width == 8:
-            return esc("-")
+            super().__init__("-")
+        else:
+            super().__init__("+")
 
-        return esc("+")
+    def __repr__(self: Self) -> str:
+        return f"SetMaxCustomCharacterWidth({self.width})"
 
-    @classmethod
-    def start_load(cls: Type[Self]) -> bytes:
-        return esc("I")
 
-    @classmethod
-    def stop_load(cls: Type[Self]) -> bytes:
-        return ctrl("D")
+START_CUSTOM_CHARACTER_LOAD = esc("I")
+STOP_CUSTOM_CHARACTER_LOAD = ctrl("D")
 
-    def load_character(self: Self, data: bytes, top_wires: bool = True) -> bytes:
-        length = (
-            TOP_WIRE_CHARACTER_WIDTHS[len(data)]
-            if top_wires
-            else BOTTOM_WIRE_CHARACTER_WIDTHS[len(data)]
-        )
-        encoded: bytes = bytes([self.point]) + length + data
 
-        return encoded
+def pack_character_data(data: CustomCharacterData) -> bytes:
+    length = (
+        TOP_WIRE_CHARACTER_WIDTHS[len(data.data)]
+        if data.top_wires
+        else BOTTOM_WIRE_CHARACTER_WIDTHS[len(data.data)]
+    )
 
-    @classmethod
-    def load(cls: Type[Self], characters: "Sequence[CharacterData]") -> bytes:
+    encoded: bytes = bytes([data.character.point]) + length + data.data
+
+    return encoded
+
+
+class LoadCustomCharacters(Bytes):
+    def __init__(self: Self, character_data: Sequence[CustomCharacterData]) -> None:
         """
         Load a series of characters, as per page 96 of the ImageWriter II
         Technical Reference Manual.
         """
 
-        encoded: bytes = cls.start_load()
+        self.character_data = character_data
 
-        for char, data, top_wires in characters:
-            encoded += char.load_character(data, top_wires)
+        encoded: bytes = START_CUSTOM_CHARACTER_LOAD
 
-        encoded += cls.stop_load()
-        return encoded
+        for data in character_data:
+            encoded += pack_character_data(data)
+        encoded += STOP_CUSTOM_CHARACTER_LOAD
 
+        super().__init__(encoded)
 
-CharacterData = Tuple[CustomCharacter, bytes, bool]
-
-
-def character_data(
-    character: CustomCharacter, data: bytes, top_wires: bool = True
-) -> CharacterData:
-    """
-    Pack character date for loading.
-
-    If top_wires is True, then the character will be written on the top
-    8 wires (out of 9). When top_wires is False, the character will be
-    written to the bottom 8 wires.
-
-    See page 96 of the ImageWriter II Technical Reference Manual for more
-    details.
-    """
-
-    return (character, data, top_wires)
-
-
-CustomCharacters = CustomCharacter | List[CustomCharacter]
+    def __repr__(self: Self) -> str:
+        return f"LoadCustomCharacters({self.character_data})"
