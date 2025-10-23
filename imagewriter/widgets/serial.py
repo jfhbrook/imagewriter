@@ -34,7 +34,7 @@ class SerialConnectButtonWidget(widgets.Button):
 class SerialCallback(Protocol):
     def __call__(
         self: Self,
-        button: "SerialWidget",
+        widget: "SerialWidget",
         port: str,
         baud_rate: BaudRate,
         protocol: SerialProtocol,
@@ -55,7 +55,7 @@ class SerialWidget(widgets.VBox):
             ]
         )
 
-    def on_click(self: Self, callback: SerialCallback) -> None:
+    def on_connect(self: Self, callback: SerialCallback) -> None:
         def cb(button: widgets.Button) -> None:
             callback(
                 self,

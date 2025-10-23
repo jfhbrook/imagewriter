@@ -1,4 +1,4 @@
-from typing import Optional, Self
+from typing import Optional, Protocol, Self
 
 import ipywidgets as widgets
 
@@ -271,6 +271,31 @@ class IncludeEighthDataBitWidget(widgets.Dropdown):
         return self.value == "Included"
 
 
+class ApplyButtonWidget(widgets.Button):
+    def __init__(self: Self) -> None:
+        super().__init__(
+            description="Apply",
+            disabled=False,
+            button_style="",
+            tooltip="Apply settings",
+        )
+
+
+class ApplyStatusWidget(widgets.Label):
+    NOT_APPLIED = "❓ Not yet applied"
+
+    def __init__(self: Self) -> None:
+        super().__init__(value=self.NOT_APPLIED)
+
+
+class SettingsCallback(Protocol):
+    def __call__(
+        self: Self,
+        widget: "SettingsWidget",
+        settings: Settings,
+    ) -> None: ...
+
+
 class SettingsWidget(widgets.VBox):
     def __init__(
         self: Self,
@@ -315,13 +340,8 @@ class SettingsWidget(widgets.VBox):
             self._settings
         )
 
-        self.button = widgets.Button(
-            description="Apply",
-            disabled=False,
-            button_style="",
-            tooltip="Apply switches",
-        )
-        self.status = Label(value="❓ Not yet applied")
+        self.button = ApplyButtonWidget()
+        self.status = ApplyStatusWidget()
 
         super().__init__(
             [
@@ -399,3 +419,9 @@ class SettingsWidget(widgets.VBox):
         )
 
         return self._settings
+
+    def on_apply(self: Self, callback: SettingsCallback) -> None:
+        def cb(button: widgets.Button) -> None:
+            callback(self, self.settings)
+
+        self.button.on_click(cb)
