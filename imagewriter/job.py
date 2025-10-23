@@ -1,14 +1,18 @@
 from contextlib import contextmanager
-from typing import Generator, List, Self, Sequence
+from typing import Generator, List, Optional, Self, Sequence
 
 from imagewriter.character import Text
 from imagewriter.color import Color
 from imagewriter.encoding import (
     apply_settings,
     BACKSPACE,
+    BackspaceLengthError,
+    CarriageReturnLengthError,
     CharacterEncoder,
     Command,
     CR,
+    LineFeedLengthError,
+    Print,
     reset_tabs,
     set_color,
     SetPitch,
@@ -24,6 +28,8 @@ from imagewriter.encoding import (
     STOP_SUBSCRIPT,
     STOP_SUPERSCRIPT,
     STOP_UNDERLINE,
+    TAB,
+    TabLengthError,
     to_tab_stops,
 )
 from imagewriter.pitch import Pitch
@@ -45,6 +51,7 @@ class Job:
         )
         self._has_header: bool = False
         self._commands: List[Command] = list()
+        self._tab_size: Optional[int] = None
 
     @property
     def settings(self: Self) -> Settings:
@@ -98,10 +105,12 @@ class Job:
 
         self.settings = Settings.replace(self.settings, pitch=pitch)
         if self._has_header:
-            self._commands += [
-                SetPitch(pitch),
-                *reset_tabs(to_tab_stops(self.settings.tab_stops, pitch)),
-            ]
+            self._commands.append(SetPitch(pitch))
+
+            if self._tab_size:
+                self.tab_size(self._tab_size)
+            else:
+                self.tab_stops(self.settings.tab_stops)
 
         return self
 
@@ -109,6 +118,7 @@ class Job:
         """
         Set the current tab stops.
         """
+        self._tab_size = None
 
         self._settings = Settings.replace(self._settings, tab_stops=tab_stops)
 
@@ -118,7 +128,9 @@ class Job:
 
     def tab_size(self: Self, size: int) -> Self:
         tab_stops = list(range(0, self.settings.pitch.max_character_position, size))
-        return self.tab_stops(tab_stops)
+        self.tab_stops(tab_stops)
+        self._tab_size = size
+        return self
 
     def text(self: Self, *text: Text) -> Self:
         """
@@ -224,17 +236,31 @@ class Job:
             self._strikeout(start)
 
     def _strikeout(self: Self, start: int) -> None:
-        chars = 0
+        backspace_ct = 0
+
+        for cmd in reversed(self._commands[start:]):
+            try:
+                backspace_ct += len(cmd)
+            except BackspaceLengthError:
+                backspace_ct -= 1
+            except TabLengthError:
+                if self._tab_size:
+                    backspace_ct += self._tab_size
+                raise
+            except (LineFeedLengthError, CarriageReturnLengthError) as exc:
+                raise NotImplementedError(
+                    "Strikeout is not implement across lines"
+                ) from exc
+
+        self._commands += [BACKSPACE for _ in range(0, backspace_ct)]
+
         for cmd in self._commands[start:]:
-            chars += self._printable_characters(cmd)
-
-        self._commands = [
-            *(BACKSPACE for _ in range(0, chars)),
-            *self._character_encoder.encode(" " * chars),
-        ]
-
-    def _printable_characters(self: Self, command: Command) -> int:
-        raise NotImplementedError("Job._printable_characters")
+            try:
+                self._commands.append(Print(b"-" * len(cmd)))
+            except BackspaceLengthError:
+                pass
+            except TabLengthError:
+                self._commands.append(TAB)
 
     @contextmanager
     def superscript(self: Self) -> Generator[None, None, None]:

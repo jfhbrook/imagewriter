@@ -29,6 +29,7 @@ from imagewriter.encoding.base import (
     Esc,
     InvalidControlCharacterError,
     LengthError,
+    Print,
 )
 from imagewriter.encoding.boundaries import SetLeftMargin, SetPageLength
 from imagewriter.encoding.cancel import CANCEL_CURRENT_LINE
@@ -115,6 +116,7 @@ __all__: List[str] = [
     "Esc",
     "InvalidControlCharacterError",
     "LengthError",
+    "Print",
     "Command",
     "SetLeftMargin",
     "SetPageLength",
