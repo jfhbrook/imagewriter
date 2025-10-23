@@ -39,6 +39,7 @@ from imagewriter.document import (
     Table,
     Underline,
 )
+from imagewriter.encoding import CR, LF
 from imagewriter.job import Job
 
 
@@ -96,10 +97,11 @@ class DocumentRenderer(BlockVisitor[None], InlineVisitor[None]):
         self.job.text(" ")
 
     def visit_soft_break(self: Self, element: SoftBreak) -> None:
-        self.job.text("\r\n")
+        # TODO: What is a soft break?
+        self.job.write([CR, LF])
 
     def visit_line_break(self: Self, element: LineBreak) -> None:
-        self.job.text("\r\n")
+        self.job.write([CR, LF])
 
     def visit_math(self: Self, element: Math) -> None:
         raise NotImplementedError("visit_math")
@@ -131,13 +133,13 @@ class DocumentRenderer(BlockVisitor[None], InlineVisitor[None]):
         for el in element.contents:
             el.accept(self)
 
-        self.job.text("\r\n\r\n")
+        self.job.write([CR, LF, CR, LF])
 
     def visit_line_block(self: Self, element: LineBlock) -> None:
         for line in element.contents:
             for el in line:
                 el.accept(self)
-            self.job.text("\r\n")
+            self.job.write([CR, LF])
 
     def visit_code_block(self: Self, element: CodeBlock) -> None:
         with self.job.code_block():
@@ -164,7 +166,9 @@ class DocumentRenderer(BlockVisitor[None], InlineVisitor[None]):
 
     def visit_horizontal_rule(self: Self, element: HorizontalRule) -> None:
         # TODO: Something nicer
-        self.job.text("\r\n---\r\n")
+        self.job.write([CR, LF, CR, LF])
+        self.job.text("---")
+        self.job.write([CR, LF, CR, LF])
 
     def visit_table(self: Self, element: Table) -> None:
         raise NotImplementedError("visit_table")
