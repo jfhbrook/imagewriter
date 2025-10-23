@@ -52,14 +52,15 @@ UNIT_VALUES: Dict[Type[Distance], Callable[[Distance], float]] = {
 # TODO: width styling
 class UnitValueWidget(widgets.BoundedFloatText):
     def __init__(self: Self, start: Distance, max: Distance, step: Distance) -> None:
+        self.cls = start.__class__
         self._max = max
         self._step = step
 
         super().__init__(
             value=self._start_value(start),
             min=0,
-            max=self._max_value(start.__class__),
-            step=self._step_value(start.__class__),
+            max=self._max_value(self.cls),
+            step=self._step_value(self.cls),
             description="",
             disabled=False,
         )
@@ -73,8 +74,16 @@ class UnitValueWidget(widgets.BoundedFloatText):
     def _step_value(self: Self, cls: Type[Distance]) -> float:
         return UNIT_VALUES[cls](self._step)
 
-    def distance(self: Self, cls: Type[Distance]) -> Distance:
-        return cls(self.value)
+    @property
+    def distance(self: Self) -> Distance:
+        return self.cls(self.value)
+
+    @distance.setter
+    def distance(self: Self, distance: Distance) -> None:
+        self.cls = distance.__class__
+        self.value = UNIT_VALUES[self.cls](distance)
+        self.max = self._max_value(self.cls)
+        self.step = self._step_value(self.cls)
 
 
 class DistanceWidget(widgets.HBox):
@@ -82,10 +91,15 @@ class DistanceWidget(widgets.HBox):
         self._value_widget = UnitValueWidget(start, max, step)
         self._class_widget = UnitClassWidget(start)
 
+        self._class_widget.observe(self._set_units, names="value")
+
         super().__init__([self._value_widget, self._class_widget])
 
-        # TODO: Event on units
+    def _set_units(self: Self, change: str) -> None:
+        cls = self._class_widget.cls
+        distance = self._value_widget.distance
+        self._value_widget.distance = distance.into(cls)
 
     @property
     def distance(self: Self) -> Distance:
-        return self._value_widget.distance(self._class_widget.cls)
+        return self._value_widget.distance
