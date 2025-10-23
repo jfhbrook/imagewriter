@@ -20,6 +20,6 @@ class PitchWidget(widgets.Dropdown):
         return pitch.value
 
     @property
-    def language(self: Self) -> Pitch:
+    def pitch(self: Self) -> Pitch:
         value: str = self.value if self.value else "Elite"
         return PITCHES[value]

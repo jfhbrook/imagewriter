@@ -278,9 +278,13 @@ class SettingsWidget(widgets.VBox):
         )
 
         self._left_margin_widget = LeftMarginWidget(self._settings)
+
         self._page_length_widget = PageLengthWidget(self._settings)
+
         self._language_widget = LanguageWidget(self._settings.language)
+
         self._slashed_zero_widget = SlashedZeroWidget(self._settings)
+
         self._pitch_widget = PitchWidget(self._settings.pitch)
 
         # TODO: tab stops
@@ -343,3 +347,33 @@ class SettingsWidget(widgets.VBox):
                 self._include_eighth_data_bit_widget,
             ]
         )
+
+    def set_pitch(self: Self, value: str) -> None:
+        self._left_margin_widget.set_pitch(self._pitch_widget.pitch)
+
+    @property
+    def settings(self: Self) -> Settings:
+        self._settings = Settings.replace(
+            self._settings,
+            left_margin=self._left_margin_widget.left_margin,
+            page_length=self._page_length_widget.page_length,
+            language=self._language_widget.language,
+            slashed_zero=self._slashed_zero_widget.slashed_zero,
+            pitch=self._pitch_widget.pitch,
+            distance_between_lines=self._line_spacing_widget.distance_between_lines,
+            lf_when_line_full=self._lf_when_line_full_widget.lf_when_line_full,
+            auto_lf_after_cr=self._auto_lf_after_cr_widget.auto_lf_after_cr,
+            cr_insertion=self._cr_insertion_widget.cr_insertion,
+            perforation_skip=self._perforation_skip_widget.perforation_skip,
+            paper_out_sensor=self._paper_out_sensor_widget.paper_out_sensor,
+            print_commands=self._print_commands_widget.print_commands,
+            quality=self._quality_widget.quality,
+            software_select_response=(
+                self._software_select_response_widget.software_select_response
+            ),
+            include_eighth_data_bit=(
+                self._include_eighth_data_bit_widget.include_eighth_data_bit
+            ),
+        )
+
+        return self._settings
