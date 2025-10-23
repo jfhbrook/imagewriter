@@ -315,6 +315,14 @@ class SettingsWidget(widgets.VBox):
             self._settings
         )
 
+        self.button = widgets.Button(
+            description="Apply",
+            disabled=False,
+            button_style="",
+            tooltip="Apply switches",
+        )
+        self.status = Label(value="❓ Not yet applied")
+
         super().__init__(
             [
                 Label("Page Settings:"),
@@ -353,6 +361,12 @@ class SettingsWidget(widgets.VBox):
                 self._print_commands_widget,
                 self._software_select_response_widget,
                 self._include_eighth_data_bit_widget,
+                widgets.HBox(
+                    [
+                        self.button,
+                        self.status,
+                    ]
+                ),
             ]
         )
 

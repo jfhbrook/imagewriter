@@ -5,6 +5,8 @@ import ipywidgets as widgets
 from imagewriter.container import Container
 from imagewriter.settings import Settings
 from imagewriter.switch import DIPSwitches
+from imagewriter.widgets.base import header
+from imagewriter.widgets.serial import SerialWidget
 from imagewriter.widgets.settings import SettingsWidget
 from imagewriter.widgets.switch import DIPSwitchWidget
 
@@ -22,13 +24,21 @@ class ControlPanel(widgets.Tab):
             settings if settings is not None else Settings.defaults(self._dip_switches)
         )
 
+        self._serial_widget = SerialWidget(self._dip_switches)
         self._settings_widget = SettingsWidget(self._dip_switches, self._settings)
         self._dip_switch_widget = DIPSwitchWidget(self._dip_switches)
 
         super().__init__(
             titles=["Settings", "DIP Switches"],
             children=[
-                self._settings_widget,
+                widgets.VBox(
+                    [
+                        header("Serial Connection", 3),
+                        self._serial_widget,
+                        header("Printer Settings", 3),
+                        self._settings_widget,
+                    ]
+                ),
                 self._dip_switch_widget,
             ],
         )
