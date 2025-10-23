@@ -1,14 +1,16 @@
 from typing import List, Self, Sequence
 
-from imagewriter.encoding.base import (
-    Bytes,
-    Command,
-    esc,
-    Esc,
-    number,
-)
+from imagewriter.encoding.base import Bytes, Command, esc, Esc, LengthError, number
 from imagewriter.pitch import Pitch
 from imagewriter.units import Length, length_to_int
+
+
+class TabLengthError(LengthError):
+    """
+    An error raised when a tab character does not have a known length.
+    """
+
+    pass
 
 
 class Tab(Bytes):
@@ -20,10 +22,10 @@ class Tab(Bytes):
         super().__init__(b"\t")
 
     def __repr__(self: Self) -> str:
-        return "\\t"
+        return "<TAB>"
 
     def __len__(self: Self) -> int:
-        raise ValueError("\\t does not have a consistent length")
+        raise TabLengthError("Tab's length depends on tab stops and pitch")
 
 
 TAB = Tab()

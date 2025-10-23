@@ -5,6 +5,7 @@ from imagewriter.encoding.base import (
     ctrl,
     esc,
     Esc,
+    LengthError,
     number,
 )
 from imagewriter.motion import LinesPerInch
@@ -16,6 +17,14 @@ def _encode_line_feed_count(lines: int) -> bytes:
         {10: ":", 11: ";", 12: "<", 13: "=", 14: ">", 15: "?"}.get(lines, str(lines)),
         encoding="ascii",
     )
+
+
+class LineFeedLengthError(LengthError):
+    """
+    An error raised when a line feed has no meaningful length.
+    """
+
+    pass
 
 
 class LineFeed(Bytes):
@@ -37,12 +46,12 @@ class LineFeed(Bytes):
 
     def __repr__(self: Self) -> str:
         if self._lines == 1:
-            return "\\n"
+            return "<LF>"
 
         return f"LineFeed({self._lines})"
 
     def __len__(self: Self) -> int:
-        raise ValueError("Line feeds do not have a meaningful length")
+        raise LineFeedLengthError("Line feeds do not have a meaningful length")
 
 
 LF = LineFeed(1)

@@ -6,6 +6,7 @@ from imagewriter.encoding.base import (
     Ctrl,
     esc,
     Esc,
+    LengthError,
     number,
 )
 from imagewriter.encoding.motion.form_feed import (
@@ -22,6 +23,7 @@ from imagewriter.encoding.motion.line_feed import (
     LF,
     LineFeed,
     LineFeedForward,
+    LineFeedLengthError,
     LineFeedReverse,
     SetDistanceBetweenLines,
     SetLinesPerInch,
@@ -33,10 +35,19 @@ from imagewriter.encoding.motion.tab import (
     SetManyTabs,
     SetOneTab,
     TAB,
+    TabLengthError,
     to_tab_stops,
 )
 from imagewriter.pitch import Pitch
 from imagewriter.units import Distance, Length, length_to_int
+
+
+class CarriageReturnLengthError(LengthError):
+    """
+    An error raised when a carriage return has no meaningful length.
+    """
+
+    pass
 
 
 class CarriageReturn(Bytes):
@@ -48,10 +59,16 @@ class CarriageReturn(Bytes):
         super().__init__(b"\r")
 
     def __repr__(self: Self) -> str:
-        return "\\r"
+        return "<CR>"
 
     def __len__(self: Self) -> int:
-        raise ValueError("\\r does not have a meaningful length")
+        raise CarriageReturnLengthError("\\r does not have a meaningful length")
+
+
+class BackspaceLengthError(LengthError):
+    """
+    An error raised when a backspace has an ambiguous length.
+    """
 
 
 class Backspace(Ctrl):
@@ -66,11 +83,7 @@ class Backspace(Ctrl):
         return "Backspace()"
 
     def __len__(self: Self) -> int:
-        """
-        A backspace has negative length, since it goes backwards.
-        """
-
-        return -1
+        raise BackspaceLengthError("Backspace does not have a positive length")
 
 
 CR = CarriageReturn()
@@ -119,8 +132,12 @@ class PlaceExactPrintHeadPosition(Command):
 
 
 __all__: List[str] = [
+    "CarriageReturn",
+    "CarriageReturnLengthError",
     "CR",
+    "Backspace",
     "BACKSPACE",
+    "BackspaceLengthError",
     "SetUnidirectionalPrinting",
     "PlaceExactPrintHeadPosition",
     "FF",
@@ -132,6 +149,7 @@ __all__: List[str] = [
     "LF",
     "LineFeed",
     "LineFeedForward",
+    "LineFeedLengthError",
     "LineFeedReverse",
     "SetDistanceBetweenLines",
     "SetLinesPerInch",
@@ -141,5 +159,6 @@ __all__: List[str] = [
     "SetManyTabs",
     "SetOneTab",
     "TAB",
+    "TabLengthError",
     "to_tab_stops",
 ]

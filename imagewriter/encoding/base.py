@@ -4,6 +4,23 @@ from typing import Any, Self
 ESC = bytes([27])
 
 
+class InvalidControlCharacterError(ValueError):
+    """
+    An error raised when a control character is invalid.
+    """
+
+    def __init__(self: Self, character: str, point: int) -> None:
+        super().__init__(f"{character} ({point}) must be between 64 and 95 inclusive")
+
+
+class LengthError(ValueError):
+    """
+    An error raised when a character has no meaningful length.
+    """
+
+    pass
+
+
 def ctrl(character: str) -> bytes:
     """
     Generate a control character, as per page 5 of the ImageWriter II Technical
@@ -13,7 +30,7 @@ def ctrl(character: str) -> bytes:
     point: int = ord(character)
 
     if not (64 <= point <= 95):
-        raise ValueError(f"{character} ({point}) must be between 64 and 95 inclusive")
+        raise InvalidControlCharacterError(character, point)
 
     return bytes(chr(point - 64), encoding="ascii")
 

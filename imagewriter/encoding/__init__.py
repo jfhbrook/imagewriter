@@ -20,7 +20,16 @@ from imagewriter.encoding.attributes import (
     STOP_UNDERLINE,
     underline,
 )
-from imagewriter.encoding.base import Bytes, Command, ctrl, Ctrl, esc, Esc
+from imagewriter.encoding.base import (
+    Bytes,
+    Command,
+    ctrl,
+    Ctrl,
+    esc,
+    Esc,
+    InvalidControlCharacterError,
+    LengthError,
+)
 from imagewriter.encoding.boundaries import SetLeftMargin, SetPageLength
 from imagewriter.encoding.cancel import CANCEL_CURRENT_LINE
 from imagewriter.encoding.character import (
@@ -42,12 +51,17 @@ from imagewriter.encoding.graphics import (
 )
 from imagewriter.encoding.motion import (
     BACKSPACE,
+    Backspace,
+    BackspaceLengthError,
+    CarriageReturn,
+    CarriageReturnLengthError,
     ClearAllTabs,
     ClearManyTabs,
     CR,
     LF,
     LineFeed,
     LineFeedForward,
+    LineFeedLengthError,
     LineFeedReverse,
     PlaceExactPrintHeadPosition,
     reset_tabs,
@@ -62,6 +76,7 @@ from imagewriter.encoding.motion import (
     SetPerforationSkip,
     SetUnidirectionalPrinting,
     TAB,
+    TabLengthError,
     to_tab_stops,
 )
 from imagewriter.encoding.paper import SetPaperOutSensor
@@ -98,6 +113,8 @@ __all__: List[str] = [
     "Ctrl",
     "esc",
     "Esc",
+    "InvalidControlCharacterError",
+    "LengthError",
     "Command",
     "SetLeftMargin",
     "SetPageLength",
@@ -118,12 +135,17 @@ __all__: List[str] = [
     "PrintGraphicsData",
     "SET_GRAPHICS_DISTANCE_BETWEEN_LINES",
     "BACKSPACE",
+    "Backspace",
+    "BackspaceLengthError",
+    "CarriageReturn",
+    "CarriageReturnLengthError",
     "ClearAllTabs",
     "ClearManyTabs",
     "CR",
     "LF",
     "LineFeed",
     "LineFeedForward",
+    "LineFeedLengthError",
     "LineFeedReverse",
     "PlaceExactPrintHeadPosition",
     "reset_tabs",
@@ -138,6 +160,7 @@ __all__: List[str] = [
     "SetPerforationSkip",
     "SetUnidirectionalPrinting",
     "TAB",
+    "TabLengthError",
     "to_tab_stops",
     "SetPaperOutSensor",
     "InsertSpaces",
