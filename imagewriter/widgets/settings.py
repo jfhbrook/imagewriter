@@ -283,9 +283,20 @@ class ApplyButtonWidget(widgets.Button):
 
 class ApplyStatusWidget(widgets.Label):
     NOT_APPLIED = "❓ Not yet applied"
+    APPLIED = "✅ Applied successfully"
+    ERROR = "❌ Error: {err}"
 
     def __init__(self: Self) -> None:
         super().__init__(value=self.NOT_APPLIED)
+
+    def not_applied(self: Self) -> None:
+        self.value = self.NOT_APPLIED
+
+    def applied(self: Self) -> None:
+        self.value = self.APPLIED
+
+    def error(self: Self, err: Exception) -> None:
+        self.value = self.ERROR.format(err=err)
 
 
 class SettingsCallback(Protocol):

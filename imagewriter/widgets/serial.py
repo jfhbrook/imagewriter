@@ -22,13 +22,22 @@ class SerialPortWidget(widgets.Dropdown):
 
 
 class SerialConnectButtonWidget(widgets.Button):
+    NOT_CONNECTED = "Connect"
+    CONNECTED = "Disconnect"
+
     def __init__(self: Self) -> None:
         super().__init__(
-            description="Connect",
+            description=self.NOT_CONNECTED,
             disabled=False,
             button_style="",
             tooltip="Connect to the serial port",
         )
+
+    def connect(self: Self) -> None:
+        self.description = self.CONNECTED
+
+    def disconnect(self: Self) -> None:
+        self.description = self.NOT_CONNECTED
 
 
 class SerialCallback(Protocol):
