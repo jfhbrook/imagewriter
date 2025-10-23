@@ -3,6 +3,7 @@ from typing import Optional, Self
 import ipywidgets as widgets
 
 from imagewriter.container import Container
+from imagewriter.serial import BaudRate, SerialProtocol
 from imagewriter.settings import Settings
 from imagewriter.switch import DIPSwitches
 from imagewriter.widgets.base import header
@@ -42,6 +43,34 @@ class ControlPanel(widgets.Tab):
                 self._dip_switch_widget,
             ],
         )
+
+        self._serial_widget.on_toggle(self._serial_toggle)
+        self._settings_widget.on_apply(self._settings_apply)
+
+    def _serial_toggle(
+        self: Self,
+        widget: SerialWidget,
+        port: str,
+        baud_rate: BaudRate,
+        protocol: SerialProtocol,
+    ) -> None:
+        if widget.connected:
+            widget.disconnect()
+            self._settings_widget.not_applied()
+        else:
+            widget.connect()
+
+        print(port)
+        print(baud_rate)
+        print(protocol)
+
+    def _settings_apply(self: Self, widget: SettingsWidget, settings: Settings) -> None:
+        if self._serial_widget.connected:
+            widget.applied()
+        else:
+            widget.error(Exception("Not connected"))
+
+        print(settings)
 
     @property
     def container(self: Self) -> Container:

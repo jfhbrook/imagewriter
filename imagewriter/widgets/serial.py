@@ -33,6 +33,10 @@ class SerialConnectButtonWidget(widgets.Button):
             tooltip="Connect to the serial port",
         )
 
+    @property
+    def connected(self: Self) -> bool:
+        return self.description == self.CONNECTED
+
     def connect(self: Self) -> None:
         self.description = self.CONNECTED
 
@@ -55,16 +59,26 @@ class SerialWidget(widgets.VBox):
         self._dip_switches = dip_switches if dip_switches else DIPSwitches.defaults()
         self._port_widget = SerialPortWidget()
 
-        self.button = SerialConnectButtonWidget()
+        self._connect_button = SerialConnectButtonWidget()
 
         super().__init__(
             [
                 self._port_widget,
-                self.button,
+                self._connect_button,
             ]
         )
 
-    def on_connect(self: Self, callback: SerialCallback) -> None:
+    @property
+    def connected(self: Self) -> bool:
+        return self._connect_button.connected
+
+    def connect(self: Self) -> None:
+        self._connect_button.connect()
+
+    def disconnect(self: Self) -> None:
+        self._connect_button.disconnect()
+
+    def on_toggle(self: Self, callback: SerialCallback) -> None:
         def cb(button: widgets.Button) -> None:
             callback(
                 self,
@@ -73,4 +87,4 @@ class SerialWidget(widgets.VBox):
                 self._dip_switches.protocol,
             )
 
-        self.button.on_click(cb)
+        self._connect_button.on_click(cb)

@@ -351,8 +351,8 @@ class SettingsWidget(widgets.VBox):
             self._settings
         )
 
-        self.button = ApplyButtonWidget()
-        self.status = ApplyStatusWidget()
+        self._apply_button = ApplyButtonWidget()
+        self._apply_status = ApplyStatusWidget()
 
         super().__init__(
             [
@@ -394,8 +394,8 @@ class SettingsWidget(widgets.VBox):
                 self._include_eighth_data_bit_widget,
                 widgets.HBox(
                     [
-                        self.button,
-                        self.status,
+                        self._apply_button,
+                        self._apply_status,
                     ]
                 ),
             ]
@@ -431,8 +431,17 @@ class SettingsWidget(widgets.VBox):
 
         return self._settings
 
+    def not_applied(self: Self) -> None:
+        self._apply_status.not_applied()
+
+    def applied(self: Self) -> None:
+        self._apply_status.applied()
+
+    def error(self: Self, err: Exception) -> None:
+        self._apply_status.error(err)
+
     def on_apply(self: Self, callback: SettingsCallback) -> None:
         def cb(button: widgets.Button) -> None:
             callback(self, self.settings)
 
-        self.button.on_click(cb)
+        self._apply_button.on_click(cb)
