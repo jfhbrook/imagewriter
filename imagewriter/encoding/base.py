@@ -33,9 +33,6 @@ class Command(ABC):
     de-asserted.
     """
 
-    def __len__(self: Self) -> int:
-        return len(self.__bytes__())
-
     @abstractmethod
     def __bytes__(self: Self) -> bytes:
         pass
@@ -51,10 +48,20 @@ class Command(ABC):
     def __repr__(self: Self) -> str:
         return f"Command({str(self)})"
 
+    def __len__(self: Self) -> int:
+        """
+        The printed length of the command, in characters.
+
+        Most commands are control characters or escape sequences, and have
+        zero length.
+        """
+
+        return 0
+
 
 class Bytes(Command):
     """
-    A packet containing raw bytes.
+    A command containing raw bytes.
     """
 
     def __init__(self: Self, data: bytes) -> None:
@@ -64,12 +71,24 @@ class Bytes(Command):
         return self.bytes
 
     def __repr__(self: Self) -> str:
+        return f"Bytes({bytes(self)})"
+
+
+class Print(Bytes):
+    """
+    A series of printable characters.
+    """
+
+    def __len__(self: Self) -> int:
+        return len(bytes(self))
+
+    def __repr__(self: Self) -> str:
         return repr(bytes(self))
 
 
 class Ctrl(Command):
     """
-    A packet containing a single control character.
+    A command containing a single control character.
     """
 
     def __init__(self: Self, character: str) -> None:
@@ -84,7 +103,7 @@ class Ctrl(Command):
 
 class Esc(Command):
     """
-    A packet containing a single escape code.
+    A command containing a single escape code.
     """
 
     def __init__(self: Self, code: str) -> None:

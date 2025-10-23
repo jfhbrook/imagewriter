@@ -8,7 +8,7 @@ from imagewriter.character import (
     MouseTextCharacter,
     Text,
 )
-from imagewriter.encoding.base import Bytes, Command, Esc
+from imagewriter.encoding.base import Command, Esc, Print
 from imagewriter.encoding.character.custom import (
     BOTTOM_WIRES,
     LoadCustomCharacters,
@@ -220,7 +220,7 @@ class CharacterEncoder:
                 return LF
             if data == b"\t":
                 return TAB
-            return Bytes(data)
+            return Print(data)
 
         return [_to_command(byte) for byte in buffer]
 

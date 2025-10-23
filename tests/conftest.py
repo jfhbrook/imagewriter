@@ -5,7 +5,7 @@ import pytest
 
 from imagewriter.connection import Connection
 from imagewriter.container import Container, SerialFactory
-from imagewriter.encoding.base import Bytes, Command
+from imagewriter.encoding.base import Command, Print
 from imagewriter.serial import BaudRate, Serial, SerialProtocol
 from imagewriter.switch import DIPSwitches
 
@@ -16,7 +16,7 @@ def encoded_text() -> Callable[[str | bytes], List[Command]]:
         buffer: bytes = (
             text if isinstance(text, bytes) else text.encode(encoding="ascii")
         )
-        return [Bytes(byte.to_bytes(byteorder="big")) for byte in buffer]
+        return [Print(byte.to_bytes(byteorder="big")) for byte in buffer]
 
     return encoded_text
 

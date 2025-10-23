@@ -41,6 +41,9 @@ class LineFeed(Bytes):
 
         return f"LineFeed({self._lines})"
 
+    def __len__(self: Self) -> int:
+        raise ValueError("Line feeds do not have a meaningful length")
+
 
 LF = LineFeed(1)
 

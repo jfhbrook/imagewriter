@@ -50,6 +50,9 @@ class CarriageReturn(Bytes):
     def __repr__(self: Self) -> str:
         return "\\r"
 
+    def __len__(self: Self) -> int:
+        raise ValueError("\\r does not have a meaningful length")
+
 
 class Backspace(Ctrl):
     """
@@ -61,6 +64,13 @@ class Backspace(Ctrl):
 
     def __repr__(self: Self) -> str:
         return "Backspace()"
+
+    def __len__(self: Self) -> int:
+        """
+        A backspace has negative length, since it goes backwards.
+        """
+
+        return -1
 
 
 CR = CarriageReturn()

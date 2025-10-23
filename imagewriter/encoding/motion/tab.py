@@ -22,6 +22,9 @@ class Tab(Bytes):
     def __repr__(self: Self) -> str:
         return "\\t"
 
+    def __len__(self: Self) -> int:
+        raise ValueError("\\t does not have a consistent length")
+
 
 TAB = Tab()
 
