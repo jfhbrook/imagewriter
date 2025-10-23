@@ -16,7 +16,7 @@ from imagewriter.encoding.motion.form_feed import (
 )
 from imagewriter.encoding.motion.insertion import (
     SetAutoLFAfterCR,
-    SetCarriageReturnInsertion,
+    SetCRInsertion,
     SetLFWhenLineFull,
 )
 from imagewriter.encoding.motion.line_feed import (
@@ -144,7 +144,7 @@ __all__: List[str] = [
     "SET_TOP_OF_FORM",
     "SetPerforationSkip",
     "SetAutoLFAfterCR",
-    "SetCarriageReturnInsertion",
+    "SetCRInsertion",
     "SetLFWhenLineFull",
     "LF",
     "LineFeed",

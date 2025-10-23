@@ -23,7 +23,7 @@ class Settings:
     distance_between_lines: Distance
     lf_when_line_full: bool
     auto_lf_after_cr: bool
-    carriage_return_insertion: bool
+    cr_insertion: bool
     perforation_skip: bool
     # paper
     paper_out_sensor: bool
@@ -49,7 +49,7 @@ class Settings:
             distance_between_lines=Pica(1),
             lf_when_line_full=software_sw.lf_when_line_full,
             auto_lf_after_cr=software_sw.auto_lf_after_cr,
-            carriage_return_insertion=False,
+            cr_insertion=False,
             perforation_skip=not software_sw.perforation_skip_disabled,
             paper_out_sensor=True,
             print_commands=software_sw.print_commands,

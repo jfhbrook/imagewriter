@@ -42,7 +42,7 @@ def test_default_settings() -> None:
     assert settings.distance_between_lines.picas == 1
     assert not settings.lf_when_line_full
     assert not settings.auto_lf_after_cr
-    assert not settings.carriage_return_insertion
+    assert not settings.cr_insertion
     assert not settings.perforation_skip
     # paper
     assert settings.paper_out_sensor

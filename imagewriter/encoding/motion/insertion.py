@@ -25,7 +25,7 @@ class SetAutoLFAfterCR(SetSoftwareSwitches):
         return f"SetAutoLFAfterCR({self.closed}, {position}, {banks})"
 
 
-class SetCarriageReturnInsertion(Esc):
+class SetCRInsertion(Esc):
     """
     As per page 75 of the ImageWriter II Technical Reference Manual, when
     carriage return insertion is enabled, a CR (\\r) will be inserted before
@@ -44,7 +44,7 @@ class SetCarriageReturnInsertion(Esc):
         super().__init__("l1" if enabled else "l0")
 
     def __repr__(self: Self) -> str:
-        return f"SetCarriageReturnInsertion({self._enabled})"
+        return f"SetCRInsertion({self._enabled})"
 
 
 class SetLFWhenLineFull(SetSoftwareSwitches):

@@ -4,7 +4,7 @@ from imagewriter.encoding.base import Command
 from imagewriter.encoding.boundaries import SetLeftMargin, SetPageLength
 from imagewriter.encoding.motion import (
     reset_tabs,
-    SetCarriageReturnInsertion,
+    SetCRInsertion,
     SetDistanceBetweenLines,
     to_tab_stops,
 )
@@ -18,7 +18,7 @@ from imagewriter.settings import Settings
 def apply_settings(settings: Settings) -> List[Command]:
     return [
         *apply_software_switches(settings.switches()),
-        SetCarriageReturnInsertion(settings.carriage_return_insertion),
+        SetCRInsertion(settings.cr_insertion),
         SetPaperOutSensor(settings.paper_out_sensor),
         SetPitch(settings.pitch),
         SetQuality(settings.quality),

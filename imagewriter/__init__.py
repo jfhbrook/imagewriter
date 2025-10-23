@@ -1,6 +1,7 @@
 from typing import List
 
 from imagewriter.connection import Connection
+from imagewriter.container import Container
 from imagewriter.identification import (
     FEAT_COLOR_RIBBON,
     FEAT_SHEET_FEEDER,
@@ -34,6 +35,7 @@ from imagewriter.units import (
 
 __all__: List[str] = [
     "Connection",
+    "Container",
     "FEAT_COLOR_RIBBON",
     "FEAT_SHEET_FEEDER",
     "Feature",

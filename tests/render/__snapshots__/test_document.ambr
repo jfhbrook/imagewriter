@@ -3,7 +3,7 @@
   list([
     OpenSoftwareSwitches([0b11100001, 0b10100100]),
     CloseSoftwareSwitches([0b00001110, 0b00000000]),
-    SetCarriageReturnInsertion(False),
+    SetCRInsertion(False),
     SetPaperOutSensor(True),
     SetPitch(Pitch.ELITE),
     SetQuality(Quality.DRAFT, scribe_mode=False),
