@@ -64,7 +64,7 @@ class SlashedZeroWidget(widgets.Dropdown):
 
 class DistanceBetweenLinesWidget(widgets.HBox):
     def __init__(self: Self, settings: Settings) -> None:
-        super().__init__([widgets.Label("Dist. bt. Lines"), widgets.Label("TK")])
+        super().__init__([widgets.Label("Line Spacing:"), widgets.Label("TK")])
 
 
 class LFWhenLineFullWidget(widgets.Dropdown):
@@ -237,7 +237,7 @@ class SettingsWidget(widgets.VBox):
 
         super().__init__(
             [
-                Label("Boundaries:"),
+                Label("Page Settings:"),
                 # TODO: Right justify labels
                 widgets.HBox(
                     [
@@ -252,19 +252,19 @@ class SettingsWidget(widgets.VBox):
                         ),
                     ]
                 ),
-                Label("Fonts, Pitch and Motion"),
+                self._perforation_skip_widget,
+                Label("Formatting:"),
                 self._language_widget,
                 self._pitch_widget,
+                self._quality_widget,
                 self._slashed_zero_widget,
                 self._distance_between_lines_widget,
-                self._perforation_skip_widget,
                 Label("Advanced Settings:"),
                 self._lf_when_line_full_widget,
                 self._auto_lf_after_cr_widget,
                 self._cr_insertion_widget,
                 self._paper_out_sensor_widget,
                 self._print_commands_widget,
-                self._quality_widget,
                 self._software_select_response_widget,
                 self._include_eighth_data_bit_widget,
             ]
