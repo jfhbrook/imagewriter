@@ -21,12 +21,13 @@ UNIT_CLASSES: Dict[str, Type[Distance]] = {
 }
 
 
+# TODO: Width styling
 class UnitClassWidget(widgets.Dropdown):
     def __init__(self: Self, distance: Distance) -> None:
         super().__init__(
             options=list(UNIT_CLASSES.keys()),
             value=UNIT_NAMES[distance.__class__],
-            description="Units:",
+            description="",
             disabled=False,
         )
 
@@ -48,6 +49,7 @@ UNIT_VALUES: Dict[Type[Distance], Callable[[Distance], float]] = {
 }
 
 
+# TODO: width styling
 class UnitValueWidget(widgets.BoundedFloatText):
     def __init__(self: Self, start: Distance, max: Distance, step: Distance) -> None:
         self._max = max
@@ -58,7 +60,7 @@ class UnitValueWidget(widgets.BoundedFloatText):
             min=0,
             max=self._max_value(start.__class__),
             step=self._step_value(start.__class__),
-            description="Distance:",
+            description="",
             disabled=False,
         )
 
@@ -81,6 +83,8 @@ class DistanceWidget(widgets.HBox):
         self._class_widget = UnitClassWidget(start)
 
         super().__init__([self._value_widget, self._class_widget])
+
+        # TODO: Event on units
 
     @property
     def distance(self: Self) -> Distance:

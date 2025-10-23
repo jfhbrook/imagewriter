@@ -6,18 +6,11 @@ from imagewriter.print import PrintCommands
 from imagewriter.settings import Settings
 from imagewriter.switch import DIPSwitches
 from imagewriter.units import Distance, Inch, VERTICAL_RESOLUTION
-
-# from imagewriter.widgets.base import Label
+from imagewriter.widgets.base import Label
 from imagewriter.widgets.language import LanguageWidget
 from imagewriter.widgets.pitch import PitchWidget
+from imagewriter.widgets.quality import QualityWidget
 from imagewriter.widgets.units import DistanceWidget
-
-# # boundaries
-# left_margin: Distance
-# page_length: Distance
-# # fonts and pitch
-# language: Language
-# slashed_zero: bool
 
 
 class LeftMarginWidget(widgets.HBox):
@@ -26,7 +19,7 @@ class LeftMarginWidget(widgets.HBox):
         self._distance_widget = DistanceWidget(
             self._settings.left_margin, Inch(8), self._step_value
         )
-        super().__init__([widgets.Label("Left Margin:"), self._distance_widget])
+        super().__init__([self._distance_widget])
 
     @property
     def _step_value(self: Self) -> Distance:
@@ -47,7 +40,7 @@ class PageLengthWidget(widgets.HBox):
         self._distance_widget = DistanceWidget(
             self._settings.page_length, max_length, step
         )
-        super().__init__([widgets.Label("Left Margin:"), self._distance_widget])
+        super().__init__([self._distance_widget])
 
     @property
     def page_length(self: Self) -> Distance:
@@ -71,7 +64,7 @@ class SlashedZeroWidget(widgets.Dropdown):
 
 class DistanceBetweenLinesWidget(widgets.HBox):
     def __init__(self: Self, settings: Settings) -> None:
-        pass
+        super().__init__([widgets.Label("Dist. bt. Lines"), widgets.Label("TK")])
 
 
 class LFWhenLineFullWidget(widgets.Dropdown):
@@ -138,7 +131,21 @@ class PerforationSkipWidget(widgets.Dropdown):
 
 class PaperOutSensorWidget(widgets.Dropdown):
     def __init__(self: Self, settings: Settings) -> None:
-        pass
+        value = "Enabled" if settings.paper_out_sensor else "Disabled"
+
+        super().__init__(
+            options=[
+                "Disabled",
+                "Enabled",
+            ],
+            value=value,
+            description="Paper Sensor:",
+            disabled=False,
+        )
+
+    @property
+    def paper_out_sensor(self: Self) -> bool:
+        return self.value == "Enabled"
 
 
 class PrintCommandsWidget(widgets.Dropdown):
@@ -152,7 +159,7 @@ class PrintCommandsWidget(widgets.Dropdown):
         super().__init__(
             options=["CR, LF and FF", "CR only"],
             value=value,
-            description="LF/FF print:",
+            description="Print Cmds:",
             disabled=False,
         )
 
@@ -163,11 +170,6 @@ class PrintCommandsWidget(widgets.Dropdown):
             if self.value == "CR, LF and FF"
             else PrintCommands.CR_ONLY
         )
-
-
-class QualityWidget(widgets.Dropdown):
-    def __init__(self: Self, settings: Settings) -> None:
-        pass
 
 
 class SoftwareSelectResponseWidget(widgets.Dropdown):
@@ -214,7 +216,7 @@ class SettingsWidget(widgets.VBox):
         self._page_length_widget = PageLengthWidget(self._settings)
         self._language_widget = LanguageWidget(self._settings.language)
         self._slashed_zero_widget = SlashedZeroWidget(self._settings)
-        self._pitch_widget = PitchWidget(self._settings)
+        self._pitch_widget = PitchWidget(self._settings.pitch)
 
         # TODO: tab stops
 
@@ -225,7 +227,7 @@ class SettingsWidget(widgets.VBox):
         self._perforation_skip_widget = PerforationSkipWidget(self._settings)
         self._paper_out_sensor_widget = PaperOutSensorWidget(self._settings)
         self._print_commands_widget = PrintCommandsWidget(self._settings)
-        self._quality_widget = QualityWidget(self._settings)
+        self._quality_widget = QualityWidget(self._settings.quality)
         self._software_select_response_widget = SoftwareSelectResponseWidget(
             self._settings
         )
@@ -235,16 +237,31 @@ class SettingsWidget(widgets.VBox):
 
         super().__init__(
             [
-                self._left_margin_widget,
-                self._page_length_widget,
+                Label("Boundaries:"),
+                # TODO: Right justify labels
+                widgets.HBox(
+                    [
+                        widgets.VBox(
+                            [
+                                widgets.Label("Left Margin:"),
+                                widgets.Label("Page Length:"),
+                            ]
+                        ),
+                        widgets.VBox(
+                            [self._left_margin_widget, self._page_length_widget]
+                        ),
+                    ]
+                ),
+                Label("Fonts, Pitch and Motion"),
                 self._language_widget,
-                self._slashed_zero_widget,
                 self._pitch_widget,
+                self._slashed_zero_widget,
                 self._distance_between_lines_widget,
+                self._perforation_skip_widget,
+                Label("Advanced Settings:"),
                 self._lf_when_line_full_widget,
                 self._auto_lf_after_cr_widget,
                 self._cr_insertion_widget,
-                self._perforation_skip_widget,
                 self._paper_out_sensor_widget,
                 self._print_commands_widget,
                 self._quality_widget,
