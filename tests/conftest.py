@@ -7,6 +7,7 @@ from imagewriter.connection import Connection
 from imagewriter.container import Container, SerialFactory
 from imagewriter.encoding.base import Command, Print
 from imagewriter.serial import BaudRate, Serial, SerialProtocol
+from imagewriter.settings import Settings
 from imagewriter.switch import DIPSwitches
 
 
@@ -110,3 +111,8 @@ def container(port, serial_factory) -> Generator[Container, None, None]:
 @pytest.fixture
 def connection(container: Container) -> Connection:
     return container.connection
+
+
+@pytest.fixture
+def settings(container: Container) -> Settings:
+    return container.settings

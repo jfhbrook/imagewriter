@@ -45,7 +45,7 @@ from imagewriter.encoding.character import (
     SetMaxCustomCharacterWidth,
     TOP_WIRES,
 )
-from imagewriter.encoding.color import set_color
+from imagewriter.encoding.color import SetColor
 from imagewriter.encoding.graphics import (
     PrintGraphicsData,
     SET_GRAPHICS_DISTANCE_BETWEEN_LINES,
@@ -133,7 +133,7 @@ __all__: List[str] = [
     "TOP_WIRES",
     "BOTTOM_WIRES",
     # stop
-    "set_color",
+    "SetColor",
     "PrintGraphicsData",
     "SET_GRAPHICS_DISTANCE_BETWEEN_LINES",
     "BACKSPACE",

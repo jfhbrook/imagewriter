@@ -53,7 +53,7 @@ class SetPageLength(Command):
         The page length as an int.
         """
 
-        return length_to_int(self.length, lambda lg: lg.vertical)
+        return length_to_int(self._length, lambda lg: lg.vertical)
 
     @length.setter
     def length(self: Self, length: Length) -> None:

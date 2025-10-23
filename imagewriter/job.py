@@ -14,7 +14,7 @@ from imagewriter.encoding import (
     LineFeedLengthError,
     Print,
     reset_tabs,
-    set_color,
+    SetColor,
     SetPitch,
     START_BOLDFACE,
     START_DOUBLE_WIDTH,
@@ -74,7 +74,7 @@ class Job:
             self._commands += [*apply_settings(self._settings), CR]
             self._has_header = True
 
-    def write(self: Self, commands: Command | List[Command]) -> Self:
+    def write(self: Self, commands: Command | str | List[Command]) -> Self:
         """
         Write raw commands.
         """
@@ -82,6 +82,9 @@ class Job:
         self._write_header()
         if isinstance(commands, Command):
             self._commands.append(commands)
+        elif isinstance(commands, str):
+            for c in commands.encode(encoding="ascii"):
+                self._commands.append(Print(c.to_bytes(byteorder="big")))
         else:
             self._commands += commands
 
@@ -147,11 +150,11 @@ class Job:
         Write colored text.
         """
 
-        self.write(set_color(color))
+        self.write(SetColor(color))
 
         yield
 
-        self.write(set_color(Color.BLACK))
+        self.write(SetColor(Color.BLACK))
 
     @contextmanager
     def monospace(self: Self) -> Generator[None, None, None]:

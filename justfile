@@ -67,7 +67,7 @@ check:
 
 # Run tests with pytest
 test:
-  uv run pytest -vv ./tests
+  uv run pytest -vvv ./tests
   @just _clean-test
 
 # Update snapshots

@@ -10,6 +10,7 @@ from imagewriter.document import (
     CodeBlock,
     DefinitionList,
     Div,
+    Document,
     Emph,
     Figure,
     Header,
@@ -44,8 +45,14 @@ from imagewriter.job import Job
 
 
 class DocumentRenderer(BlockVisitor[None], InlineVisitor[None]):
-    def __self__(self: Self, job: Job) -> None:
+    def __init__(self: Self, job: Job) -> None:
         self.job: Job = job
+
+    def render(self: Self, document: Document) -> Job:
+        for block in document.blocks:
+            block.accept(self)
+
+        return self.job
 
     def visit_str(self: Self, element: Str) -> None:
         self.job.text(element.contents)
@@ -112,7 +119,8 @@ class DocumentRenderer(BlockVisitor[None], InlineVisitor[None]):
     def visit_link(self: Self, element: Link) -> None:
         # TODO: What attributes may a link have?
         with self.job.color(Color.PURPLE):
-            self.job.text(element.target.title)
+            for el in element.alt_text:
+                el.accept(self)
 
     def visit_image(self: Self, element: Image) -> None:
         raise NotImplementedError("visit_image")
