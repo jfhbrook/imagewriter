@@ -13,17 +13,19 @@ from imagewriter.widgets.quality import QualityWidget
 from imagewriter.widgets.units import DistanceWidget
 
 
+# TODO: Wire event to Pitch
+# TODO: Inherit from DistanceWidget
 class LeftMarginWidget(widgets.HBox):
     def __init__(self: Self, settings: Settings) -> None:
-        self._settings = settings
+        max = Inch(8)
+
         self._distance_widget = DistanceWidget(
-            self._settings.left_margin, Inch(8), self._step_value
+            settings.left_margin, max, self._step_value(settings)
         )
         super().__init__([self._distance_widget])
 
-    @property
-    def _step_value(self: Self) -> Distance:
-        return Inch(1 / self._settings.pitch.characters_per_inch)
+    def _step_value(self: Self, settings: Settings) -> Distance:
+        return Inch(1 / settings.pitch.characters_per_inch)
 
     @property
     def left_margin(self: Self) -> Distance:
@@ -64,7 +66,76 @@ class SlashedZeroWidget(widgets.Dropdown):
 
 class DistanceBetweenLinesWidget(widgets.HBox):
     def __init__(self: Self, settings: Settings) -> None:
-        super().__init__([widgets.Label("Line Spacing:"), widgets.Label("TK")])
+        max_distance = Inch(99 / VERTICAL_RESOLUTION)
+        step = Inch(1 / VERTICAL_RESOLUTION)
+
+        self._distance_widget = DistanceWidget(
+            settings.distance_between_lines, max_distance, step
+        )
+        super().__init__([self._distance_widget])
+
+    @property
+    def distance_between_lines(self: Self) -> Distance:
+        return self._distance_widget.distance
+
+
+class LinesPerInchWidget(widgets.Dropdown):
+    def __init__(self: Self, settings: Settings) -> None:
+        value = "8" if settings.lines_per_inch > 7 else "6"
+
+        super().__init__(
+            options=["6", "8"], value=value, description="", disabled=False
+        )
+
+    @property
+    def lines_per_inch(self: Self) -> int:
+        value = self.value if self.value else "6"
+        return int(value)
+
+
+class LineSpacingWidget(widgets.HBox):
+    # widgets.Label("Line Spacing")
+    def __init__(self: Self, settings: Settings) -> None:
+        self._distance_between_lines_widget = DistanceBetweenLinesWidget(settings)
+        self._lines_per_inch_widget = LinesPerInchWidget(settings)
+
+        self._selector_widget = widgets.Dropdown(
+            options=["Dist bt Lines", "Lines per In"],
+            value="Dist bt Lines",
+            description="",
+        )
+
+        self._stack = widgets.Stack(
+            [
+                self._distance_between_lines_widget,
+                self._lines_per_inch_widget,
+            ],
+            selected_index=0,
+        )
+
+        super().__init__([self._selector_widget, self._stack])
+
+        self._selector_widget.observe(self._select, names="value")
+
+    def _select(self: Self, change: str) -> None:
+        if self._selector_widget.value == "Dist bt Lines":
+            self._stack.selected_index = 0
+        else:
+            self._stack.selected_index = 1
+
+    @property
+    def distance_between_lines(self: Self) -> Distance:
+        if self._stack.selected_index == 0:
+            return self._distance_between_lines_widget.distance_between_lines
+        return Inch(1 / self._lines_per_inch_widget.lines_per_inch)
+
+    @property
+    def lines_per_inch(self: Self) -> float:
+        if self._stack.selected_index == 0:
+            return (
+                72 / self._distance_between_lines_widget.distance_between_lines.points
+            )
+        return self._lines_per_inch_widget.lines_per_inch
 
 
 class LFWhenLineFullWidget(widgets.Dropdown):
@@ -121,7 +192,7 @@ class PerforationSkipWidget(widgets.Dropdown):
         super().__init__(
             options=["Yes", "No"],
             value=value,
-            description="Perf skip:",
+            description="",
         )
 
     @property
@@ -220,7 +291,10 @@ class SettingsWidget(widgets.VBox):
 
         # TODO: tab stops
 
-        self._distance_between_lines_widget = DistanceBetweenLinesWidget(self._settings)
+        self._line_spacing_widget = LineSpacingWidget(self._settings)
+
+        self._line_spacing_widget.layout.width = "75%"
+
         self._lf_when_line_full_widget = LFWhenLineFullWidget(self._settings)
         self._auto_lf_after_cr_widget = AutoLFAfterCRWidget(self._settings)
         self._cr_insertion_widget = CRInsertionWidget(self._settings)
@@ -245,20 +319,26 @@ class SettingsWidget(widgets.VBox):
                             [
                                 widgets.Label("Left Margin:"),
                                 widgets.Label("Page Length:"),
+                                widgets.Label("Perf Skip:"),
                             ]
                         ),
                         widgets.VBox(
-                            [self._left_margin_widget, self._page_length_widget]
+                            [
+                                self._left_margin_widget,
+                                self._page_length_widget,
+                                self._perforation_skip_widget,
+                            ]
                         ),
                     ]
                 ),
-                self._perforation_skip_widget,
                 Label("Formatting:"),
                 self._language_widget,
                 self._pitch_widget,
                 self._quality_widget,
                 self._slashed_zero_widget,
-                self._distance_between_lines_widget,
+                widgets.HBox(
+                    [widgets.Label("Line Spacing:"), self._line_spacing_widget]
+                ),
                 Label("Advanced Settings:"),
                 self._lf_when_line_full_widget,
                 self._auto_lf_after_cr_widget,
