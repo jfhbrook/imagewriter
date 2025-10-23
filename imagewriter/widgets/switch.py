@@ -6,28 +6,28 @@ import ipywidgets as widgets
 from imagewriter.encoding.switch import apply_software_switches
 from imagewriter.language import Language
 from imagewriter.print import PrintCommands
-import imagewriter.switch as switch
+from imagewriter.switch import DIPSwitches, SoftwareSwitches
 from imagewriter.widgets.base import Label
-from imagewriter.widgets.connection import Connection
+from imagewriter.widgets.connection import ConnectionWidget
 
 
-def language(switches: switch.DIPSwitches | switch.SoftwareSwitches) -> str:
+def language(switches: DIPSwitches | SoftwareSwitches) -> str:
     return switches.language.value
 
 
-def form_length(switches: switch.DIPSwitches) -> str:
+def form_length(switches: DIPSwitches) -> str:
     return f"{switches.form_length} in"
 
 
-def software_select_response(switches: switch.SoftwareSwitches) -> str:
+def software_select_response(switches: SoftwareSwitches) -> str:
     return "Disabled" if switches.software_select_response_disabled else "Enabled"
 
 
-def lf_when_line_full(switches: switch.SoftwareSwitches) -> str:
+def lf_when_line_full(switches: SoftwareSwitches) -> str:
     return "Yes" if switches.lf_when_line_full else "No"
 
 
-def print_commands(switches: switch.SoftwareSwitches) -> str:
+def print_commands(switches: SoftwareSwitches) -> str:
     return (
         "CR, LF and FF"
         if switches.print_commands == PrintCommands.CR_LF_AND_FF
@@ -35,39 +35,39 @@ def print_commands(switches: switch.SoftwareSwitches) -> str:
     )
 
 
-def auto_lf_after_cr(switches: switch.DIPSwitches | switch.SoftwareSwitches) -> str:
+def auto_lf_after_cr(switches: DIPSwitches | SoftwareSwitches) -> str:
     return "Yes" if switches.auto_lf_after_cr else "No"
 
 
-def slashed_zero(switches: switch.SoftwareSwitches) -> str:
+def slashed_zero(switches: SoftwareSwitches) -> str:
     return "Slashed" if switches.slashed_zero else "Unslashed"
 
 
-def perforation_skip(switches: switch.DIPSwitches | switch.SoftwareSwitches) -> str:
-    if isinstance(switches, switch.DIPSwitches):
+def perforation_skip(switches: DIPSwitches | SoftwareSwitches) -> str:
+    if isinstance(switches, DIPSwitches):
         return "Yes" if switches.perforation_skip else "No"
 
     return "No" if switches.perforation_skip_disabled else "Yes"
 
 
-def pitch(switches: switch.DIPSwitches) -> str:
+def pitch(switches: DIPSwitches) -> str:
     return switches.pitch.value
 
 
-def baud_rate(switches: switch.DIPSwitches) -> str:
+def baud_rate(switches: DIPSwitches) -> str:
     return str(switches.baud_rate)
 
 
-def protocol(switches: switch.DIPSwitches) -> str:
+def protocol(switches: DIPSwitches) -> str:
     return switches.protocol.value
 
 
-def eighth_data_bit(switches: switch.SoftwareSwitches) -> str:
+def eighth_data_bit(switches: SoftwareSwitches) -> str:
     return "Ignored" if switches.ignore_eighth_data_bit else "Included"
 
 
-class DIPSwitches(widgets.VBox):
-    def __init__(self: Self, dip_switches: switch.DIPSwitches) -> None:
+class DIPSwitchWidget(widgets.VBox):
+    def __init__(self: Self, dip_switches: DIPSwitches) -> None:
         self.dip_switches = dip_switches
 
         self._language = widgets.Label(value=language(dip_switches))
@@ -126,11 +126,11 @@ class DIPSwitches(widgets.VBox):
         )
 
 
-class SoftwareSwitches(widgets.VBox):
+class SoftwareSwitchWidget(widgets.VBox):
     def __init__(
         self: Self,
-        switches: switch.SoftwareSwitches,
-        connection: Optional[Connection] = None,
+        switches: SoftwareSwitches,
+        connection: Optional[ConnectionWidget] = None,
     ) -> None:
         self.switches = switches
         self.connection = connection
@@ -225,14 +225,14 @@ class SoftwareSwitches(widgets.VBox):
         )
 
     def update(
-        self: Self, switches: Optional[switch.SoftwareSwitches] = None, **changes: Any
+        self: Self, switches: Optional[SoftwareSwitches] = None, **changes: Any
     ) -> None:
         if switches:
             self._update(switches)
         else:
             self._update(dataclasses.replace(self.switches, **changes))
 
-    def _update(self: Self, switches: switch.SoftwareSwitches) -> None:
+    def _update(self: Self, switches: SoftwareSwitches) -> None:
         self.switches = switches
         self._language.value = language(switches)
         self._software_select_response.value = software_select_response(switches)
@@ -244,7 +244,7 @@ class SoftwareSwitches(widgets.VBox):
         self._eighth_data_bit.value = eighth_data_bit(switches)
 
     def apply(self: Self) -> None:
-        self.switches = switch.SoftwareSwitches(
+        self.switches = SoftwareSwitches(
             language={
                 "American": Language.AMERICAN,
                 "British": Language.BRITISH,

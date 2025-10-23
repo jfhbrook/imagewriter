@@ -272,9 +272,17 @@ class IncludeEighthDataBitWidget(widgets.Dropdown):
 
 
 class SettingsWidget(widgets.VBox):
-    def __init__(self: Self, dip_switches: Optional[DIPSwitches] = None) -> None:
-        self._settings: Settings = Settings.defaults(
-            dip_switches if dip_switches is not None else DIPSwitches.defaults()
+    def __init__(
+        self: Self,
+        dip_switches: Optional[DIPSwitches] = None,
+        settings: Optional[Settings] = None,
+    ) -> None:
+        self._settings: Settings = (
+            settings
+            if settings is not None
+            else Settings.defaults(
+                dip_switches if dip_switches is not None else DIPSwitches.defaults()
+            )
         )
 
         self._left_margin_widget = LeftMarginWidget(self._settings)

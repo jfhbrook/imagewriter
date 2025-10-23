@@ -10,7 +10,7 @@ from imagewriter.widgets.base import Label
 
 
 class SerialStateObserver(debug.SerialStateObserver):
-    def __init__(self: Self, widget: "Activity") -> None:
+    def __init__(self: Self, widget: "ActivityWidget") -> None:
         self._widget = widget
         self._port = widget._connection.port
         super().__init__(self._port)
@@ -22,8 +22,8 @@ class SerialStateObserver(debug.SerialStateObserver):
         self._widget.cts.value = self._fmt_signal(self.serial.cts)
 
 
-class Activity(widgets.VBox):
-    def __init__(self: Self, connection: "Connection") -> None:
+class ActivityWidget(widgets.VBox):
+    def __init__(self: Self, connection: "ConnectionWidget") -> None:
         self._connection = connection
         self.dtr = widgets.Text(value="", disabled=True)
         self.dsr = widgets.Text(value="", disabled=True)
@@ -84,7 +84,7 @@ class Activity(widgets.VBox):
             self._observer.stop()
 
 
-class Connection(widgets.VBox):
+class ConnectionWidget(widgets.VBox):
     def __init__(self: Self) -> None:
         ports: List[str] = [port.device for port in comports()]
         self._serial_port = widgets.Dropdown(
@@ -116,7 +116,7 @@ class Connection(widgets.VBox):
             ]
         )
 
-        self.activity = Activity(self)
+        self.activity = ActivityWidget(self)
 
     @property
     def port(self: Self) -> serial.Serial:

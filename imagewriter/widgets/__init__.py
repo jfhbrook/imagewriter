@@ -3,26 +3,28 @@ from typing import Any, List, Optional, Self
 import ipywidgets as widgets
 import serial
 
-import imagewriter.switch as switch
+from imagewriter.switch import DIPSwitches, SoftwareSwitches
 from imagewriter.widgets.base import header
-from imagewriter.widgets.connection import Activity, Connection
-from imagewriter.widgets.switch import DIPSwitches, SoftwareSwitches
+from imagewriter.widgets.connection import ActivityWidget, ConnectionWidget
+from imagewriter.widgets.switch import DIPSwitchWidget, SoftwareSwitchWidget
 
 
 class ControlPanel(widgets.Tab):
     def __init__(
         self: Self,
-        dip_switches: switch.DIPSwitches,
-        software_switches: switch.SoftwareSwitches,
+        dip_switches: DIPSwitches,
+        software_switches: SoftwareSwitches,
     ) -> None:
-        self.connection = Connection()
-        self.dip_switches = DIPSwitches(dip_switches)
-        self.software_switches = SoftwareSwitches(software_switches, self.connection)
+        self.connection = ConnectionWidget()
+        self.dip_switches = DIPSwitchWidget(dip_switches)
+        self.software_switches = SoftwareSwitchWidget(
+            software_switches, self.connection
+        )
 
         self.activity = self.connection.activity
 
         super().__init__(
-            titles=["Settings", "DIP Switches", "Activity"],
+            titles=["Settings", "DIP Switches", "ActivityWidget"],
             children=[
                 widgets.VBox(
                     [
@@ -48,7 +50,7 @@ class ControlPanel(widgets.Tab):
         self.connection.close_port()
 
     def update(
-        self: Self, switches: Optional[switch.SoftwareSwitches] = None, **changes: Any
+        self: Self, switches: Optional[SoftwareSwitches] = None, **changes: Any
     ) -> None:
         self.software_switches.update(switches, **changes)
 
@@ -57,7 +59,7 @@ class ControlPanel(widgets.Tab):
 
 
 __all__: List[str] = [
-    "Activity",
-    "Connection",
-    "SoftwareSwitches",
+    "ActivityWidget",
+    "ConnectionWidget",
+    "SoftwareSwitchWidget",
 ]
