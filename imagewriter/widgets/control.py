@@ -1,9 +1,10 @@
-from typing import Optional, Self
+from typing import Self
 
+from dependency_injector.wiring import inject, Provide
 import ipywidgets as widgets
 
 from imagewriter.container import Container
-from imagewriter.serial import Serial
+from imagewriter.serial import BaudRate, SerialProtocol
 from imagewriter.settings import Settings
 from imagewriter.switch import DIPSwitches
 from imagewriter.widgets.base import header
@@ -12,51 +13,22 @@ from imagewriter.widgets.settings import SettingsWidget
 from imagewriter.widgets.switch import DIPSwitchWidget
 
 
-class ControlPanelContainer(Container):
-    def __init__(self: Self, widget: "ControlPanel") -> None:
-        self.widget = widget
-        super().__init__(port=None, dip_switches=widget.dip_switches)
-
-    def create_port(self: Self) -> str:
-        return self.widget.port
-
-    def reload_port(self: Self) -> None:
-        super().reload_port()
-        self.widget.port = self.port
-
-    def create_settings(self: Self) -> Settings:
-        return self.widget.settings
-
-    def reload_settings(self: Self) -> None:
-        super().reload_settings()
-        self.widget.settings_widget.settings = self.settings
-
-    def create_serial(self: Self) -> Serial:
-        serial = super().create_serial()
-
-        self.widget.serial_widget.connect()
-
-        return serial
-
-
 class ControlPanel(widgets.Tab):
+    @inject
     def __init__(
         self: Self,
-        dip_switches: Optional[DIPSwitches] = None,
-        settings: Optional[Settings] = None,
+        port: str = Provide[Container.port],
+        baud_rate: BaudRate = Provide[Container.baud_rate],
+        protocol: SerialProtocol = Provide[Container.protocol],
+        dip_switches: DIPSwitches = Provide[Container.dip_switches],
+        settings: Settings = Provide[Container.settings],
     ) -> None:
-        self.dip_switches = (
-            dip_switches if dip_switches is not None else DIPSwitches.defaults()
-        )
-        self._settings = (
-            settings if settings is not None else Settings.defaults(self.dip_switches)
-        )
+        self._baud_rate = baud_rate
+        self._protocol = protocol
 
-        self._container = ControlPanelContainer(self)
-
-        self.serial_widget = SerialWidget(self.dip_switches)
-        self.settings_widget = SettingsWidget(self.dip_switches, self._settings)
-        self._dip_switch_widget = DIPSwitchWidget(self.dip_switches)
+        self.serial_widget = SerialWidget(port, dip_switches)
+        self.settings_widget = SettingsWidget(dip_switches, settings)
+        self._dip_switch_widget = DIPSwitchWidget(dip_switches)
 
         super().__init__(
             titles=["Settings", "DIP Switches"],
@@ -106,7 +78,3 @@ class ControlPanel(widgets.Tab):
             widget.error(Exception("Not connected"))
 
         print(widget.settings)
-
-    @property
-    def container(self: Self) -> Container:
-        raise NotImplementedError("ControlPanel().container")

@@ -92,29 +92,24 @@ def serial(port: str) -> Serial:
     return MockSerial(port)
 
 
-class TestContainer(Container):
-    def __init__(self: Self, port: str, mock_serial: Serial) -> None:
-        super().__init__(port)
-        self._mock_serial = mock_serial
-
-    def create_serial(self: Self) -> Serial:
-        return self._mock_serial
-
-
 @pytest.fixture
 def container(port, serial) -> Generator[Container, None, None]:
-    container = TestContainer(port=port, mock_serial=serial)
+    container = Container()
 
-    yield container
-
-    container.connection.shutdown()
+    with container.port.override(port):
+        with container.serial.override(serial):
+            yield container
 
 
 @pytest.fixture
-def connection(container: Container) -> Connection:
-    return container.connection
+def connection(container: Container) -> Generator[Connection, None, None]:
+    connection = container.connection()
+
+    yield connection
+
+    connection.shutdown()
 
 
 @pytest.fixture
 def settings(container: Container) -> Settings:
-    return container.settings
+    return container.settings()
