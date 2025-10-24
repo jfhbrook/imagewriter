@@ -1,47 +1,9 @@
-from typing import Protocol, Self
+from typing import Optional, Self
 
 from imagewriter.connection import Connection
-
-# from imagewriter.language import Language
-# from imagewriter.pitch import Pitch
-# from imagewriter.print import PrintCommands
-# from imagewriter.quality import Quality
 from imagewriter.serial import Serial
 from imagewriter.settings import Settings
-from imagewriter.switch import DIPSwitches, SoftwareSwitches
-
-# from imagewriter.units import Inch, Pica
-
-
-class SoftwareSwitchesFactory(Protocol):
-    def __call__(self: Self, dip_switches: DIPSwitches) -> SoftwareSwitches: ...
-
-
-class SerialFactory(Protocol):
-    def __call__(self: Self, port: str, dip_switches: DIPSwitches) -> Serial: ...
-
-
-class ConnectionFactory(Protocol):
-    def __call__(self: Self, port: Serial) -> Connection: ...
-
-
-class SettingsFactory(Protocol):
-    def __call__(self: Self, dip_switches: DIPSwitches) -> Settings: ...
-
-
-def serial_factory(port: str, dip_switches: DIPSwitches) -> Serial:
-    return Serial(
-        port=port, baudrate=dip_switches.baud_rate, protocol=dip_switches.protocol
-    )
-
-
-def settings_factory(dip_switches: DIPSwitches) -> Settings:
-    return Settings.replace(
-        Settings.defaults(dip_switches),
-        lf_when_line_full=True,
-        perforation_skip=True,
-        include_eighth_data_bit=True,
-    )
+from imagewriter.switch import DIPSwitches
 
 
 class Container:
@@ -49,27 +11,72 @@ class Container:
         self: Self,
         port: str,
         dip_switches: DIPSwitches = DIPSwitches.defaults(),
-        serial: SerialFactory = serial_factory,
-        connection: ConnectionFactory = Connection,
-        settings: SettingsFactory = settings_factory,
     ) -> None:
-        self._dip_switches: DIPSwitches = dip_switches
-        self._port: Serial = serial(port, self._dip_switches)
-        self._connection: Connection = connection(self._port)
-        self._settings: Settings = settings(dip_switches)
+        self._port = port
+        self.dip_switches: DIPSwitches = dip_switches
+
+        self._settings: Optional[Settings] = None
+        self._serial: Optional[Serial] = None
+        self._connection: Optional[Connection] = None
+
+    def create_settings(self: Self) -> Settings:
+        return Settings.replace(
+            Settings.defaults(self.dip_switches),
+            lf_when_line_full=True,
+            perforation_skip=True,
+            include_eighth_data_bit=True,
+        )
+
+    def reload_settings(self: Self) -> None:
+        pass
+
+    def create_serial(self: Self) -> Serial:
+        return Serial(
+            port=self.port,
+            baudrate=self.dip_switches.baud_rate,
+            protocol=self.dip_switches.protocol,
+        )
+
+    def reload_serial(self: Self) -> None:
+        self.serial.close()
+        self.serial.port = self.port
+        self.serial.open()
+
+    def create_connection(self: Self) -> Connection:
+        return Connection(self.serial)
+
+    def reload_connection(self: Self) -> None:
+        pass
 
     @property
-    def dip_switches(self: Self) -> DIPSwitches:
-        return self._dip_switches
-
-    @property
-    def port(self: Self) -> Serial:
+    def port(self: Self) -> str:
         return self._port
 
-    @property
-    def connection(self: Self) -> Connection:
-        return self._connection
+    @port.setter
+    def port(self: Self, port: str) -> None:
+        self._port = port
+        self.reload_serial()
 
     @property
     def settings(self: Self) -> Settings:
+        if not self._settings:
+            self._settings = self.create_settings()
+
         return self._settings
+
+    @settings.setter
+    def settings(self: Self, settings: Settings) -> None:
+        self._settings = settings
+        self.reload_settings()
+
+    @property
+    def serial(self: Self) -> Serial:
+        if not self._serial:
+            self._serial = self.create_serial()
+        return self._serial
+
+    @property
+    def connection(self: Self) -> Connection:
+        if not self._connection:
+            self._connection = self.create_connection()
+        return self._connection
