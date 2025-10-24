@@ -31,14 +31,6 @@ def provide_settings(dip_switches: DIPSwitches) -> Settings:
     )
 
 
-def provide_serial(port: str, dip_switches: DIPSwitches) -> Serial:
-    return Serial(
-        port=port,
-        baudrate=dip_switches.baud_rate,
-        protocol=dip_switches.protocol,
-    )
-
-
 def provide_connection(serial: Serial) -> Connection:
     return Connection(serial)
 
@@ -51,5 +43,7 @@ class Container(containers.DeclarativeContainer):
     dip_switches = providers.Object(DIP_SWITCHES)
     settings = providers.Callable(provide_settings, dip_switches=dip_switches)
 
-    serial = providers.Singleton(Serial)
-    connection = providers.Callable(provide_connection, serial=serial)
+    serial = providers.Singleton(
+        Serial, port=port, baud_rate=baud_rate, protocol=protocol
+    )
+    connection = providers.Singleton(Connection, serial=serial)

@@ -94,8 +94,12 @@ class SerialWidget(widgets.VBox):
 
     def on_toggle(self: Self, callback: SerialCallback) -> None:
         def cb(button: widgets.Button) -> None:
-            callback(
-                self,
-            )
+            callback(self)
 
         self._connect_button.on_click(cb)
+
+    def on_port(self: Self, callback: SerialCallback) -> None:
+        def cb(value: str) -> None:
+            callback(self)
+
+        self._port_widget.observe(cb, names="value")
