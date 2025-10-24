@@ -31,10 +31,6 @@ def provide_settings(dip_switches: DIPSwitches) -> Settings:
     )
 
 
-def provide_connection(serial: Serial) -> Connection:
-    return Connection(serial)
-
-
 class Container(containers.DeclarativeContainer):
     port = providers.Callable(provide_port)
     baud_rate = providers.Callable(provide_baud_rate)

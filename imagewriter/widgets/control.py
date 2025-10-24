@@ -1,8 +1,9 @@
 from typing import Optional, Self
 
+from dependency_injector import providers
 import ipywidgets as widgets
 
-from imagewriter.connection import Connection
+# from imagewriter.connection import Connection
 from imagewriter.container import Container
 from imagewriter.serial import Serial
 from imagewriter.widgets.base import header
@@ -12,17 +13,22 @@ from imagewriter.widgets.switch import DIPSwitchWidget
 
 
 class ControlPanel(widgets.Tab):
-    def __init__(self: Self, container: Container = Container()) -> None:
-        self.container = container
+    def __init__(self: Self) -> None:
+        # We need to hook some custom behavior onto the creation of the
+        # serial port. We do that by subclassing the container here.
+
+        self._serial: Optional[Serial] = None
+
+        class _Container(Container):
+            serial = providers.Callable(self._provide_serial)
+
+        # OK, now create the container
+        self.container: Container = _Container()
 
         # Grab needed dependencies
-        port = container.port()
-        dip_switches = container.dip_switches()
-        settings = container.settings()
-
-        # Serial port is fetched lazily
-        self._serial: Optional[Serial] = None
-        self._connection: Optional[Connection] = None
+        port = self.container.port()
+        dip_switches = self.container.dip_switches()
+        settings = self.container.settings()
 
         # Child widgets
         self.serial_widget = SerialWidget(port, dip_switches)
@@ -48,19 +54,21 @@ class ControlPanel(widgets.Tab):
         self.serial_widget.on_toggle(self._toggle_serial)
         self.settings_widget.on_apply(self._click_apply)
 
-    # The serial port is already a singleton in the container, but we
-    # also need to hook some behavior onto it, so we do it here.
-    @property
-    def serial(self: Self) -> Serial:
+    def _provide_serial(self: Self) -> Serial:
         if not self._serial:
-            self._serial = self.container.serial()
-            # TODO: This means that the serial port will be incorrect prior
-            # to it being accessed here...
-            self.container.serial.override(self._serial)
+            self._serial = Serial(
+                port=self.container.port(),
+                baudrate=self.container.baud_rate(),
+                protocol=self.container.protocol(),
+            )
             if self._serial.is_open:
                 self.serial_widget.connect()
 
         return self._serial
+
+    @property
+    def serial(self: Self) -> Serial:
+        return self.container.serial()
 
     # Triggered when we reload the port, typically from clicking "connect".
     def _reload_port(self: Self) -> None:
@@ -83,16 +91,19 @@ class ControlPanel(widgets.Tab):
     # Open the serial port
     def _open_serial(self: Self) -> None:
         self._reload_port()
+        serial: Serial = self.container.serial()
 
-        if not self.serial.is_open:
-            self.serial.open()
+        if not serial.is_open:
+            serial.open()
 
         self.serial_widget.connect()
 
     # Close the serial port
     def _close_serial(self: Self) -> None:
-        if self.serial.is_open:
-            self.serial.close()
+        serial: Serial = self.container.serial()
+
+        if serial.is_open:
+            serial.close()
 
         self.serial_widget.disconnect()
         self.settings_widget.not_applied()
