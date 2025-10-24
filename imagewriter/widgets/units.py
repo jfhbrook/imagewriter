@@ -1,4 +1,4 @@
-from typing import Callable, Dict, Literal, Self, Type
+from typing import Callable, cast, Dict, Literal, Self, Type
 
 import ipywidgets as widgets
 
@@ -33,11 +33,19 @@ class UnitClassWidget(widgets.Dropdown):
 
     @property
     def units(self: Self) -> UnitName:
-        return self.value if self.value else "in"
+        return cast(UnitName, self.value) if self.value else "in"
+
+    @units.setter
+    def units(self: Self, unit: UnitName) -> None:
+        self.value = unit
 
     @property
     def cls(self: Self) -> Type[Distance]:
         return UNIT_CLASSES[self.units]
+
+    @cls.setter
+    def cls(self: Self, cls: Type[Distance]) -> None:
+        self.value = UNIT_NAMES[cls]
 
 
 UNIT_VALUES: Dict[Type[Distance], Callable[[Distance], float]] = {
@@ -103,3 +111,8 @@ class DistanceWidget(widgets.HBox):
     @property
     def distance(self: Self) -> Distance:
         return self._value_widget.distance
+
+    @distance.setter
+    def distance(self: Self, distance: Distance) -> None:
+        self._value_widget.distance = distance
+        self._class_widget.cls = distance.__class__

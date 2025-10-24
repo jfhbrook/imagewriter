@@ -19,15 +19,16 @@ class QualityWidget(widgets.Dropdown):
     def __init__(self: Self, quality: Quality) -> None:
         super().__init__(
             options=list(QUALITIES.keys()),
-            value=self._start_value(quality),
+            value=QUALITY_NAMES[quality],
             description="Quality:",
             disabled=False,
         )
-
-    def _start_value(self: Self, quality: Quality) -> str:
-        return QUALITY_NAMES[quality]
 
     @property
     def quality(self: Self) -> Quality:
         value: str = self.value if self.value else "Draft"
         return QUALITIES[value]
+
+    @quality.setter
+    def quality(self: Self, quality: Quality) -> None:
+        self.value = QUALITY_NAMES[quality]

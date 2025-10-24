@@ -11,15 +11,16 @@ class LanguageWidget(widgets.Dropdown):
     def __init__(self: Self, language: Language) -> None:
         super().__init__(
             options=list(LANGUAGES.keys()),
-            value=self._start_value(language),
+            value=language.value,
             description="Language:",
             disabled=False,
         )
-
-    def _start_value(self: Self, language: Language) -> str:
-        return language.value
 
     @property
     def language(self: Self) -> Language:
         value: str = self.value if self.value else "American"
         return LANGUAGES[value]
+
+    @language.setter
+    def language(self: Self, language: Language) -> None:
+        self.value = language.value

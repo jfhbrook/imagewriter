@@ -11,15 +11,16 @@ class PitchWidget(widgets.Dropdown):
     def __init__(self: Self, pitch: Pitch) -> None:
         super().__init__(
             options=list(PITCHES.keys()),
-            value=self._start_value(pitch),
+            value=pitch.value,
             description="Pitch:",
             disabled=False,
         )
-
-    def _start_value(self: Self, pitch: Pitch) -> str:
-        return pitch.value
 
     @property
     def pitch(self: Self) -> Pitch:
         value: str = self.value if self.value else "Elite"
         return PITCHES[value]
+
+    @pitch.setter
+    def pitch(self: Self, pitch: Pitch) -> None:
+        self.value = pitch.value

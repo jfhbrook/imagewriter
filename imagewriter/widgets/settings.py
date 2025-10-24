@@ -14,7 +14,6 @@ from imagewriter.widgets.quality import QualityWidget
 from imagewriter.widgets.units import DistanceWidget
 
 
-# TODO: Wire event to Pitch
 class LeftMarginWidget(DistanceWidget):
     def __init__(self: Self, settings: Settings) -> None:
         self._settings = settings
@@ -31,6 +30,10 @@ class LeftMarginWidget(DistanceWidget):
     def left_margin(self: Self) -> Distance:
         return self.distance
 
+    @left_margin.setter
+    def left_margin(self: Self, left_margin: Distance) -> None:
+        self.distance = left_margin
+
 
 class PageLengthWidget(DistanceWidget):
     def __init__(self: Self, settings: Settings) -> None:
@@ -44,6 +47,10 @@ class PageLengthWidget(DistanceWidget):
     @property
     def page_length(self: Self) -> Distance:
         return self.distance
+
+    @page_length.setter
+    def page_length(self: Self, page_length: Distance) -> None:
+        self.distance = page_length
 
 
 class SlashedZeroWidget(widgets.Dropdown):
@@ -60,6 +67,10 @@ class SlashedZeroWidget(widgets.Dropdown):
     def slashed_zero(self: Self) -> bool:
         return self.value == "Slashed"
 
+    @slashed_zero.setter
+    def slashed_zero(self: Self, slashed_zero: bool) -> None:
+        self.value = "Slashed" if slashed_zero else "Unslashed"
+
 
 class DistanceBetweenLinesWidget(DistanceWidget):
     def __init__(self: Self, settings: Settings) -> None:
@@ -72,6 +83,10 @@ class DistanceBetweenLinesWidget(DistanceWidget):
     @property
     def distance_between_lines(self: Self) -> Distance:
         return self.distance
+
+    @distance_between_lines.setter
+    def distance_between_lines(self: Self, distance_between_lines: Distance) -> None:
+        self.distance = distance_between_lines
 
 
 class LinesPerInchWidget(widgets.Dropdown):
@@ -86,6 +101,10 @@ class LinesPerInchWidget(widgets.Dropdown):
     def lines_per_inch(self: Self) -> int:
         value = self.value if self.value else "6"
         return int(value)
+
+    @lines_per_inch.setter
+    def lines_per_inch(self: Self, lines_per_inch: int) -> None:
+        self.value = lines_per_inch
 
 
 class LineSpacingWidget(widgets.HBox):
@@ -123,6 +142,15 @@ class LineSpacingWidget(widgets.HBox):
             return self._distance_between_lines_widget.distance_between_lines
         return Inch(1 / self._lines_per_inch_widget.lines_per_inch)
 
+    @distance_between_lines.setter
+    def distance_between_lines(self: Self, distance_between_lines: Distance) -> None:
+        self._distance_between_lines_widget.distance_between_lines = (
+            distance_between_lines
+        )
+        self._lines_per_inch_widget.lines_per_inch = int(
+            72 / distance_between_lines.points
+        )
+
     @property
     def lines_per_inch(self: Self) -> float:
         if self._stack.selected_index == 0:
@@ -130,6 +158,11 @@ class LineSpacingWidget(widgets.HBox):
                 72 / self._distance_between_lines_widget.distance_between_lines.points
             )
         return self._lines_per_inch_widget.lines_per_inch
+
+    @lines_per_inch.setter
+    def lines_per_inch(self: Self, lines_per_inch: int) -> None:
+        self._lines_per_inch_widget.lines_per_inch = lines_per_inch
+        self._distance_between_lines = Inch(1 / lines_per_inch)
 
 
 class LFWhenLineFullWidget(widgets.Dropdown):
@@ -149,10 +182,14 @@ class LFWhenLineFullWidget(widgets.Dropdown):
     def lf_when_line_full(self: Self) -> bool:
         return self.value == "Yes"
 
+    @lf_when_line_full.setter
+    def lf_when_line_full(self: Self, lf_when_line_full: bool) -> None:
+        self.value = "Yes" if lf_when_line_full else "No"
+
 
 class AutoLFAfterCRWidget(widgets.Dropdown):
     def __init__(self: Self, settings: Settings) -> None:
-        value = "Yes" if settings.lf_when_line_full else "No"
+        value = "Yes" if settings.auto_lf_after_cr else "No"
         super().__init__(
             options=["Yes", "No"],
             value=value,
@@ -163,6 +200,10 @@ class AutoLFAfterCRWidget(widgets.Dropdown):
     @property
     def auto_lf_after_cr(self: Self) -> bool:
         return self.value == "Yes"
+
+    @auto_lf_after_cr.setter
+    def auto_lf_after_cr(self: Self, auto_lf_after_cr: bool) -> None:
+        self.value = "Yes" if auto_lf_after_cr else "No"
 
 
 class CRInsertionWidget(widgets.Dropdown):
@@ -179,6 +220,10 @@ class CRInsertionWidget(widgets.Dropdown):
     def cr_insertion(self: Self) -> bool:
         return self.value == "Yes"
 
+    @cr_insertion.setter
+    def cr_insertion(self: Self, cr_insertion: bool) -> None:
+        self.value = "Yes" if cr_insertion else "No"
+
 
 class PerforationSkipWidget(widgets.Dropdown):
     def __init__(self: Self, settings: Settings) -> None:
@@ -192,6 +237,10 @@ class PerforationSkipWidget(widgets.Dropdown):
     @property
     def perforation_skip(self: Self) -> bool:
         return self.value == "Yes"
+
+    @perforation_skip.setter
+    def perforation_skip(self: Self, perforation_skip: bool) -> None:
+        self.value = "Yes" if perforation_skip else "No"
 
 
 class PaperOutSensorWidget(widgets.Dropdown):
@@ -211,6 +260,10 @@ class PaperOutSensorWidget(widgets.Dropdown):
     @property
     def paper_out_sensor(self: Self) -> bool:
         return self.value == "Enabled"
+
+    @paper_out_sensor.setter
+    def paper_out_sensor(self: Self, paper_out_sensor: bool) -> None:
+        self.value = "Enabled" if paper_out_sensor else "Disabled"
 
 
 class PrintCommandsWidget(widgets.Dropdown):
@@ -236,6 +289,14 @@ class PrintCommandsWidget(widgets.Dropdown):
             else PrintCommands.CR_ONLY
         )
 
+    @print_commands.setter
+    def print_commands(self: Self, print_commands: PrintCommands) -> None:
+        self.value = (
+            "CR, LF and FF"
+            if print_commands == PrintCommands.CR_LF_AND_FF
+            else "CR only"
+        )
+
 
 class SoftwareSelectResponseWidget(widgets.Dropdown):
     def __init__(self: Self, settings: Settings) -> None:
@@ -255,13 +316,17 @@ class SoftwareSelectResponseWidget(widgets.Dropdown):
     def software_select_response(self: Self) -> bool:
         return self.value == "Enabled"
 
+    @software_select_response.setter
+    def software_select_response(self: Self, software_select_response: bool) -> None:
+        self.value = "Enabled" if software_select_response else "Disabled"
+
 
 class IncludeEighthDataBitWidget(widgets.Dropdown):
     def __init__(self: Self, settings: Settings) -> None:
         value = "Included" if settings.include_eighth_data_bit else "Ignored"
 
         super().__init__(
-            options=["Ignored", "Respected"],
+            options=["Ignored", "Included"],
             value=value,
             description="8th bit:",
         )
@@ -269,6 +334,10 @@ class IncludeEighthDataBitWidget(widgets.Dropdown):
     @property
     def include_eighth_data_bit(self: Self) -> bool:
         return self.value == "Included"
+
+    @include_eighth_data_bit.setter
+    def include_eighth_data_bit(self: Self, include_eighth_data_bit: bool) -> None:
+        self.value = "Included" if include_eighth_data_bit else "Included"
 
 
 class ApplyButtonWidget(widgets.Button):
@@ -300,11 +369,7 @@ class ApplyStatusWidget(widgets.Label):
 
 
 class SettingsCallback(Protocol):
-    def __call__(
-        self: Self,
-        widget: "SettingsWidget",
-        settings: Settings,
-    ) -> None: ...
+    def __call__(self: Self, widget: "SettingsWidget") -> None: ...
 
 
 class SettingsWidget(widgets.VBox):
@@ -431,6 +496,34 @@ class SettingsWidget(widgets.VBox):
 
         return self._settings
 
+    @settings.setter
+    def settings(self: Self, settings: Settings) -> None:
+        self._settings = settings
+
+        self._left_margin_widget.left_margin = settings.left_margin
+        self._page_length_widget.page_length = settings.page_length
+        self._language_widget.language = settings.language
+        self._slashed_zero_widget.slashed_zero = settings.slashed_zero
+        self._pitch_widget.pitch = settings.pitch
+        self._line_spacing_widget.distance_between_lines = (
+            settings.distance_between_lines
+        )
+        self._lf_when_line_full_widget.lf_when_line_full = settings.lf_when_line_full
+        self._auto_lf_after_cr_widget.auto_lf_after_cr = settings.auto_lf_after_cr
+        self._cr_insertion_widget.cr_insertion = settings.cr_insertion
+        self._perforation_skip_widget.perforation_skip = settings.perforation_skip
+        self._paper_out_sensor_widget.paper_out_sensor = settings.paper_out_sensor
+        self._print_commands_widget.print_commands = settings.print_commands
+        self._quality_widget.quality = settings.quality
+        self._software_select_response_widget.software_select_response = (
+            settings.software_select_response
+        )
+        self._include_eighth_data_bit_widget.include_eighth_data_bit = (
+            settings.include_eighth_data_bit
+        )
+
+        self.applied()
+
     def not_applied(self: Self) -> None:
         self._apply_status.not_applied()
 
@@ -442,6 +535,6 @@ class SettingsWidget(widgets.VBox):
 
     def on_apply(self: Self, callback: SettingsCallback) -> None:
         def cb(button: widgets.Button) -> None:
-            callback(self, self.settings)
+            callback(self)
 
         self._apply_button.on_click(cb)

@@ -20,6 +20,10 @@ class SerialPortWidget(widgets.Dropdown):
         assert isinstance(self.value, str)
         return self.value
 
+    @port.setter
+    def port(self: Self, port: str) -> None:
+        self.value = port
+
 
 class SerialConnectButtonWidget(widgets.Button):
     NOT_CONNECTED = "Connect"
@@ -45,13 +49,7 @@ class SerialConnectButtonWidget(widgets.Button):
 
 
 class SerialCallback(Protocol):
-    def __call__(
-        self: Self,
-        widget: "SerialWidget",
-        port: str,
-        baud_rate: BaudRate,
-        protocol: SerialProtocol,
-    ) -> None: ...
+    def __call__(self: Self, widget: "SerialWidget") -> None: ...
 
 
 class SerialWidget(widgets.VBox):
@@ -69,6 +67,22 @@ class SerialWidget(widgets.VBox):
         )
 
     @property
+    def port(self: Self) -> str:
+        return self._port_widget.port
+
+    @port.setter
+    def port(self: Self, port: str) -> None:
+        self._port_widget.port = port
+
+    @property
+    def baud_rate(self: Self) -> BaudRate:
+        return self._dip_switches.baud_rate
+
+    @property
+    def protocol(self: Self) -> SerialProtocol:
+        return self._dip_switches.protocol
+
+    @property
     def connected(self: Self) -> bool:
         return self._connect_button.connected
 
@@ -82,9 +96,6 @@ class SerialWidget(widgets.VBox):
         def cb(button: widgets.Button) -> None:
             callback(
                 self,
-                self._port_widget.port,
-                self._dip_switches.baud_rate,
-                self._dip_switches.protocol,
             )
 
         self._connect_button.on_click(cb)
