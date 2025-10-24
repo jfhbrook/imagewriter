@@ -51,5 +51,5 @@ class Container(containers.DeclarativeContainer):
     dip_switches = providers.Object(DIP_SWITCHES)
     settings = providers.Callable(provide_settings, dip_switches=dip_switches)
 
-    serial = providers.Callable(provide_serial, port=port, dip_switches=dip_switches)
+    serial = providers.Singleton(Serial)
     connection = providers.Callable(provide_connection, serial=serial)
