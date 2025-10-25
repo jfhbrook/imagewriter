@@ -3,9 +3,10 @@ from typing import Optional, Self, Type
 from dependency_injector import providers
 import ipywidgets as widgets
 
-# from imagewriter.connection import Connection
+from imagewriter.connection import Connection
 from imagewriter.container import Container
 from imagewriter.serial import Serial
+from imagewriter.settings import Settings
 from imagewriter.widgets.base import header
 from imagewriter.widgets.serial import SerialWidget
 from imagewriter.widgets.settings import SettingsWidget
@@ -69,8 +70,16 @@ class ControlPanel(widgets.Tab):
         return self._serial
 
     @property
+    def settings(self: Self) -> Settings:
+        return self.container.settings()
+
+    @property
     def serial(self: Self) -> Serial:
         return self.container.serial()
+
+    @property
+    def connection(self: Self) -> Connection:
+        return self.container.connection()
 
     # Triggered when we reload the port, typically from clicking "connect".
     def _reload_port(self: Self) -> None:
