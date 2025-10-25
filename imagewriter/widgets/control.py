@@ -141,11 +141,4 @@ class ControlPanel(widgets.Tab):
     def _click_apply(self: Self, widget: SettingsWidget) -> None:
         self._reload_settings()
 
-        try:
-            self._apply_settings()
-        except Exception as exc:
-            widget.error(exc)
-
-    # Apply the settings to the serial connection.
-    def _apply_settings(self: Self) -> None:
-        raise NotImplementedError("Applying settings")
+        widget.apply(self.container.connection())

@@ -2,6 +2,8 @@ from typing import Optional, Protocol, Self
 
 import ipywidgets as widgets
 
+from imagewriter.connection import Connection
+from imagewriter.encoding.settings import apply_settings
 from imagewriter.pitch import Pitch
 from imagewriter.print import PrintCommands
 from imagewriter.settings import Settings
@@ -521,6 +523,17 @@ class SettingsWidget(widgets.VBox):
         self._include_eighth_data_bit_widget.include_eighth_data_bit = (
             settings.include_eighth_data_bit
         )
+
+        self.applied()
+
+    def apply(self: Self, connection: Connection) -> None:
+        commands = apply_settings(self.settings)
+        try:
+            connection.write(commands)
+            self.applied()
+        except Exception as exc:
+            self.error(exc)
+            raise
 
         self.applied()
 
