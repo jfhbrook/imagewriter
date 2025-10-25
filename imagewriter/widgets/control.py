@@ -7,6 +7,7 @@ from imagewriter.connection import Connection
 from imagewriter.container import Container
 from imagewriter.serial import Serial
 from imagewriter.settings import Settings
+from imagewriter.widgets.activity import ActivityWidget
 from imagewriter.widgets.base import header
 from imagewriter.widgets.serial import SerialWidget
 from imagewriter.widgets.settings import SettingsWidget
@@ -28,28 +29,30 @@ class ControlPanel(widgets.Tab):
         settings = self.container.settings()
 
         # Child widgets
-        self.serial_widget = SerialWidget(port, dip_switches)
-        self.settings_widget = SettingsWidget(dip_switches, settings)
+        self._serial_widget = SerialWidget(port, dip_switches)
+        self._settings_widget = SettingsWidget(dip_switches, settings)
         self._dip_switch_widget = DIPSwitchWidget(dip_switches)
+        self._activity_widget = ActivityWidget()
 
         super().__init__(
-            titles=["Settings", "DIP Switches"],
+            titles=["Settings", "DIP Switches", "Serial Activity"],
             children=[
                 widgets.VBox(
                     [
                         header("Serial Connection", 3),
-                        self.serial_widget,
+                        self._serial_widget,
                         header("Printer Settings", 3),
-                        self.settings_widget,
+                        self._settings_widget,
                     ]
                 ),
                 self._dip_switch_widget,
+                self._activity_widget,
             ],
         )
 
         # UI hooks
-        self.serial_widget.on_toggle(self._toggle_serial)
-        self.settings_widget.on_apply(self._click_apply)
+        self._serial_widget.on_toggle(self._toggle_serial)
+        self._settings_widget.on_apply(self._click_apply)
 
     def _bind_cls(self: Self, cls: Type[Container]) -> Type[Container]:
         class Container(cls):
@@ -68,10 +71,12 @@ class ControlPanel(widgets.Tab):
                     protocol=self.container.protocol(),
                 )
             except Exception as exc:
-                self.serial_widget.error(exc)
+                self._serial_widget.error(exc)
                 raise exc
+
+            self._activity_widget.instrument(self._serial)
             if self._serial.is_open:
-                self.serial_widget.connect()
+                self._serial_widget.connect()
 
         return self._serial
 
@@ -89,28 +94,28 @@ class ControlPanel(widgets.Tab):
 
     # Triggered when we reload the port, typically from clicking "connect".
     def _reload_port(self: Self) -> None:
-        self.container.port.override(self.serial_widget.port)
+        self.container.port.override(self._serial_widget.port)
 
         try:
             if self._serial:
-                self._serial.port = self.serial_widget.port
+                self._serial.port = self._serial_widget.port
         except Exception as exc:
-            self.serial_widget.error(exc)
+            self._serial_widget.error(exc)
             raise
 
     # Triggered when we reload the settings, typically from clicking "apply".
     def _reload_settings(self: Self) -> None:
-        self.container.settings.override(self.settings_widget.settings)
+        self.container.settings.override(self._settings_widget.settings)
 
     # Triggered when the "connect/disconnect" button is clicked
     def _toggle_serial(self: Self, widget: SerialWidget) -> None:
         if widget.connected:
-            self._close_serial()
+            self.close_serial()
         else:
-            self._open_serial()
+            self.open_serial()
 
     # Open the serial port
-    def _open_serial(self: Self) -> None:
+    def open_serial(self: Self) -> None:
         self._reload_port()
         serial: Serial = self.container.serial()
 
@@ -118,27 +123,30 @@ class ControlPanel(widgets.Tab):
             try:
                 serial.open()
             except Exception as exc:
-                self.serial_widget.error(exc)
+                self._serial_widget.error(exc)
                 raise exc
 
-        self.serial_widget.connect()
+        self._serial_widget.connect()
 
     # Close the serial port
-    def _close_serial(self: Self) -> None:
+    def close_serial(self: Self) -> None:
         serial: Serial = self.container.serial()
 
         try:
             if serial.is_open:
                 serial.close()
         except Exception as exc:
-            self.serial_widget.error(exc)
+            self._serial_widget.error(exc)
         else:
-            self.serial_widget.disconnect()
+            self._serial_widget.disconnect()
 
-        self.settings_widget.not_applied()
+        self._settings_widget.not_applied()
 
     # Triggered when the "apply" button is clicked.
     def _click_apply(self: Self, widget: SettingsWidget) -> None:
         self._reload_settings()
 
         widget.apply(self.container.connection())
+
+    def shutdown(self: Self) -> None:
+        self._activity_widget.shutdown()

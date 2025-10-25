@@ -17,7 +17,7 @@ class SerialStateObserver:
         return datetime.datetime.now().strftime("%H:%M:%S.%f")
 
     def _fmt_signal(self: Self, signal: bool) -> str:
-        return "🚨" if signal else ""
+        return "🌕" if signal else "🌑"
 
     def _fmt_row(self: Self, name: str, signal: bool) -> str:
         return f"| {name} | {self._fmt_signal(signal)}"

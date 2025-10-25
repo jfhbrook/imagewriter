@@ -47,6 +47,9 @@ class Connection:
         for command in commands:
             self._command_queue.put(command)
 
+    def flush(self: Self) -> None:
+        self.serial.flush()
+
     def interrupt(self: Self, commands: Sequence[Command], dump: bool = True) -> None:
         """
         Interrupt with a sequence of commands.
@@ -111,7 +114,7 @@ class Connection:
                 self.serial.write(bytes(command))
 
             # Flush the serial
-            self.serial.flush()
+            self.flush()
 
             # Enable flow_control again
             self._set_flow_control(True)
