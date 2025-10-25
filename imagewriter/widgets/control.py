@@ -55,15 +55,21 @@ class ControlPanel(widgets.Tab):
         class Container(cls):
             serial = providers.Callable(self._provide_serial)
 
+            connection = providers.Singleton(Connection, serial=serial)
+
         return Container
 
     def _provide_serial(self: Self) -> Serial:
         if not self._serial:
-            self._serial = Serial(
-                port=self.container.port(),
-                baudrate=self.container.baud_rate(),
-                protocol=self.container.protocol(),
-            )
+            try:
+                self._serial = Serial(
+                    port=self.container.port(),
+                    baudrate=self.container.baud_rate(),
+                    protocol=self.container.protocol(),
+                )
+            except Exception as exc:
+                self.serial_widget.error(exc)
+                raise exc
             if self._serial.is_open:
                 self.serial_widget.connect()
 
@@ -85,8 +91,12 @@ class ControlPanel(widgets.Tab):
     def _reload_port(self: Self) -> None:
         self.container.port.override(self.serial_widget.port)
 
-        if self._serial:
-            self._serial.port = self.serial_widget.port
+        try:
+            if self._serial:
+                self._serial.port = self.serial_widget.port
+        except Exception as exc:
+            self.serial_widget.error(exc)
+            raise
 
     # Triggered when we reload the settings, typically from clicking "apply".
     def _reload_settings(self: Self) -> None:
@@ -105,7 +115,11 @@ class ControlPanel(widgets.Tab):
         serial: Serial = self.container.serial()
 
         if not serial.is_open:
-            serial.open()
+            try:
+                serial.open()
+            except Exception as exc:
+                self.serial_widget.error(exc)
+                raise exc
 
         self.serial_widget.connect()
 
@@ -113,10 +127,14 @@ class ControlPanel(widgets.Tab):
     def _close_serial(self: Self) -> None:
         serial: Serial = self.container.serial()
 
-        if serial.is_open:
-            serial.close()
+        try:
+            if serial.is_open:
+                serial.close()
+        except Exception as exc:
+            self.serial_widget.error(exc)
+        else:
+            self.serial_widget.disconnect()
 
-        self.serial_widget.disconnect()
         self.settings_widget.not_applied()
 
     # Triggered when the "apply" button is clicked.

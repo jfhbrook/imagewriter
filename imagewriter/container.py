@@ -6,6 +6,8 @@ from imagewriter.serial import BaudRate, Serial, SerialProtocol
 from imagewriter.settings import Settings
 from imagewriter.switch import DIPSwitches
 
+DIP_SWITCHES = DIPSwitches.defaults()
+
 
 def provide_port() -> str:
     return comports()[-1].device
@@ -19,9 +21,6 @@ def provide_protocol(dip_switches: DIPSwitches) -> SerialProtocol:
     return dip_switches.protocol
 
 
-DIP_SWITCHES = DIPSwitches.defaults()
-
-
 def provide_settings(dip_switches: DIPSwitches) -> Settings:
     return Settings.replace(
         Settings.defaults(dip_switches),
@@ -33,13 +32,13 @@ def provide_settings(dip_switches: DIPSwitches) -> Settings:
 
 class Container(containers.DeclarativeContainer):
     port = providers.Callable(provide_port)
-    baud_rate = providers.Callable(provide_baud_rate)
-    protocol = providers.Callable(provide_protocol)
-
     dip_switches = providers.Object(DIP_SWITCHES)
+    baud_rate = providers.Callable(provide_baud_rate, dip_switches=dip_switches)
+    protocol = providers.Callable(provide_protocol, dip_switches=dip_switches)
+
     settings = providers.Callable(provide_settings, dip_switches=dip_switches)
 
-    serial = providers.Singleton(
+    serial = providers.Factory(
         Serial, port=port, baud_rate=baud_rate, protocol=protocol
     )
-    connection = providers.Singleton(Connection, serial=serial)
+    connection = providers.Factory(Connection, serial=serial)

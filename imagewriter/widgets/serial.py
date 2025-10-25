@@ -3,7 +3,6 @@ from typing import List, Protocol, Self
 import ipywidgets as widgets
 from serial.tools.list_ports import comports
 
-from imagewriter.serial import BaudRate, SerialProtocol
 from imagewriter.switch import DIPSwitches
 
 
@@ -48,6 +47,28 @@ class SerialConnectButtonWidget(widgets.Button):
         self.description = self.NOT_CONNECTED
 
 
+class SerialStatusWidget(widgets.Label):
+    NOT_CONNECTED = "🌑 Disconnected"
+    CONNECTED = "🌕 Connected"
+    ERROR = "❌ Error: {err}"
+
+    def __init__(self: Self) -> None:
+        super().__init__(value=self.NOT_CONNECTED)
+
+    @property
+    def connected(self: Self) -> bool:
+        return self.value == self.CONNECTED
+
+    def disconnect(self: Self) -> None:
+        self.value = self.NOT_CONNECTED
+
+    def connect(self: Self) -> None:
+        self.value = self.CONNECTED
+
+    def error(self: Self, err: Exception) -> None:
+        self.value = self.ERROR.format(err=err)
+
+
 class SerialCallback(Protocol):
     def __call__(self: Self, widget: "SerialWidget") -> None: ...
 
@@ -58,11 +79,17 @@ class SerialWidget(widgets.VBox):
         self._port_widget = SerialPortWidget(port)
 
         self._connect_button = SerialConnectButtonWidget()
+        self._status_widget = SerialStatusWidget()
 
         super().__init__(
             [
                 self._port_widget,
-                self._connect_button,
+                widgets.HBox(
+                    [
+                        self._connect_button,
+                        self._status_widget,
+                    ]
+                ),
             ]
         )
 
@@ -75,31 +102,23 @@ class SerialWidget(widgets.VBox):
         self._port_widget.port = port
 
     @property
-    def baud_rate(self: Self) -> BaudRate:
-        return self._dip_switches.baud_rate
-
-    @property
-    def protocol(self: Self) -> SerialProtocol:
-        return self._dip_switches.protocol
-
-    @property
     def connected(self: Self) -> bool:
         return self._connect_button.connected
 
     def connect(self: Self) -> None:
         self._connect_button.connect()
+        self._status_widget.connect()
 
     def disconnect(self: Self) -> None:
         self._connect_button.disconnect()
+        self._status_widget.disconnect()
+
+    def error(self: Self, err: Exception) -> None:
+        self._connect_button.disconnect()
+        self._status_widget.error(err)
 
     def on_toggle(self: Self, callback: SerialCallback) -> None:
         def cb(button: widgets.Button) -> None:
             callback(self)
 
         self._connect_button.on_click(cb)
-
-    def on_port(self: Self, callback: SerialCallback) -> None:
-        def cb(value: str) -> None:
-            callback(self)
-
-        self._port_widget.observe(cb, names="value")
