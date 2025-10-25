@@ -4,11 +4,10 @@ from unittest.mock import Mock
 import pytest
 
 from imagewriter.connection import Connection
-from imagewriter.container import Container, SerialFactory
+from imagewriter.container import Container
 from imagewriter.encoding.base import Command, Print
 from imagewriter.serial import BaudRate, Serial, SerialProtocol
 from imagewriter.settings import Settings
-from imagewriter.switch import DIPSwitches
 
 
 @pytest.fixture
@@ -94,25 +93,23 @@ def serial(port: str) -> Serial:
 
 
 @pytest.fixture
-def serial_factory(serial: Serial) -> SerialFactory:
-    def factory(port: str, dip_switches: DIPSwitches) -> Serial:
-        return serial
+def container(port, serial) -> Generator[Container, None, None]:
+    container = Container()
 
-    return factory
-
-
-@pytest.fixture
-def container(port, serial_factory) -> Generator[Container, None, None]:
-    container = Container(port=port, serial=serial_factory)
-    yield container
-    container.connection.shutdown()
+    with container.port.override(port):
+        with container.serial.override(serial):
+            yield container
 
 
 @pytest.fixture
-def connection(container: Container) -> Connection:
-    return container.connection
+def connection(container: Container) -> Generator[Connection, None, None]:
+    connection = container.connection()
+
+    yield connection
+
+    connection.shutdown()
 
 
 @pytest.fixture
 def settings(container: Container) -> Settings:
-    return container.settings
+    return container.settings()

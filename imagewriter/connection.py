@@ -20,8 +20,8 @@ class Interrupted(Exception):
 
 
 class Connection:
-    def __init__(self: Self, port: Serial) -> None:
-        self.port: Serial = port
+    def __init__(self: Self, serial: Serial) -> None:
+        self.serial: Serial = serial
         self._executor: Executor = ThreadPoolExecutor()
         self._command_queue: queue.Queue[Command] = queue.Queue(maxsize=0)
         self._interrupt_queue: queue.Queue[Interrupt] = queue.Queue(maxsize=1)
@@ -39,13 +39,16 @@ class Connection:
 
     def write(self: Self, commands: Sequence[Command]) -> None:
         """
-        Write to the serial port.
+        Write to the serial portl.
 
         Commands are buffered, respecting the ImageWriter II's CTS signal.
         """
 
         for command in commands:
             self._command_queue.put(command)
+
+    def flush(self: Self) -> None:
+        self.serial.flush()
 
     def interrupt(self: Self, commands: Sequence[Command], dump: bool = True) -> None:
         """
@@ -59,7 +62,7 @@ class Connection:
 
     @property
     def _timeout(self: Self) -> float:
-        return 1 / self.port.baudrate
+        return 1 / self.serial.baudrate
 
     def _worker(self: Self) -> None:
         while self._running:
@@ -74,7 +77,7 @@ class Connection:
                     # Wait for CTS to go high
                     self._wait_for_cts()
                     # Now we can write the command
-                    self.port.write(bytes(command))
+                    self.serial.write(bytes(command))
                 except queue.Empty:
                     # No ready command - that's OK
                     continue
@@ -86,17 +89,17 @@ class Connection:
 
     def _wait_for_cts(self: Self) -> None:
         # Check for interrupts until CTS is high
-        while not self.port.cts:
+        while not self.serial.cts:
             time.sleep(self._timeout)
             self._run_interrupts()
         # Check for interrupts one last time
         self._run_interrupts()
 
     def _set_flow_control(self: Self, enabled: bool) -> None:
-        if self.port.protocol == SerialProtocol.XONXOFF:
-            self.port.xonxoff = enabled
+        if self.serial.protocol == SerialProtocol.XONXOFF:
+            self.serial.xonxoff = enabled
         else:
-            self.port.rtscts = enabled
+            self.serial.rtscts = enabled
 
     def _run_interrupts(self: Self) -> None:
         try:
@@ -106,12 +109,12 @@ class Connection:
             # Disable flow control
             self._set_flow_control(False)
 
-            # Write our interrupt to the port
+            # Write our interrupt to the serial
             for command in interrupt.commands:
-                self.port.write(bytes(command))
+                self.serial.write(bytes(command))
 
-            # Flush the port
-            self.port.flush()
+            # Flush the serial
+            self.flush()
 
             # Enable flow_control again
             self._set_flow_control(True)
