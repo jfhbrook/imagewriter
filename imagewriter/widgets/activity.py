@@ -21,10 +21,10 @@ class SerialStateObserver(debug.SerialStateObserver):
 
 class ActivityWidget(widgets.VBox):
     def __init__(self: Self) -> None:
-        self.dtr = widgets.Text(value="", disabled=True)
-        self.dsr = widgets.Text(value="", disabled=True)
-        self.rts = widgets.Text(value="", disabled=True)
-        self.cts = widgets.Text(value="", disabled=True)
+        self.dtr = widgets.Text(value="🌑", disabled=True)
+        self.dsr = widgets.Text(value="🌑", disabled=True)
+        self.rts = widgets.Text(value="🌑", disabled=True)
+        self.cts = widgets.Text(value="🌑", disabled=True)
 
         super().__init__(
             [
