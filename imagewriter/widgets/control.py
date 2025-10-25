@@ -1,4 +1,4 @@
-from typing import Optional, Self
+from typing import Optional, Self, Type
 
 from dependency_injector import providers
 import ipywidgets as widgets
@@ -13,17 +13,13 @@ from imagewriter.widgets.switch import DIPSwitchWidget
 
 
 class ControlPanel(widgets.Tab):
-    def __init__(self: Self) -> None:
+    def __init__(self: Self, container_cls: Type[Container] = Container) -> None:
         # We need to hook some custom behavior onto the creation of the
         # serial port. We do that by subclassing the container here.
 
         self._serial: Optional[Serial] = None
-
-        class _Container(Container):
-            serial = providers.Callable(self._provide_serial)
-
-        # OK, now create the container
-        self.container: Container = _Container()
+        cls = self._bind_cls(container_cls)
+        self.container: Container = cls()
 
         # Grab needed dependencies
         port = self.container.port()
@@ -53,6 +49,12 @@ class ControlPanel(widgets.Tab):
         # UI hooks
         self.serial_widget.on_toggle(self._toggle_serial)
         self.settings_widget.on_apply(self._click_apply)
+
+    def _bind_cls(self: Self, cls: Type[Container]) -> Type[Container]:
+        class Container(cls):
+            serial = providers.Callable(self._provide_serial)
+
+        return Container
 
     def _provide_serial(self: Self) -> Serial:
         if not self._serial:
