@@ -8,6 +8,7 @@ from imagewriter.render import DocumentRenderer, PandocRenderer, RichTextBuilder
 from imagewriter.serial import BaudRate, Serial, SerialProtocol
 from imagewriter.settings import Settings
 from imagewriter.switch import DIPSwitches
+from imagewriter.test import test_page
 
 DIP_SWITCHES = DIPSwitches.defaults()
 
@@ -63,3 +64,10 @@ class Container(containers.DeclarativeContainer):
     rich_text_builder = providers.Factory(RichTextBuilder, settings=settings)
     document_renderer = providers.Factory(DocumentRenderer, settings=settings)
     pandoc_renderer = providers.Factory(PandocRenderer, settings=settings)
+
+    test_page = providers.Factory(
+        test_page,
+        character_encoder=character_encoder,
+        document_renderer=document_renderer,
+        pandoc_renderer=pandoc_renderer,
+    )

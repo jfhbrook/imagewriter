@@ -1,10 +1,7 @@
 import importlib.resources
 from typing import List, Self
 
-from dependency_injector.wiring import inject, Provide
-
 from imagewriter.character import MouseTextCharacter
-from imagewriter.container import Container
 from imagewriter.document import Document, Header, split_text
 from imagewriter.encoding import (
     boldface,
@@ -141,11 +138,10 @@ def markdown_test(renderer: PandocRenderer) -> List[Command]:
     return renderer.render(MARKDOWN, format="markdown")
 
 
-@inject
 def test_page(
-    character_encoder=Provide[Container.character_encoder],
-    document_renderer=Provide[Container.document_renderer],
-    pandoc_renderer=Provide[Container.pandoc_renderer],
+    character_encoder: CharacterEncoder,
+    document_renderer: DocumentRenderer,
+    pandoc_renderer: PandocRenderer,
 ) -> List[Command]:
     title = TitleRenderer(document_renderer)
     return [

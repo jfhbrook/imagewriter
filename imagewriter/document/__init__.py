@@ -687,7 +687,7 @@ class Document:
 
 
 def split_text(text: str) -> List[Inline]:
-    inlines: List[Inline] = list()
+    inlines: List[Inline] = []
     buffer: str = ""
 
     def process_buffer() -> None:
