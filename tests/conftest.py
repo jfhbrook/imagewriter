@@ -1,3 +1,4 @@
+import importlib.resources
 from typing import Callable, Generator, List, Optional, Self
 from unittest.mock import Mock
 
@@ -5,9 +6,55 @@ import pytest
 
 from imagewriter.connection import Connection
 from imagewriter.container import Container
-from imagewriter.encoding.base import Command, Print
+from imagewriter.encoding import (
+    boldface,
+    CharacterEncoder,
+    Command,
+    CR,
+    double_width,
+    half_height,
+    LF,
+    Print,
+    PRINT_SLASHED_ZERO,
+    PRINT_UNSLASHED_ZERO,
+    START_SUBSCRIPT,
+    START_SUPERSCRIPT,
+    STOP_SUBSCRIPT,
+    underline,
+)
 from imagewriter.serial import BaudRate, Serial, SerialProtocol
 from imagewriter.settings import Settings
+
+#
+# Some fixtures that may be imported directly by Jupyter notebooks.
+#
+
+CHARACTER_ENCODER = CharacterEncoder()
+
+HELLO_WORLD: List[Command] = CHARACTER_ENCODER.encode("Hello world!") + [CR, LF]
+ATTRIBUTES: List[Command] = [
+    *CHARACTER_ENCODER.encode("Plain\r\n"),
+    *double_width(CHARACTER_ENCODER.encode("Double width\r\n")),
+    *underline(CHARACTER_ENCODER.encode("Underlined\r\n")),
+    *boldface(CHARACTER_ENCODER.encode("Boldface\r\n")),
+    *half_height(CHARACTER_ENCODER.encode("Half height\r\n")),
+    START_SUPERSCRIPT,
+    *CHARACTER_ENCODER.encode("Superscript\r\n"),
+    START_SUBSCRIPT,
+    *CHARACTER_ENCODER.encode("Subscript\r\n"),
+    STOP_SUBSCRIPT,
+    PRINT_UNSLASHED_ZERO,
+    *CHARACTER_ENCODER.encode("Unslashed 0\r\n"),
+    PRINT_SLASHED_ZERO,
+    *CHARACTER_ENCODER.encode("Slashed 0\r\n"),
+    CR,
+]
+SIMPLE_MARKDOWN: str = importlib.resources.read_text(
+    __name__, "./documents/test_markdown.md"
+)
+PANDOC_MARKDOWN: str = importlib.resources.read_text(
+    __name__, "documents/test_pandoc.md"
+)
 
 
 @pytest.fixture
@@ -113,3 +160,23 @@ def connection(container: Container) -> Generator[Connection, None, None]:
 @pytest.fixture
 def settings(container: Container) -> Settings:
     return container.settings()
+
+
+@pytest.fixture
+def hello_world() -> List[Command]:
+    return HELLO_WORLD
+
+
+@pytest.fixture
+def simple_markdown() -> str:
+    return SIMPLE_MARKDOWN
+
+
+@pytest.fixture
+def pandoc_markdown() -> str:
+    return PANDOC_MARKDOWN
+
+
+@pytest.fixture
+def attributes() -> List[Command]:
+    return ATTRIBUTES

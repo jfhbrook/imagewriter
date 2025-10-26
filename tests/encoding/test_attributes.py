@@ -1,5 +1,7 @@
-from tests.documents.attributes import ATTRIBUTES_TEST
+from typing import List
+
+from imagewriter.encoding import Command
 
 
-def test_attributes(snapshot) -> None:
-    assert ATTRIBUTES_TEST == snapshot
+def test_attributes(attributes: List[Command], snapshot) -> None:
+    assert attributes == snapshot

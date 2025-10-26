@@ -1,8 +1,9 @@
-from documents.attributes import ATTRIBUTES_TEST
-from documents.hello import HELLO_WORLD
+from conftest import ATTRIBUTES, HELLO_WORLD, SIMPLE_MARKDOWN
 from IPython.display import Markdown
 
 from imagewriter.encoding import CANCEL_CURRENT_LINE, CR, Print, SetLFWhenLineFull
+from imagewriter.pandoc import parse_document
+from imagewriter.render import DocumentRenderer
 from imagewriter.widgets import ControlPanel
 
 
@@ -14,10 +15,21 @@ def test_hello_world(control: ControlPanel) -> Markdown:
 
 
 def test_attributes(control: ControlPanel) -> Markdown:
-    control.connection.write(ATTRIBUTES_TEST)
+    control.connection.write(ATTRIBUTES)
     control.connection.flush()
 
-    return Markdown("✅ Attributes demo")
+    return Markdown("✅ Attributes")
+
+
+def test_markdown(control: ControlPanel) -> Markdown:
+    doc = parse_document(SIMPLE_MARKDOWN)
+    renderer = DocumentRenderer(control.settings)
+    commands = renderer.render(doc)
+
+    control.connection.write(commands)
+    control.connection.flush()
+
+    return Markdown("✅ Markdown")
 
 
 def test_memory(control: ControlPanel, print_buffer_size: int) -> Markdown:

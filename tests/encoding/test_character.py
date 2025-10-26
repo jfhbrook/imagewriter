@@ -1,7 +1,9 @@
-from tests.documents.hello import HELLO_WORLD
+from typing import Callable, List
 
-from imagewriter.encoding import CR, LF
+from imagewriter.encoding import Command, CR, LF
 
 
-def test_hello_world(encoded_text) -> None:
-    assert HELLO_WORLD == encoded_text("Hello world!") + [CR, LF]
+def test_hello_world(
+    hello_world: str, encoded_text: Callable[[str], List[Command]]
+) -> None:
+    assert hello_world == encoded_text("Hello world!") + [CR, LF]
