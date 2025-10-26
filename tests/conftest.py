@@ -4,6 +4,7 @@ from unittest.mock import Mock
 
 import pytest
 
+from imagewriter.character import MouseTextCharacter
 from imagewriter.connection import Connection
 from imagewriter.container import Container
 from imagewriter.encoding import (
@@ -172,6 +173,49 @@ PITCHES: List[Command] = [
     CR,
     LF,
     *_pitch_test(Pitch.ELITE_PROPORTIONAL),
+]
+
+
+MOUSETEXT = [
+    _title("MouseText"),
+    CR,
+    LF,
+    CR,
+    LF,
+    *CHARACTER_ENCODER.encode(
+        MouseTextCharacter.DARK_APPLE,
+        MouseTextCharacter.LIGHT_APPLE,
+        MouseTextCharacter.ARROWHEAD_SHAPED_POINTER,
+        MouseTextCharacter.HOURGLASS,
+        MouseTextCharacter.CHECK_MARK,
+        MouseTextCharacter.INVERSE_CHECK_MARK,
+        MouseTextCharacter.DOWNWARDS_ARROW_WITH_TIP_LEFTWARDS,
+        MouseTextCharacter.TITLE_BAR,
+        MouseTextCharacter.LEFTWARDS_ARROW,
+        MouseTextCharacter.ELLIPSIS,
+        MouseTextCharacter.DOWNWARDS_ARROW,
+        MouseTextCharacter.UPWARDS_ARROW,
+        MouseTextCharacter.UPPER_ONE_EIGHTS_BLOCK,
+        MouseTextCharacter.CARRIAGE_RETURN,
+        MouseTextCharacter.FULL_BLOCK,
+        MouseTextCharacter.LEFTWARDS_ARROW_AND_UPPER_AND_LOWER_ONE_EIGHTH_BLOCK,
+        MouseTextCharacter.RIGHTWARDS_ARROW_AND_UPPER_AND_LOWER_ONE_EIGHTH_BLOCK,
+        MouseTextCharacter.DOWNWARDS_ARROW_AND_RIGHT_ONE_EIGHTH_BLOCK,
+        MouseTextCharacter.UPWARDS_ARROW_AND_RIGHT_ONE_EIGHTH_BLOCK,
+        MouseTextCharacter.ALSO_UPPER_ONE_EIGHTS_BLOCK,
+        MouseTextCharacter.LEFT_AND_LOWER_ONE_EIGHTH_BLOCK,
+        MouseTextCharacter.RIGHTWARDS_ARROW,
+        MouseTextCharacter.BLOCK_2,
+        MouseTextCharacter.BLOCK_3,
+        MouseTextCharacter.LEFT_HALF_FOLDER,
+        MouseTextCharacter.RIGHT_HALF_FOLDER,
+        MouseTextCharacter.RIGHT_ONE_EIGHTH_BLOCK,
+        MouseTextCharacter.BLACK_DIAMOND,
+        MouseTextCharacter.UPPER_AND_LOWER_ONE_EIGHTH_BLOCK,
+        MouseTextCharacter.VOIDED_GREEK_CROSS,
+        MouseTextCharacter.RIGHT_OPEN_SQUARED_DOT,
+        MouseTextCharacter.LEFT_ONE_EIGHTH_BLOCK,
+    ),
 ]
 
 

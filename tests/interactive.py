@@ -1,4 +1,11 @@
-from conftest import ATTRIBUTES, HELLO_WORLD, LANGUAGES, PITCHES, SIMPLE_MARKDOWN
+from conftest import (
+    ATTRIBUTES,
+    HELLO_WORLD,
+    LANGUAGES,
+    MOUSETEXT,
+    PITCHES,
+    SIMPLE_MARKDOWN,
+)
 from IPython.display import Markdown
 
 from imagewriter.encoding import CANCEL_CURRENT_LINE, CR, Print, SetLFWhenLineFull
@@ -33,6 +40,13 @@ def test_pitches(control: ControlPanel) -> Markdown:
     control.connection.flush()
 
     return Markdown("✅ Pitches")
+
+
+def test_mousetext(control: ControlPanel) -> Markdown:
+    control.connection.write(MOUSETEXT)
+    control.connection.flush()
+
+    return Markdown("✅ Mousetext")
 
 
 def test_markdown(control: ControlPanel) -> Markdown:
