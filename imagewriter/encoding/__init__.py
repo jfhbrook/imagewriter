@@ -50,6 +50,7 @@ from imagewriter.encoding.graphics import (
     PrintGraphicsData,
     SET_GRAPHICS_DISTANCE_BETWEEN_LINES,
 )
+from imagewriter.encoding.language import set_language
 from imagewriter.encoding.motion import (
     BACKSPACE,
     Backspace,
@@ -121,7 +122,6 @@ __all__: List[str] = [
     "SetLeftMargin",
     "SetPageLength",
     "CANCEL_CURRENT_LINE",
-    # start
     "SetMaxCustomCharacterWidth",
     "LoadCustomCharacters",
     "DisableMode",
@@ -132,10 +132,10 @@ __all__: List[str] = [
     "CharacterEncoder",
     "TOP_WIRES",
     "BOTTOM_WIRES",
-    # stop
     "SetColor",
     "PrintGraphicsData",
     "SET_GRAPHICS_DISTANCE_BETWEEN_LINES",
+    "set_language",
     "BACKSPACE",
     "Backspace",
     "BackspaceLengthError",

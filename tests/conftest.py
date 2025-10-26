@@ -17,11 +17,13 @@ from imagewriter.encoding import (
     Print,
     PRINT_SLASHED_ZERO,
     PRINT_UNSLASHED_ZERO,
+    set_language,
     START_SUBSCRIPT,
     START_SUPERSCRIPT,
     STOP_SUBSCRIPT,
     underline,
 )
+from imagewriter.language import Language
 from imagewriter.serial import BaudRate, Serial, SerialProtocol
 from imagewriter.settings import Settings
 
@@ -55,6 +57,45 @@ SIMPLE_MARKDOWN: str = importlib.resources.read_text(
 PANDOC_MARKDOWN: str = importlib.resources.read_text(
     __name__, "documents/test_pandoc.md"
 )
+
+
+def _language_characters(language: Language) -> List[Command]:
+    return [
+        *boldface([Print(f"-- {language.value} --".encode(encoding="ascii"))]),
+        *set_language(language),
+        Print(f"#${chr(64)}[\\]`(|)~".encode(encoding="ascii")),
+    ]
+
+
+LANGUAGE_CHARACTERS: List[Command] = [
+    *boldface(double_width(CHARACTER_ENCODER.encode("=== Language Characters ==="))),
+    CR,
+    LF,
+    *_language_characters(Language.AMERICAN),
+    CR,
+    LF,
+    *_language_characters(Language.BRITISH),
+    CR,
+    LF,
+    *_language_characters(Language.GERMAN),
+    CR,
+    LF,
+    *_language_characters(Language.FRENCH),
+    CR,
+    LF,
+    *_language_characters(Language.SWEDISH),
+    CR,
+    LF,
+    *_language_characters(Language.ITALIAN),
+    CR,
+    LF,
+    *_language_characters(Language.SPANISH),
+    CR,
+    LF,
+    *_language_characters(Language.DANISH),
+    CR,
+    LF,
+]
 
 
 @pytest.fixture

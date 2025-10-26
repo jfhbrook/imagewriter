@@ -1,4 +1,4 @@
-from conftest import ATTRIBUTES, HELLO_WORLD, SIMPLE_MARKDOWN
+from conftest import ATTRIBUTES, HELLO_WORLD, LANGUAGE_CHARACTERS, SIMPLE_MARKDOWN
 from IPython.display import Markdown
 
 from imagewriter.encoding import CANCEL_CURRENT_LINE, CR, Print, SetLFWhenLineFull
@@ -19,6 +19,13 @@ def test_attributes(control: ControlPanel) -> Markdown:
     control.connection.flush()
 
     return Markdown("✅ Attributes")
+
+
+def test_language(control: ControlPanel) -> Markdown:
+    control.connection.write(LANGUAGE_CHARACTERS)
+    control.connection.flush()
+
+    return Markdown("✅ Language characters")
 
 
 def test_markdown(control: ControlPanel) -> Markdown:
