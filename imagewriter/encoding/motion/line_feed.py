@@ -36,7 +36,7 @@ class LineFeed(Bytes):
     def __init__(self: Self, lines: int) -> None:
         assert 1 <= lines <= 15, "Must feed between 1 and 15 lines"
 
-        self._lines = lines
+        self.lines = lines
 
         if lines == 1:
             super().__init__(b"\n")
@@ -45,10 +45,10 @@ class LineFeed(Bytes):
             super().__init__(ctrl("_") + _encode_line_feed_count(lines))
 
     def __repr__(self: Self) -> str:
-        if self._lines == 1:
+        if self.lines == 1:
             return "<LF>"
 
-        return f"LineFeed({self._lines})"
+        return f"LineFeed({self.lines})"
 
     def __len__(self: Self) -> int:
         raise LineFeedLengthError("Line feeds do not have a meaningful length")

@@ -103,6 +103,15 @@ class Print(Bytes):
         return repr(bytes(self))
 
 
+class Space(Print):
+    """
+    A single space.
+    """
+
+    def __init__(self: Self) -> None:
+        super().__init__(b" ")
+
+
 class Ctrl(Command):
     """
     A command containing a single control character.

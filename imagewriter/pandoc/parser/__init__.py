@@ -63,8 +63,8 @@ InlineParser = Callable[[Any], Inline]
 
 def parse_caption(contents: Any) -> Caption:
     return Caption(
-        parse_inline_list(contents[0]) if contents[0] is not None else None,
-        parse_block_list(contents[1]),
+        short=parse_inline_list(contents[0]) if contents[0] is not None else None,
+        contents=parse_block_list(contents[1]),
     )
 
 
@@ -73,16 +73,17 @@ def parse_caption(contents: Any) -> Caption:
 
 def parse_cite(contents: Any) -> Inline:
     return Cite(
-        [parse_citation(cont) for cont in contents[0]], parse_inline_list(contents[1])
+        citations=[parse_citation(cont) for cont in contents[0]],
+        contents=parse_inline_list(contents[1]),
     )
 
 
 def parse_code(contents: Any) -> Inline:
-    return Code(parse_attr(contents[0]), contents[1])
+    return Code(attr=parse_attr(contents[0]), contents=contents[1])
 
 
 def parse_emph(contents: Any) -> Inline:
-    return Emph(parse_inline_list(contents))
+    return Emph(contents=parse_inline_list(contents))
 
 
 def parse_line_break(contents: Any) -> Inline:
@@ -91,18 +92,18 @@ def parse_line_break(contents: Any) -> Inline:
 
 def parse_link(contents: Any) -> Inline:
     return Link(
-        parse_attr(contents[0]),
-        parse_inline_list(contents[1]),
-        parse_target(contents[2]),
+        attr=parse_attr(contents[0]),
+        alt_text=parse_inline_list(contents[1]),
+        target=parse_target(contents[2]),
     )
 
 
 def parse_raw_inline(contents: Any) -> Inline:
-    return RawInline(contents[0], contents[1])
+    return RawInline(format=contents[0], contents=contents[1])
 
 
 def parse_small_caps(contents: Any) -> Inline:
-    return SmallCaps(parse_inline_list(contents))
+    return SmallCaps(contents=parse_inline_list(contents))
 
 
 def parse_soft_break(contents: Any) -> Inline:
@@ -114,51 +115,54 @@ def parse_space(contents: Any) -> Inline:
 
 
 def parse_str(contents: Any) -> Inline:
-    return Str(contents)
+    return Str(contents=contents)
 
 
 def parse_strikeout(contents: Any) -> Inline:
-    return Strikeout(parse_inline_list(contents))
+    return Strikeout(contents=parse_inline_list(contents))
 
 
 def parse_strong(contents: Any) -> Inline:
-    return Strong(parse_inline_list(contents))
+    return Strong(contents=parse_inline_list(contents))
 
 
 def parse_superscript(contents: Any) -> Inline:
-    return Superscript(parse_inline_list(contents))
+    return Superscript(contents=parse_inline_list(contents))
 
 
 def parse_subscript(contents: Any) -> Inline:
-    return Subscript(parse_inline_list(contents))
+    return Subscript(contents=parse_inline_list(contents))
 
 
 def parse_underline(contents: Any) -> Inline:
-    return Underline(parse_inline_list(contents))
+    return Underline(contents=parse_inline_list(contents))
 
 
 def parse_image(contents: Any) -> Inline:
     return Image(
-        parse_attr(contents[0]),
-        parse_inline_list(contents[1]),
-        parse_target(contents[2]),
+        attr=parse_attr(contents[0]),
+        alt_text=parse_inline_list(contents[1]),
+        target=parse_target(contents[2]),
     )
 
 
 def parse_math(contents: Any) -> Inline:
-    return Math(parse_math_type(contents[0]), contents[1])
+    return Math(math_type=parse_math_type(contents[0]), contents=contents[1])
 
 
 def parse_note(contents: Any) -> Inline:
-    return Note(parse_block_list(contents))
+    return Note(contents=parse_block_list(contents))
 
 
 def parse_quoted(contents: Any) -> Inline:
-    return Quoted(parse_quote_type(contents[0]), parse_inline_list(contents[1]))
+    return Quoted(
+        quote_type=parse_quote_type(contents[0]),
+        contents=parse_inline_list(contents[1]),
+    )
 
 
 def parse_span(contents: Any) -> Inline:
-    return Span(parse_attr(contents[0]), parse_inline_list(contents[1]))
+    return Span(attr=parse_attr(contents[0]), contents=parse_inline_list(contents[1]))
 
 
 INLINE_PARSERS: Dict[str, InlineParser] = {
@@ -197,52 +201,54 @@ def parse_inline_list(contents: List[Any]) -> List[Inline]:
 
 
 def parse_plain(contents: Any) -> Block:
-    return Plain(parse_inline_list(contents))
+    return Plain(contents=parse_inline_list(contents))
 
 
 def parse_para(contents: Any) -> Block:
-    return Para(parse_inline_list(contents))
+    return Para(contents=parse_inline_list(contents))
 
 
 def parse_line_block(contents: Any) -> Block:
-    return LineBlock([parse_inline_list(inlines) for inlines in contents])
+    return LineBlock(contents=[parse_inline_list(inlines) for inlines in contents])
 
 
 def parse_code_block(contents: Any) -> Block:
-    return CodeBlock(parse_attr(contents[0]), contents[1])
+    return CodeBlock(attr=parse_attr(contents[0]), contents=contents[1])
 
 
 def parse_raw_block(contents: Any) -> Block:
-    return RawBlock(contents[0], contents[1])
+    return RawBlock(format=contents[0], contents=contents[1])
 
 
 def parse_block_quote(contents: Any) -> Block:
-    return BlockQuote(parse_block_list(contents))
+    return BlockQuote(contents=parse_block_list(contents))
 
 
 def parse_list_attributes(contents: Any) -> ListAttributes:
-    return ListAttributes(contents[0], contents[1]["t"], contents[2]["t"])
+    return ListAttributes(
+        start=contents[0], style=contents[1]["t"], delimiter=contents[2]["t"]
+    )
 
 
 def parse_ordered_list(contents: Any) -> Block:
     return OrderedList(
-        parse_list_attributes(contents[0]),
-        [parse_block_list(block_list) for block_list in contents[1]],
+        attrs=parse_list_attributes(contents[0]),
+        items=[parse_block_list(block_list) for block_list in contents[1]],
     )
 
 
 def parse_bullet_list(contents: Any) -> Block:
-    return BulletList([parse_block_list(item) for item in contents])
+    return BulletList(items=[parse_block_list(item) for item in contents])
 
 
 class DefinitionListParser:
     def __call__(self: Self, contents: Any) -> Block:
-        return DefinitionList([self.item(cont) for cont in contents])
+        return DefinitionList(items=[self.item(cont) for cont in contents])
 
     def item(self: Self, contents: Any) -> DefinitionListItem:
         return DefinitionListItem(
-            parse_inline_list(contents[0]),
-            [parse_block_list(cont) for cont in contents[1]],
+            term=parse_inline_list(contents[0]),
+            definitions=[parse_block_list(cont) for cont in contents[1]],
         )
 
 
@@ -250,7 +256,11 @@ parse_definition_list = DefinitionListParser()
 
 
 def parse_header(contents: Any) -> Block:
-    return Header(contents[0], parse_attr(contents[1]), parse_inline_list(contents[2]))
+    return Header(
+        level=contents[0],
+        attr=parse_attr(contents[1]),
+        contents=parse_inline_list(contents[2]),
+    )
 
 
 def parse_horizontal_rule(contents: Any) -> Block:
@@ -260,12 +270,12 @@ def parse_horizontal_rule(contents: Any) -> Block:
 class TableParser:
     def __call__(self: Self, contents: Any) -> Block:
         return Table(
-            parse_attr(contents[0]),
-            parse_caption(contents[1]),
-            [self.col_spec(cont) for cont in contents[2]],
-            self.header(contents[3]),
-            [self.body(cont) for cont in contents[4]],
-            self.footer(contents[5]),
+            attr=parse_attr(contents[0]),
+            caption=parse_caption(contents[1]),
+            columns=[self.col_spec(cont) for cont in contents[2]],
+            header=self.header(contents[3]),
+            body=[self.body(cont) for cont in contents[4]],
+            footer=self.footer(contents[5]),
         )
 
     def alignment(self: Self, contents: Any) -> Alignment:
@@ -277,36 +287,41 @@ class TableParser:
         return None
 
     def col_spec(self: Self, contents: Any) -> ColSpec:
-        return ColSpec(self.alignment(contents[0]), self.col_width(contents[1]))
+        return ColSpec(
+            alignment=self.alignment(contents[0]), width=self.col_width(contents[1])
+        )
 
     def cell(self: Self, contents: Any) -> Cell:
         return Cell(
-            parse_attr(contents[0]),
-            self.alignment(contents[1]),
-            contents[2],
-            contents[3],
-            parse_block_list(contents[4]),
+            attr=parse_attr(contents[0]),
+            alignment=self.alignment(contents[1]),
+            row_span=contents[2],
+            column_span=contents[3],
+            contents=parse_block_list(contents[4]),
         )
 
     def row(self: Self, contents: Any) -> Row:
-        return Row(parse_attr(contents[0]), [self.cell(cont) for cont in contents[1]])
+        return Row(
+            attr=parse_attr(contents[0]),
+            contents=[self.cell(cont) for cont in contents[1]],
+        )
 
     def header(self: Self, contents: Any) -> TableHead:
         return TableHead(
-            parse_attr(contents[0]), [self.row(cont) for cont in contents[1]]
+            attr=parse_attr(contents[0]), rows=[self.row(cont) for cont in contents[1]]
         )
 
     def body(self: Self, contents: Any) -> TableBody:
         return TableBody(
-            parse_attr(contents[0]),
-            contents[1],
-            [self.row(cont) for cont in contents[2]],
-            [self.row(cont) for cont in contents[3]],
+            attr=parse_attr(contents[0]),
+            row_header_columns=contents[1],
+            row_header=[self.row(cont) for cont in contents[2]],
+            body=[self.row(cont) for cont in contents[3]],
         )
 
     def footer(self: Self, contents: Any) -> TableFoot:
         return TableFoot(
-            parse_attr(contents[0]), [self.row(cont) for cont in contents[1]]
+            attr=parse_attr(contents[0]), rows=[self.row(cont) for cont in contents[1]]
         )
 
 
@@ -315,14 +330,14 @@ parse_table = TableParser()
 
 def parse_figure(contents: Any) -> Figure:
     return Figure(
-        parse_attr(contents[0]),
-        parse_caption(contents[1]),
-        parse_block_list(contents[2]),
+        attr=parse_attr(contents[0]),
+        caption=parse_caption(contents[1]),
+        contents=parse_block_list(contents[2]),
     )
 
 
 def parse_div(contents: Any) -> Block:
-    return Div(parse_attr(contents[0]), parse_block_list(contents[1]))
+    return Div(attr=parse_attr(contents[0]), contents=parse_block_list(contents[1]))
 
 
 BLOCK_PARSERS: Dict[str, BlockParser] = {

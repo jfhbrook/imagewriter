@@ -7,15 +7,19 @@ from imagewriter.encoding import (
     apply_settings,
     BACKSPACE,
     BackspaceLengthError,
+    CarriageReturn,
     CarriageReturnLengthError,
     CharacterEncoder,
     Command,
     CR,
+    cr_lf,
+    LineFeed,
     LineFeedLengthError,
     Print,
     reset_tabs,
     SetColor,
     SetPitch,
+    Space,
     START_BOLDFACE,
     START_DOUBLE_WIDTH,
     START_HALF_HEIGHT,
@@ -37,7 +41,7 @@ from imagewriter.settings import Settings
 from imagewriter.units import Length
 
 
-class TextRenderer:
+class RichTextBuilder:
     def __init__(self: Self, settings: Settings) -> None:
         self._settings: Settings = settings
         self._character_encoder = CharacterEncoder(
@@ -86,7 +90,8 @@ class TextRenderer:
 
         return self
 
-    def render(self: Self) -> List[Command]:
+    @property
+    def commands(self: Self) -> List[Command]:
         """
         Commands to write to the printer to complete the job.
         """
@@ -94,11 +99,7 @@ class TextRenderer:
         self._write_header()
         self._commands.append(CR)
 
-        commands = self._commands
-
-        self._commands = []
-
-        return commands
+        return self._commands
 
     def pitch(self: Self, pitch: Pitch) -> Self:
         """
@@ -132,6 +133,49 @@ class TextRenderer:
         tab_stops = list(range(0, self.settings.pitch.max_character_position, size))
         self.tab_stops(tab_stops)
         self._tab_size = size
+        return self
+
+    def trim(self: Self, count: int) -> Self:
+        """
+        Remove the last count commands.
+        """
+
+        self._commands = self._commands[:-count]
+        return self
+
+    def cr_lf(self: Self, count: int = 1) -> Self:
+        """
+        Write a CR and an LF.
+        """
+
+        self._commands += cr_lf(count)
+        return self
+
+    def trim_cr_lf(self: Self, count: int = 1) -> Self:
+        """
+        Trim tailing CRFLs.
+        """
+
+        for _ in range(0, count):
+            cr = self._commands[-1]
+            lf = self._commands[-2]
+
+            assert isinstance(cr, CarriageReturn)
+            assert isinstance(lf, LineFeed)
+            assert lf.lines == 1
+
+            self.trim(2)
+
+        return self
+
+    def space(self: Self) -> Self:
+        command: Command = Space()
+        self.write([command])
+        return self
+
+    def trim_space(self: Self) -> Self:
+        assert isinstance(self._commands[-1], Space)
+        self.trim(1)
         return self
 
     def text(self: Self, *text: Text) -> Self:

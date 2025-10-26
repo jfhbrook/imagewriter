@@ -8,7 +8,7 @@ Pandoc.
 """
 
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Dict, List, Literal, Optional, Protocol, Self
 
 from imagewriter.document.attr import Attr
@@ -185,11 +185,11 @@ class Cell:
     A table cell.
     """
 
-    attr: Attr
     alignment: Alignment
     row_span: int
     column_span: int
     contents: List[Block]
+    attr: Attr = field(default_factory=Attr)
 
 
 @dataclass
@@ -198,8 +198,8 @@ class Row:
     A table row.
     """
 
-    attr: Attr
     contents: List[Cell]
+    attr: Attr = field(default_factory=Attr)
 
 
 @dataclass
@@ -208,8 +208,8 @@ class TableHead:
     The head of a table.
     """
 
-    attr: Attr
     rows: List[Row]
+    attr: Attr = field(default_factory=Attr)
 
 
 @dataclass
@@ -218,10 +218,10 @@ class TableBody:
     A body of a table.
     """
 
-    attr: Attr
     row_header_columns: int
     row_header: List[Row]
     body: List[Row]
+    attr: Attr = field(default_factory=Attr)
 
 
 @dataclass
@@ -230,8 +230,8 @@ class TableFoot:
     The foot of a table.
     """
 
-    attr: Attr
     rows: List[Row]
+    attr: Attr = field(default_factory=Attr)
 
 
 #
@@ -367,8 +367,8 @@ class Code(Inline):
     Inline code.
     """
 
-    attr: Attr
     contents: str
+    attr: Attr = field(default_factory=Attr)
 
     def accept(self: Self, visitor: Any) -> Any:
         return visitor.visit_code(self)
@@ -436,9 +436,9 @@ class Link(Inline):
     Hyperlink.
     """
 
-    attr: Attr
     alt_text: List[Inline]
     target: Target
+    attr: Attr = field(default_factory=Attr)
 
     def accept(self: Self, visitor: Any) -> Any:
         return visitor.visit_link(self)
@@ -450,9 +450,9 @@ class Image(Inline):
     Image.
     """
 
-    attr: Attr
     alt_text: List[Inline]
     target: Target
+    attr: Attr = field(default_factory=Attr)
 
     def accept(self: Self, visitor: Any) -> Any:
         return visitor.visit_image(self)
@@ -472,8 +472,8 @@ class Note(Inline):
 
 @dataclass
 class Span(Inline):
-    attr: Attr
     contents: List[Inline]
+    attr: Attr = field(default_factory=Attr)
 
     def accept(self: Self, visitor: Any) -> Any:
         return visitor.visit_span(self)
@@ -526,8 +526,8 @@ class CodeBlock(Block):
     Code block (literal) with attributes.
     """
 
-    attr: Attr
     contents: str
+    attr: Attr = field(default_factory=Attr)
 
     def accept(self: Self, visitor: Any) -> Any:
         return visitor.visit_code_block(self)
@@ -608,8 +608,8 @@ class Header(Block):
     """
 
     level: int
-    attr: Attr
     contents: List[Inline]
+    attr: Attr = field(default_factory=Attr)
 
     def accept(self: Self, visitor: Any) -> Any:
         return visitor.visit_header(self)
@@ -631,12 +631,12 @@ class Table(Block):
     Table.
     """
 
-    attr: Attr
     caption: Caption
     columns: List[ColSpec]
     header: TableHead
     body: List[TableBody]
     footer: TableFoot
+    attr: Attr = field(default_factory=Attr)
 
     def accept(self: Self, visitor: Any) -> Any:
         return visitor.visit_table(self)
@@ -648,9 +648,9 @@ class Figure(Block):
     Figure.
     """
 
-    attr: Attr
     caption: Caption
     contents: List[Block]
+    attr: Attr = field(default_factory=Attr)
 
     def accept(self: Self, visitor: Any) -> Any:
         return visitor.visit_figure(self)
@@ -662,8 +662,8 @@ class Div(Block):
     Generic block container.
     """
 
-    attr: Attr
     contents: List[Block]
+    attr: Attr = field(default_factory=Attr)
 
     def accept(self: Self, visitor: Any) -> Any:
         return visitor.visit_div(self)
@@ -682,6 +682,37 @@ class Document:
 
 
 #
+# Helpers
+#
+
+
+def split_text(text: str) -> List[Inline]:
+    inlines: List[Inline] = list()
+    buffer: str = ""
+
+    def process_buffer() -> None:
+        nonlocal buffer
+
+        if buffer:
+            inlines.append(Str(contents=buffer))
+            buffer = ""
+
+    for char in text:
+        if char == " ":
+            process_buffer()
+            inlines.append(Space())
+        elif char == "\n":
+            process_buffer()
+            inlines.append(LineBreak())
+        else:
+            buffer += char
+
+    process_buffer()
+
+    return inlines
+
+
+#
 # Exports
 #
 
@@ -689,6 +720,7 @@ __all__: List[str] = [
     "Attr",
     "Block",
     "Document",
+    "split_text",
     "Format",
     "FORMATS",
     "NATIVE_FORMATS",

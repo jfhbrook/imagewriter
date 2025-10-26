@@ -88,6 +88,11 @@ class Backspace(Ctrl):
 
 CR = CarriageReturn()
 BACKSPACE = Backspace()
+CRLF: List[Command] = [CR, LF]
+
+
+def cr_lf(count: int = 1) -> List[Command]:
+    return CRLF * count
 
 
 class SetUnidirectionalPrinting(Esc):
@@ -135,6 +140,8 @@ __all__: List[str] = [
     "CarriageReturn",
     "CarriageReturnLengthError",
     "CR",
+    "CRLF",
+    "cr_lf",
     "Backspace",
     "BACKSPACE",
     "BackspaceLengthError",

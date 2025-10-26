@@ -30,6 +30,7 @@ from imagewriter.encoding.base import (
     InvalidControlCharacterError,
     LengthError,
     Print,
+    Space,
 )
 from imagewriter.encoding.boundaries import SetLeftMargin, SetPageLength
 from imagewriter.encoding.cancel import CANCEL_CURRENT_LINE
@@ -60,6 +61,8 @@ from imagewriter.encoding.motion import (
     ClearAllTabs,
     ClearManyTabs,
     CR,
+    cr_lf,
+    CRLF,
     LF,
     LineFeed,
     LineFeedForward,
@@ -118,6 +121,7 @@ __all__: List[str] = [
     "InvalidControlCharacterError",
     "LengthError",
     "Print",
+    "Space",
     "Command",
     "SetLeftMargin",
     "SetPageLength",
@@ -144,6 +148,8 @@ __all__: List[str] = [
     "ClearAllTabs",
     "ClearManyTabs",
     "CR",
+    "CRLF",
+    "cr_lf",
     "LF",
     "LineFeed",
     "LineFeedForward",
