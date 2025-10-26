@@ -9,6 +9,7 @@ from imagewriter.encoding import (
     Command,
     cr_lf,
     double_width,
+    FF,
     half_height,
     Print,
     PRINT_SLASHED_ZERO,
@@ -158,4 +159,5 @@ def test_page(
         *mousetext_test(character_encoder),
         *title("Markdown", 2),
         *markdown_test(pandoc_renderer),
+        FF,
     ]

@@ -4945,5 +4945,6 @@
     b'1',
     SetColor(Color.BLACK),
     <CR>,
+    FormFeed(),
   ])
 # ---

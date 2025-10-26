@@ -12,6 +12,7 @@ from imagewriter.widgets.base import header
 from imagewriter.widgets.serial import SerialWidget
 from imagewriter.widgets.settings import SettingsWidget
 from imagewriter.widgets.switch import DIPSwitchWidget
+from imagewriter.widgets.test import TestPageWidget
 
 
 class ControlPanel(widgets.Tab):
@@ -31,11 +32,12 @@ class ControlPanel(widgets.Tab):
         # Child widgets
         self._serial_widget = SerialWidget(port, dip_switches)
         self._settings_widget = SettingsWidget(dip_switches, settings)
+        self._test_page_widget = TestPageWidget()
         self._dip_switch_widget = DIPSwitchWidget(dip_switches)
         self._activity_widget = ActivityWidget()
 
         super().__init__(
-            titles=["Settings", "DIP Switches", "Serial Activity"],
+            titles=["Settings", "DIP Switches", "Test", "Serial Activity"],
             children=[
                 widgets.VBox(
                     [
@@ -46,6 +48,7 @@ class ControlPanel(widgets.Tab):
                     ]
                 ),
                 self._dip_switch_widget,
+                self._test_page_widget,
                 self._activity_widget,
             ],
         )
@@ -53,6 +56,7 @@ class ControlPanel(widgets.Tab):
         # UI hooks
         self._serial_widget.on_toggle(self._toggle_serial)
         self._settings_widget.on_apply(self._click_apply)
+        self._test_page_widget.on_print(self._print_test_page)
 
     def _bind_cls(self: Self, cls: Type[Container]) -> Type[Container]:
         class Container(cls):
@@ -147,6 +151,12 @@ class ControlPanel(widgets.Tab):
         self._reload_settings()
 
         widget.apply(self.container.connection())
+
+    def _print_test_page(self: Self, widget: TestPageWidget) -> None:
+        test_page = self.container.test_page()
+        connection = self.container.connection()
+        connection.write(test_page)
+        connection.flush()
 
     def shutdown(self: Self) -> None:
         self._activity_widget.shutdown()
