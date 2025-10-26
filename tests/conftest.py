@@ -18,12 +18,14 @@ from imagewriter.encoding import (
     PRINT_SLASHED_ZERO,
     PRINT_UNSLASHED_ZERO,
     set_language,
+    SetPitch,
     START_SUBSCRIPT,
     START_SUPERSCRIPT,
     STOP_SUBSCRIPT,
     underline,
 )
 from imagewriter.language import Language
+from imagewriter.pitch import Pitch
 from imagewriter.serial import BaudRate, Serial, SerialProtocol
 from imagewriter.settings import Settings
 
@@ -59,7 +61,11 @@ PANDOC_MARKDOWN: str = importlib.resources.read_text(
 )
 
 
-def _language_characters(language: Language) -> List[Command]:
+def _title(title: str) -> List[Command]:
+    return boldface(double_width([Print(f"=== {title} ===".encode(encoding="ascii"))]))
+
+
+def _language_test(language: Language) -> List[Command]:
     return [
         *boldface([Print(f"-- {language.value} --".encode(encoding="ascii"))]),
         *set_language(language),
@@ -67,34 +73,105 @@ def _language_characters(language: Language) -> List[Command]:
     ]
 
 
-LANGUAGE_CHARACTERS: List[Command] = [
-    *boldface(double_width(CHARACTER_ENCODER.encode("=== Language Characters ==="))),
+LANGUAGES: List[Command] = [
+    *_title("Languages"),
     CR,
     LF,
-    *_language_characters(Language.AMERICAN),
     CR,
     LF,
-    *_language_characters(Language.BRITISH),
+    *_language_test(Language.AMERICAN),
     CR,
     LF,
-    *_language_characters(Language.GERMAN),
     CR,
     LF,
-    *_language_characters(Language.FRENCH),
+    *_language_test(Language.BRITISH),
     CR,
     LF,
-    *_language_characters(Language.SWEDISH),
     CR,
     LF,
-    *_language_characters(Language.ITALIAN),
+    *_language_test(Language.GERMAN),
     CR,
     LF,
-    *_language_characters(Language.SPANISH),
     CR,
     LF,
-    *_language_characters(Language.DANISH),
+    *_language_test(Language.FRENCH),
     CR,
     LF,
+    CR,
+    LF,
+    *_language_test(Language.SWEDISH),
+    CR,
+    LF,
+    CR,
+    LF,
+    *_language_test(Language.ITALIAN),
+    CR,
+    LF,
+    CR,
+    LF,
+    *_language_test(Language.SPANISH),
+    CR,
+    LF,
+    CR,
+    LF,
+    *_language_test(Language.DANISH),
+]
+
+
+def _pitch_test(pitch: Pitch) -> List[Command]:
+    return [
+        *boldface([Print(f"-- {pitch.value} --".encode(encoding="ascii"))]),
+        SetPitch(pitch),
+        CR,
+        LF,
+        CR,
+        LF,
+        Print(b"A quick brown fox jumped over the lazy dog"),
+    ]
+
+
+PITCHES: List[Command] = [
+    *_title("Pitches"),
+    CR,
+    LF,
+    CR,
+    LF,
+    *_pitch_test(Pitch.EXTENDED),
+    CR,
+    LF,
+    CR,
+    LF,
+    *_pitch_test(Pitch.PICA),
+    CR,
+    LF,
+    CR,
+    LF,
+    *_pitch_test(Pitch.ELITE),
+    CR,
+    LF,
+    CR,
+    LF,
+    *_pitch_test(Pitch.SEMICONDENSED),
+    CR,
+    LF,
+    CR,
+    LF,
+    *_pitch_test(Pitch.CONDENSED),
+    CR,
+    LF,
+    CR,
+    LF,
+    *_pitch_test(Pitch.ULTRACONDENSED),
+    CR,
+    LF,
+    CR,
+    LF,
+    *_pitch_test(Pitch.PICA_PROPORTIONAL),
+    CR,
+    LF,
+    CR,
+    LF,
+    *_pitch_test(Pitch.ELITE_PROPORTIONAL),
 ]
 
 
