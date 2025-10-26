@@ -1,7 +1,7 @@
 from conftest import HELLO_WORLD
 from IPython.display import Markdown
 
-from imagewriter.encoding import CANCEL_CURRENT_LINE, CR, Print, SetLFWhenLineFull
+import imagewriter.test as test
 from imagewriter.widgets import ControlPanel
 
 
@@ -13,18 +13,6 @@ def test_hello_world(control: ControlPanel) -> Markdown:
 
 
 def test_memory(control: ControlPanel, print_buffer_size: int) -> Markdown:
-    control.connection.write([SetLFWhenLineFull(False), CR])
-    control.connection.flush()
+    memory = test.test_memory(control.serial, control.connection, print_buffer_size)
 
-    i = 0
-
-    while control.serial.cts and i <= 2 * print_buffer_size:
-        control.connection.write([Print(b"x")])
-        i += 1
-
-    control.serial.rtscts = False
-    control.connection.write([CANCEL_CURRENT_LINE, CR])
-    control.connection.flush()
-    control.serial.rtscts = True
-
-    return Markdown(f"✅ Printer accepted **{i}** bytes")
+    return Markdown(f"✅ Printer accepted **{memory}** bytes")
