@@ -17,12 +17,15 @@ class TestPageStatusWidget(widgets.Label):
         super().__init__(value="")
 
     def running(self: Self) -> None:
+        print("set to running")
         self.value = self.RUNNING
 
     def clear(self: Self) -> None:
+        print("cleared")
         self.value = ""
 
     def error(self: Self, err: Exception) -> None:
+        print(err)
         self.value = self.ERROR.format(err=err)
 
 
@@ -97,7 +100,10 @@ class TestWidget(widgets.VBox):
     ) -> None:
         self._test_page_status_widget.running()
         try:
-            connection.write(test_page)
+            for cmd in test_page:
+                connection.serial.write(bytes(cmd))
+
+            # connection.write(test_page)
             connection.flush()
         except Exception as exc:
             self._test_page_status_widget.error(exc)
@@ -114,6 +120,8 @@ class TestWidget(widgets.VBox):
         self._memory_test_status_widget.result(memory)
 
     def on_print(self: Self, callback: TestCallback) -> None:
+        print("on_print method called")
+
         def cb(button: widgets.Button) -> None:
             callback(self)
 

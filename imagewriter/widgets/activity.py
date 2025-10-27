@@ -53,9 +53,11 @@ class SerialStateObserver(debug.SerialStateObserver):
         self._widget.write_stats.on_write(data)
 
     def _write_hook(self: Self, serial: Serial) -> None:
+        _write = serial.write
+
         def write(data: Any) -> Optional[int]:
             self._on_write(data)
-            return serial.write(data)
+            return _write(data)
 
         serial.write = write
 
