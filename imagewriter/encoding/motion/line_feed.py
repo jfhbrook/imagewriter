@@ -114,3 +114,7 @@ class LineFeedReverse(Esc):
 
     def __repr__(self: Self) -> str:
         return "LineFeedReverse()"
+
+
+LINE_FEED_FORWARD = LineFeedForward()
+LINE_FEED_REVERSE = LineFeedReverse()

@@ -22,6 +22,8 @@ from imagewriter.encoding.motion.insertion import (
 )
 from imagewriter.encoding.motion.line_feed import (
     LF,
+    LINE_FEED_FORWARD,
+    LINE_FEED_REVERSE,
     LineFeed,
     LineFeedForward,
     LineFeedLengthError,
@@ -30,6 +32,7 @@ from imagewriter.encoding.motion.line_feed import (
     SetLinesPerInch,
 )
 from imagewriter.encoding.motion.tab import (
+    CLEAR_ALL_TABS,
     ClearAllTabs,
     ClearManyTabs,
     reset_tabs,
@@ -158,11 +161,14 @@ __all__: List[str] = [
     "LF",
     "LineFeed",
     "LineFeedForward",
+    "LINE_FEED_FORWARD",
     "LineFeedLengthError",
     "LineFeedReverse",
+    "LINE_FEED_REVERSE",
     "SetDistanceBetweenLines",
     "SetLinesPerInch",
     "ClearAllTabs",
+    "CLEAR_ALL_TABS",
     "ClearManyTabs",
     "reset_tabs",
     "SetManyTabs",

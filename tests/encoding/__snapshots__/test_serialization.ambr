@@ -1,0 +1,397 @@
+# serializer version: 1
+# name: test_bytes_command[command0]
+  b'\x08'
+# ---
+# name: test_bytes_command[command10]
+  b"\x1b'"
+# ---
+# name: test_bytes_command[command11]
+  b'\x1bx'
+# ---
+# name: test_bytes_command[command12]
+  b'\x0c'
+# ---
+# name: test_bytes_command[command13]
+  b'\x1b2'
+# ---
+# name: test_bytes_command[command14]
+  b'\n'
+# ---
+# name: test_bytes_command[command15]
+  b'\x1bf'
+# ---
+# name: test_bytes_command[command16]
+  b'\x1br'
+# ---
+# name: test_bytes_command[command17]
+  b'\x1f2'
+# ---
+# name: test_bytes_command[command18]
+  b'hello'
+# ---
+# name: test_bytes_command[command19]
+  b'\x1bD\x00\x80'
+# ---
+# name: test_bytes_command[command1]
+  b'hello'
+# ---
+# name: test_bytes_command[command20]
+  b'\x1bZ\x00\x80'
+# ---
+# name: test_bytes_command[command21]
+  b'\x1b?'
+# ---
+# name: test_bytes_command[command22]
+  b'\x1bc'
+# ---
+# name: test_bytes_command[command23]
+  b'\x11'
+# ---
+# name: test_bytes_command[command24]
+  b'\x1bv'
+# ---
+# name: test_bytes_command[command25]
+  b'\x1bD\x01\x00'
+# ---
+# name: test_bytes_command[command26]
+  b'\x1bZ\x01\x00'
+# ---
+# name: test_bytes_command[command27]
+  b'\x1bK0'
+# ---
+# name: test_bytes_command[command28]
+  b'\x1bl1'
+# ---
+# name: test_bytes_command[command29]
+  b'\x1bl0'
+# ---
+# name: test_bytes_command[command2]
+  b'\x18'
+# ---
+# name: test_bytes_command[command30]
+  b'\x1bT06'
+# ---
+# name: test_bytes_command[command31]
+  b'\x1bZ \x00'
+# ---
+# name: test_bytes_command[command32]
+  b'\x1bD\xc0\x00'
+# ---
+# name: test_bytes_command[command33]
+  b'\x1bD\x04\x00'
+# ---
+# name: test_bytes_command[command34]
+  b'\x1bZ\x04\x00'
+# ---
+# name: test_bytes_command[command35]
+  b'\x1bA'
+# ---
+# name: test_bytes_command[command36]
+  b'\x1bB'
+# ---
+# name: test_bytes_command[command37]
+  b'\x1b-'
+# ---
+# name: test_bytes_command[command38]
+  b'\x1b+'
+# ---
+# name: test_bytes_command[command39]
+  b'\x1bO'
+# ---
+# name: test_bytes_command[command3]
+  b'\x1b0'
+# ---
+# name: test_bytes_command[command40]
+  b'\x1bo'
+# ---
+# name: test_bytes_command[command41]
+  b'\x1bZ\x00 '
+# ---
+# name: test_bytes_command[command42]
+  b'\x1bD\x00 '
+# ---
+# name: test_bytes_command[command43]
+  b'\x1bE'
+# ---
+# name: test_bytes_command[command44]
+  b'\x1bD\x02\x00'
+# ---
+# name: test_bytes_command[command45]
+  b'\x1bZ\x02\x00'
+# ---
+# name: test_bytes_command[command46]
+  b'\x1ba2'
+# ---
+# name: test_bytes_command[command47]
+  b'\x1bZ\x08\x00'
+# ---
+# name: test_bytes_command[command48]
+  b'\x1bD\x08\x00'
+# ---
+# name: test_bytes_command[command49]
+  b'\x1bm2'
+# ---
+# name: test_bytes_command[command4]
+  b'\r'
+# ---
+# name: test_bytes_command[command50]
+  b'\x1b>'
+# ---
+# name: test_bytes_command[command51]
+  b'\x1b<'
+# ---
+# name: test_bytes_command[command52]
+  b' '
+# ---
+# name: test_bytes_command[command53]
+  b'\x1b!'
+# ---
+# name: test_bytes_command[command54]
+  b'\x0e'
+# ---
+# name: test_bytes_command[command55]
+  b'\x1bw'
+# ---
+# name: test_bytes_command[command56]
+  b'\x1by'
+# ---
+# name: test_bytes_command[command57]
+  b'\x1bx'
+# ---
+# name: test_bytes_command[command58]
+  b'\x1bX'
+# ---
+# name: test_bytes_command[command59]
+  b'\x1b"'
+# ---
+# name: test_bytes_command[command5]
+  b'\x11'
+# ---
+# name: test_bytes_command[command60]
+  b'\x0f'
+# ---
+# name: test_bytes_command[command61]
+  b'\x1bW'
+# ---
+# name: test_bytes_command[command62]
+  b'\x1bz'
+# ---
+# name: test_bytes_command[command63]
+  b'\x1bz'
+# ---
+# name: test_bytes_command[command64]
+  b'\x1bY'
+# ---
+# name: test_bytes_command[command65]
+  b'\t'
+# ---
+# name: test_bytes_command[command6]
+  b'\x13'
+# ---
+# name: test_bytes_command[command7]
+  b'\x1b$'
+# ---
+# name: test_bytes_command[command8]
+  b'\x1b&'
+# ---
+# name: test_bytes_command[command9]
+  b'\x1b*'
+# ---
+# name: test_repr_command[command0]
+  'Backspace()'
+# ---
+# name: test_repr_command[command10]
+  'EnableCustomCharacterMode(map=False)'
+# ---
+# name: test_repr_command[command11]
+  'Esc(x)'
+# ---
+# name: test_repr_command[command12]
+  'FormFeed()'
+# ---
+# name: test_repr_command[command13]
+  'Esc(2)'
+# ---
+# name: test_repr_command[command14]
+  '<LF>'
+# ---
+# name: test_repr_command[command15]
+  'LineFeedForward()'
+# ---
+# name: test_repr_command[command16]
+  'LineFeedReverse()'
+# ---
+# name: test_repr_command[command17]
+  'LineFeed(2)'
+# ---
+# name: test_repr_command[command18]
+  "b'hello'"
+# ---
+# name: test_repr_command[command19]
+  'PrintSlashedZero(CLOSE, [0b00000000, 0b10000000])'
+# ---
+# name: test_repr_command[command1]
+  "Bytes(b'hello')"
+# ---
+# name: test_repr_command[command20]
+  'PrintUnslashedZero(OPEN, [0b00000000, 0b10000000])'
+# ---
+# name: test_repr_command[command21]
+  'RequestSelfIdentify()'
+# ---
+# name: test_repr_command[command22]
+  'Reset()'
+# ---
+# name: test_repr_command[command23]
+  'Select()'
+# ---
+# name: test_repr_command[command24]
+  'SetTopOfForm()'
+# ---
+# name: test_repr_command[command25]
+  'SetAutoLFAfterCR(True, CLOSE, [0b00000001, 0b00000000])'
+# ---
+# name: test_repr_command[command26]
+  'SetAutoLFAfterCR(False, OPEN, [0b00000001, 0b00000000])'
+# ---
+# name: test_repr_command[command27]
+  'SetColor(Color.BLACK)'
+# ---
+# name: test_repr_command[command28]
+  'SetCRInsertion(True)'
+# ---
+# name: test_repr_command[command29]
+  'SetCRInsertion(False)'
+# ---
+# name: test_repr_command[command2]
+  'CancelCurrentLine()'
+# ---
+# name: test_repr_command[command30]
+  'SetDistanceBetweenLines(6)'
+# ---
+# name: test_repr_command[command31]
+  'OpenLanguageSwitches(Language.BRITISH, OPEN, [0b00100000, 0b00000000])'
+# ---
+# name: test_repr_command[command32]
+  'CloseLanguageSwitches(Language.BRITISH, CLOSE, [0b11000000, 0b00000000])'
+# ---
+# name: test_repr_command[command33]
+  'SetLFWhenLineFull(True, CLOSE, [0b00000100, 0b00000000])'
+# ---
+# name: test_repr_command[command34]
+  'SetLFWhenLineFull(False, OPEN, [0b00000100, 0b00000000])'
+# ---
+# name: test_repr_command[command35]
+  'SetLinesPerInch(6)'
+# ---
+# name: test_repr_command[command36]
+  'SetLinesPerInch(8)'
+# ---
+# name: test_repr_command[command37]
+  'SetMaxCustomCharacterWidth(8)'
+# ---
+# name: test_repr_command[command38]
+  'SetMaxCustomCharacterWidth(16)'
+# ---
+# name: test_repr_command[command39]
+  'SetPaperOutSensor(True)'
+# ---
+# name: test_repr_command[command3]
+  'ClearAllTabs()'
+# ---
+# name: test_repr_command[command40]
+  'SetPaperOutSensor(False)'
+# ---
+# name: test_repr_command[command41]
+  'SetPerforationSkip(True, OPEN, [0b00000000, 0b00100000])'
+# ---
+# name: test_repr_command[command42]
+  'SetPerforationSkip(False, CLOSE, [0b00000000, 0b00100000])'
+# ---
+# name: test_repr_command[command43]
+  'SetPitch(Pitch.ELITE)'
+# ---
+# name: test_repr_command[command44]
+  'SetPrintCommands(PrintCommands.CR_LF_AND_FF, CLOSE, [0b00000010, 0b00000000])'
+# ---
+# name: test_repr_command[command45]
+  'SetPrintCommands(PrintCommands.CR_ONLY, OPEN, [0b00000010, 0b00000000])'
+# ---
+# name: test_repr_command[command46]
+  'SetQuality(Quality.NEAR_LETTER_QUALITY, scribe_mode=False)'
+# ---
+# name: test_repr_command[command47]
+  'SetSoftwareSelectResponse(True, OPEN, [0b00001000, 0b00000000])'
+# ---
+# name: test_repr_command[command48]
+  'SetSoftwareSelectResponse(False, CLOSE, [0b00001000, 0b00000000])'
+# ---
+# name: test_repr_command[command49]
+  'SetSpacing(Pitch.ELITE_PROPORTIONAL, 2)'
+# ---
+# name: test_repr_command[command4]
+  '<CR>'
+# ---
+# name: test_repr_command[command50]
+  'SetUnidirectionalPrinting(is_unidirectional=True)'
+# ---
+# name: test_repr_command[command51]
+  'SetUnidirectionalPrinting(is_unidirectional=False)'
+# ---
+# name: test_repr_command[command52]
+  "b' '"
+# ---
+# name: test_repr_command[command53]
+  'StartBoldface()'
+# ---
+# name: test_repr_command[command54]
+  'StartDoubleWidth()'
+# ---
+# name: test_repr_command[command55]
+  'StartHalfHeight()'
+# ---
+# name: test_repr_command[command56]
+  'StartSubscript()'
+# ---
+# name: test_repr_command[command57]
+  'StartSuperscript()'
+# ---
+# name: test_repr_command[command58]
+  'StartUnderline()'
+# ---
+# name: test_repr_command[command59]
+  'StopBoldface()'
+# ---
+# name: test_repr_command[command5]
+  "Ctrl(b'\\x11')"
+# ---
+# name: test_repr_command[command60]
+  'StopDoubleWidth()'
+# ---
+# name: test_repr_command[command61]
+  'StopHalfHeight()'
+# ---
+# name: test_repr_command[command62]
+  'StopSuperscriptOrSubscript()'
+# ---
+# name: test_repr_command[command63]
+  'StopSuperscriptOrSubscript()'
+# ---
+# name: test_repr_command[command64]
+  'StopUnderline()'
+# ---
+# name: test_repr_command[command65]
+  '<TAB>'
+# ---
+# name: test_repr_command[command6]
+  'Deselect()'
+# ---
+# name: test_repr_command[command7]
+  'DisableMode()'
+# ---
+# name: test_repr_command[command8]
+  'EnableMouseTextMappingMode()'
+# ---
+# name: test_repr_command[command9]
+  'EnableCustomCharacterMode(map=True)'
+# ---

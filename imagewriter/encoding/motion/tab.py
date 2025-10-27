@@ -103,6 +103,9 @@ class ClearAllTabs(Esc):
         return "ClearAllTabs()"
 
 
+CLEAR_ALL_TABS = ClearAllTabs()
+
+
 def reset_tabs(stops: List[int]) -> List[Command]:
     """
     Clear and then set stops, effectively resetting them.

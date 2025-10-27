@@ -1,10 +1,13 @@
 from concurrent.futures import Executor, ThreadPoolExecutor
+import logging
 import queue
 import time
 from typing import List, Self, Sequence
 
 from imagewriter.encoding import Command
 from imagewriter.serial import Serial, SerialProtocol
+
+logger = logging.getLogger(__name__)
 
 
 class Interrupt:
@@ -25,6 +28,7 @@ class Connection:
         self._executor: Executor = ThreadPoolExecutor()
         self._command_queue: queue.Queue[Command] = queue.Queue(maxsize=0)
         self._interrupt_queue: queue.Queue[Interrupt] = queue.Queue(maxsize=1)
+        self._error_queue: queue.Queue[Exception] = queue.Queue(maxsize=0)
 
         self._running: bool = True
         self._executor.submit(self._worker)
@@ -49,6 +53,11 @@ class Connection:
 
     def flush(self: Self) -> None:
         self.serial.flush()
+        try:
+            exc = self._error_queue.get_nowait()
+            raise exc
+        except queue.Empty:
+            pass
 
     def interrupt(self: Self, commands: Sequence[Command], dump: bool = True) -> None:
         """
@@ -65,27 +74,31 @@ class Connection:
         return 1 / self.serial.baudrate
 
     def _worker(self: Self) -> None:
-        while self._running:
-            try:
-                # Check for interrupts
-                self._run_interrupts()
+        try:
+            while self._running:
                 try:
-                    # Fetch the command
-                    command = self._command_queue.get(timeout=self._timeout)
-                    # Check for interrupts again
+                    # Check for interrupts
                     self._run_interrupts()
-                    # Wait for CTS to go high
-                    self._wait_for_cts()
-                    # Now we can write the command
-                    self.serial.write(bytes(command))
-                except queue.Empty:
-                    # No ready command - that's OK
-                    continue
-            except Interrupted as exc:
-                # Dump the command queue if need be
-                if exc.dump:
-                    self._dump()
-                pass
+                    try:
+                        # Fetch the command
+                        command = self._command_queue.get(timeout=self._timeout)
+                        # Check for interrupts again
+                        self._run_interrupts()
+                        # Wait for CTS to go high
+                        self._wait_for_cts()
+                        # Now we can write the command
+                        self.serial.write(bytes(command))
+                    except queue.Empty:
+                        # No ready command - that's OK
+                        continue
+                except Interrupted as exc:
+                    # Dump the command queue if need be
+                    if exc.dump:
+                        self._dump()
+                    pass
+        except Exception as exc:
+            logger.error(exc)
+            self._error_queue.put(exc)
 
     def _wait_for_cts(self: Self) -> None:
         # Check for interrupts until CTS is high

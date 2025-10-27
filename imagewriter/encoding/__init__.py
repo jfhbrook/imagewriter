@@ -51,13 +51,22 @@ from imagewriter.encoding.graphics import (
     PrintGraphicsData,
     SET_GRAPHICS_DISTANCE_BETWEEN_LINES,
 )
-from imagewriter.encoding.language import set_language
+from imagewriter.encoding.identification import (
+    REQUEST_SELF_IDENTIFY,
+    RequestSelfIdentify,
+)
+from imagewriter.encoding.language import (
+    CloseLanguageSwitches,
+    OpenLanguageSwitches,
+    set_language,
+)
 from imagewriter.encoding.motion import (
     BACKSPACE,
     Backspace,
     BackspaceLengthError,
     CarriageReturn,
     CarriageReturnLengthError,
+    CLEAR_ALL_TABS,
     ClearAllTabs,
     ClearManyTabs,
     CR,
@@ -65,6 +74,8 @@ from imagewriter.encoding.motion import (
     CRLF,
     FF,
     LF,
+    LINE_FEED_FORWARD,
+    LINE_FEED_REVERSE,
     LineFeed,
     LineFeedForward,
     LineFeedLengthError,
@@ -94,7 +105,11 @@ from imagewriter.encoding.repeat import repeat
 from imagewriter.encoding.reset import RESET
 from imagewriter.encoding.select import DESELECT, SELECT, SetSoftwareSelectResponse
 from imagewriter.encoding.settings import apply_settings
-from imagewriter.encoding.switch import CloseSoftwareSwitches, OpenSoftwareSwitches
+from imagewriter.encoding.switch import (
+    CloseSoftwareSwitches,
+    OpenSoftwareSwitches,
+    SetSoftwareSwitches,
+)
 
 __all__: List[str] = [
     "boldface",
@@ -141,6 +156,10 @@ __all__: List[str] = [
     "SetColor",
     "PrintGraphicsData",
     "SET_GRAPHICS_DISTANCE_BETWEEN_LINES",
+    "RequestSelfIdentify",
+    "REQUEST_SELF_IDENTIFY",
+    "CloseLanguageSwitches",
+    "OpenLanguageSwitches",
     "set_language",
     "BACKSPACE",
     "Backspace",
@@ -148,6 +167,7 @@ __all__: List[str] = [
     "CarriageReturn",
     "CarriageReturnLengthError",
     "ClearAllTabs",
+    "CLEAR_ALL_TABS",
     "ClearManyTabs",
     "CR",
     "CRLF",
@@ -156,8 +176,10 @@ __all__: List[str] = [
     "LF",
     "LineFeed",
     "LineFeedForward",
+    "LINE_FEED_FORWARD",
     "LineFeedLengthError",
     "LineFeedReverse",
+    "LINE_FEED_REVERSE",
     "PlaceExactPrintHeadPosition",
     "reset_tabs",
     "SetTopOfForm",
@@ -188,4 +210,5 @@ __all__: List[str] = [
     "SetSoftwareSelectResponse",
     "CloseSoftwareSwitches",
     "OpenSoftwareSwitches",
+    "SetSoftwareSwitches",
 ]
