@@ -51,6 +51,13 @@ class SetSoftwareSwitches(Command, ABC):
 
         return code + self.pack()
 
+    def __repr__(self: Self) -> str:
+        packed = self.pack()
+
+        return f"SetSoftwareSwitches({self.closed}, {fmt_switch_banks(packed)})"
+
+
+
 
 class OpenSoftwareSwitches(SetSoftwareSwitches):
     def __init__(self: Self, switches: Set[SoftwareSwitch]) -> None:
