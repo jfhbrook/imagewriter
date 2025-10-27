@@ -9,6 +9,7 @@ from imagewriter.serial import Serial
 from imagewriter.settings import Settings
 from imagewriter.widgets.activity import ActivityWidget
 from imagewriter.widgets.base import header
+from imagewriter.widgets.form_feed import TopOfFormWidget
 from imagewriter.widgets.serial import SerialWidget
 from imagewriter.widgets.settings import SettingsWidget
 from imagewriter.widgets.switch import DIPSwitchWidget
@@ -33,22 +34,25 @@ class ControlPanel(widgets.Tab):
         self._serial_widget = SerialWidget(port, dip_switches)
         self._settings_widget = SettingsWidget(dip_switches, settings)
         self._test_widget = TestWidget()
+        self._top_of_form_widget = TopOfFormWidget()
         self._dip_switch_widget = DIPSwitchWidget(dip_switches)
         self._activity_widget = ActivityWidget()
 
         super().__init__(
-            titles=["Settings", "DIP Switches", "Test", "Serial Activity"],
+            titles=["Settings", "DIP Switches", "Serial Activity"],
             children=[
                 widgets.VBox(
                     [
                         header("Serial Connection", 3),
                         self._serial_widget,
-                        header("Printer Settings", 3),
+                        header("Actions", 3),
+                        self._top_of_form_widget,
+                        self._test_widget,
+                        header("Settings", 3),
                         self._settings_widget,
                     ]
                 ),
                 self._dip_switch_widget,
-                self._test_widget,
                 self._activity_widget,
             ],
         )
@@ -56,6 +60,7 @@ class ControlPanel(widgets.Tab):
         # UI hooks
         self._serial_widget.on_toggle(self._toggle_serial)
         self._settings_widget.on_apply(self._click_apply)
+        self._top_of_form_widget.on_set_top_of_form(self._set_top_of_form)
         self._test_widget.on_print(self._print_test_page)
         self._test_widget.on_memory_test(self._run_memory_test)
 
@@ -153,15 +158,14 @@ class ControlPanel(widgets.Tab):
 
         widget.apply(self.container.connection())
 
+    def _set_top_of_form(self: Self, widget: TopOfFormWidget) -> None:
+        widget.set_top_of_form(self.container.connection())
+
     def _print_test_page(self: Self, widget: TestWidget) -> None:
-        self._test_widget.print_test_page(
-            self.container.connection(), self.container.test_page()
-        )
+        widget.print_test_page(self.container.connection(), self.container.test_page())
 
     def _run_memory_test(self: Self, widget: TestWidget) -> None:
-        self._test_widget.run_memory_test(
-            self.container.serial(), self.container.connection()
-        )
+        widget.run_memory_test(self.container.serial(), self.container.connection())
 
     def shutdown(self: Self) -> None:
         self._activity_widget.shutdown()

@@ -423,7 +423,7 @@ class SettingsWidget(widgets.VBox):
 
         super().__init__(
             [
-                Label("Page Settings:"),
+                Label("Page Settings"),
                 # TODO: Right justify labels
                 widgets.HBox(
                     [
@@ -443,7 +443,7 @@ class SettingsWidget(widgets.VBox):
                         ),
                     ]
                 ),
-                Label("Formatting:"),
+                Label("Formatting"),
                 self._language_widget,
                 self._pitch_widget,
                 self._quality_widget,
@@ -451,7 +451,7 @@ class SettingsWidget(widgets.VBox):
                 widgets.HBox(
                     [widgets.Label("Line Spacing:"), self._line_spacing_widget]
                 ),
-                Label("Advanced Settings:"),
+                Label("Advanced Settings"),
                 self._lf_when_line_full_widget,
                 self._auto_lf_after_cr_widget,
                 self._cr_insertion_widget,

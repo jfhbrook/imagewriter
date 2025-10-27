@@ -13,6 +13,7 @@ from imagewriter.encoding.motion.form_feed import (
     FF,
     SET_TOP_OF_FORM,
     SetPerforationSkip,
+    SetTopOfForm,
 )
 from imagewriter.encoding.motion.insertion import (
     SetAutoLFAfterCR,
@@ -148,6 +149,7 @@ __all__: List[str] = [
     "SetUnidirectionalPrinting",
     "PlaceExactPrintHeadPosition",
     "FF",
+    "SetTopOfForm",
     "SET_TOP_OF_FORM",
     "SetPerforationSkip",
     "SetAutoLFAfterCR",
