@@ -8,7 +8,7 @@ from imagewriter.encoding.base import Print
 
 def test_connection(serial: Any, connection: Connection) -> None:
     def sleep(n: int | float) -> None:
-        time.sleep(2 * n * connection._timeout)
+        time.sleep(2 * n / connection.serial.baudrate)
 
     first = Print(b"first")
     second = Print(b"second")
@@ -20,9 +20,13 @@ def test_connection(serial: Any, connection: Connection) -> None:
 
     serial.cts = False
 
+    print("writing again")
     connection.write([second])
+    print("interrupt")
     connection.interrupt([interrupt])
 
     sleep(2)
+
+    print("assert time")
 
     serial.write.assert_has_calls([call(bytes(first)), call(bytes(interrupt))])

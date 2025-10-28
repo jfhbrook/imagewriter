@@ -113,16 +113,16 @@ def container(port, serial) -> Generator[Container, None, None]:
 
     with container.port.override(port):
         with container.serial.override(serial):
+            container.init_resources()
+
             yield container
+
+            container.shutdown_resources()
 
 
 @pytest.fixture
-def connection(container: Container) -> Generator[Connection, None, None]:
-    connection = container.connection()
-
-    yield connection
-
-    connection.shutdown()
+def connection(container: Container) -> Connection:
+    return container.connection()
 
 
 @pytest.fixture
