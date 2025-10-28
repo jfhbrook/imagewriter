@@ -96,6 +96,9 @@ class CustomCharacter:
 
         assert 160 <= self.point <= 239, "Point must be valid ASCII"
 
+    def __repr__(self: Self) -> str:
+        return f"CustomCharacter({self.point})"
+
 
 @dataclass
 class CustomCharacterData:

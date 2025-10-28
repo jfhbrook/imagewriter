@@ -57,8 +57,6 @@ class SetSoftwareSwitches(Command, ABC):
         return f"SetSoftwareSwitches({self.closed}, {fmt_switch_banks(packed)})"
 
 
-
-
 class OpenSoftwareSwitches(SetSoftwareSwitches):
     def __init__(self: Self, switches: Set[SoftwareSwitch]) -> None:
         return super().__init__(False, switches)

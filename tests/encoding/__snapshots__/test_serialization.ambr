@@ -273,7 +273,7 @@
   "Bytes(b'hello')"
 # ---
 # name: test_repr_command[command20]
-  "LoadCustomCharacters([CustomCharacterData(character=<imagewriter.character.CustomCharacter object at 0x1097d74d0>, data=b'1234', top_wires=True)])"
+  "LoadCustomCharacters([CustomCharacterData(character=CustomCharacter(225), data=b'1234', top_wires=True)])"
 # ---
 # name: test_repr_command[command21]
   'OpenSoftwareSwitches([0b11000000, 0b00000000])'
