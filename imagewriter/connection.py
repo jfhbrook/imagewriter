@@ -68,18 +68,20 @@ class Connection:
         count: Optional[int] = None
         try:
             interrupts, fut = self._interrupts.get_nowait()
+            try:
+                self._set_flow_control(False)
 
-            self._set_flow_control(False)
+                for command in interrupts:
+                    res = self.serial.write(bytes(command))
+                    count = _add(count, res)
 
-            for command in interrupts:
-                res = self.serial.write(bytes(command))
-                count = _add(count, res)
+                self._set_flow_control(True)
 
-            self._set_flow_control(True)
+                self.serial.flush()
 
-            self.serial.flush()
-
-            fut.set_result(count)
+                fut.set_result(count)
+            except Exception as exc:
+                fut.set_exception(exc)
 
             raise InterruptError()
         except queue.Empty:
