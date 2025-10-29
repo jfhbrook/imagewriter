@@ -68,8 +68,8 @@ class MockSerial(Serial):
         self._xonxoff: bool = protocol == SerialProtocol.XONXOFF
 
         # Mocked methods
-        self.write = Mock(name="Serial().write")
-        self.flush = Mock(name="Serial().flush")
+        self.write = Mock(name="Serial().write", return_value=1)
+        self.flush = Mock(name="Serial().flush", return_value=1)
 
     @property
     def cts(self: Self) -> bool:

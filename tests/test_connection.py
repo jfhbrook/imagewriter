@@ -1,32 +1,24 @@
-import time
 from typing import Any
-from unittest.mock import call
 
-from imagewriter.connection import Connection
+import pytest
+
+from imagewriter.connection import Connection, InterruptError
 from imagewriter.encoding.base import Print
 
 
 def test_connection(serial: Any, connection: Connection) -> None:
-    def sleep(n: int | float) -> None:
-        time.sleep(2 * n / connection.serial.baudrate)
-
     first = Print(b"first")
     second = Print(b"second")
     interrupt = Print(b"interrupt")
 
-    connection.write([first])
-
-    sleep(1)
+    connection.write([first]).result()
 
     serial.cts = False
 
-    print("writing again")
-    connection.write([second])
-    print("interrupt")
-    connection.interrupt([interrupt])
+    interrupt_fut = connection.interrupt([interrupt])
+    write_fut = connection.write([second])
 
-    sleep(2)
+    interrupt_fut.result()
 
-    print("assert time")
-
-    serial.write.assert_has_calls([call(bytes(first)), call(bytes(interrupt))])
+    with pytest.raises(InterruptError):
+        write_fut.result()

@@ -63,17 +63,6 @@ def provide_serial_state_observer(
     observer.stop()
 
 
-@contextmanager
-def provide_connection(
-    serial: Serial, executor: Executor
-) -> Generator[Connection, None, None]:
-    connection = Connection(serial=serial, executor=executor)
-
-    yield connection
-
-    connection.stop()
-
-
 class Container(containers.DeclarativeContainer):
     port = providers.Callable(provide_port)
 
@@ -95,10 +84,7 @@ class Container(containers.DeclarativeContainer):
             provide_serial_state_observer, serial=serial, executor=executor
         ),
     )
-    connection = cast(
-        providers.Resource[Connection],
-        providers.Resource(provide_connection, serial=serial, executor=executor),
-    )
+    connection = providers.Factory(Connection, serial=serial, executor=executor)
 
     map_mousetext = providers.Object(False)
     map_custom = providers.Object(False)
