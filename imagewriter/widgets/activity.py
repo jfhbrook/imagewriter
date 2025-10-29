@@ -1,3 +1,4 @@
+from concurrent.futures import Executor
 from typing import Any, Optional, Self
 
 import ipywidgets as widgets
@@ -42,12 +43,14 @@ class WriteStatsWidget(widgets.HBox):
 
 
 class SerialStateObserver(debug.SerialStateObserver):
-    def __init__(self: Self, serial: Serial, widget: "ActivityWidget") -> None:
+    def __init__(
+        self: Self, serial: Serial, executor: Executor, widget: "ActivityWidget"
+    ) -> None:
         self._widget = widget
 
         self._write_hook(serial)
 
-        super().__init__(serial)
+        super().__init__(serial, executor)
 
     def _on_write(self: Self, data: Any) -> None:
         self._widget.write_stats.on_write(data)
@@ -89,9 +92,11 @@ class ActivityWidget(widgets.VBox):
 
         self._observer: Optional[SerialStateObserver] = None
 
-    def instrument(self: Self, serial: Serial) -> None:
+    def instrument(self: Self, serial: Serial, executor: Executor) -> None:
         self._reset()
-        self._observer = SerialStateObserver(serial=serial, widget=self)
+        self._observer = SerialStateObserver(
+            serial=serial, executor=executor, widget=self
+        )
         self.start()
 
     def _reset(self: Self) -> None:
@@ -112,6 +117,4 @@ class ActivityWidget(widgets.VBox):
             self._observer.stop()
 
     def shutdown(self: Self) -> None:
-        if self._observer:
-            self._observer.shutdown()
-            self._observer = None
+        self._observer = None

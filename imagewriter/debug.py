@@ -1,4 +1,4 @@
-from concurrent.futures import Executor, ThreadPoolExecutor
+from concurrent.futures import Executor
 import datetime
 import time
 from typing import Optional, Self
@@ -7,9 +7,9 @@ from serial import Serial
 
 
 class SerialStateObserver:
-    def __init__(self: Self, serial: Serial) -> None:
+    def __init__(self: Self, serial: Serial, executor: Executor) -> None:
         self.serial: Serial = serial
-        self._executor: Executor = ThreadPoolExecutor(max_workers=1)
+        self._executor: Executor = executor
         self._tick: float = 0.25 / serial.baudrate
         self.running: bool = False
 
@@ -65,7 +65,3 @@ class SerialStateObserver:
 
     def stop(self: Self) -> None:
         self.running = False
-
-    def shutdown(self: Self) -> None:
-        self.stop()
-        self._executor.shutdown()

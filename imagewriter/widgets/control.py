@@ -1,4 +1,6 @@
-from typing import Optional, Self, Type
+from concurrent.futures import Executor
+from contextlib import contextmanager
+from typing import cast, Generator, Optional, Self, Type
 
 from dependency_injector import providers
 import ipywidgets as widgets
@@ -7,7 +9,7 @@ from imagewriter.connection import Connection
 from imagewriter.container import Container
 from imagewriter.serial import Serial
 from imagewriter.settings import Settings
-from imagewriter.widgets.activity import ActivityWidget
+from imagewriter.widgets.activity import ActivityWidget, SerialStateObserver
 from imagewriter.widgets.base import header
 from imagewriter.widgets.form_feed import TopOfFormWidget
 from imagewriter.widgets.serial import SerialWidget
@@ -65,8 +67,18 @@ class ControlPanel(widgets.Tab):
         self._test_widget.on_memory_test(self._run_memory_test)
 
     def _bind_cls(self: Self, cls: Type[Container]) -> Type[Container]:
+
         class Container(cls):
             serial = providers.Callable(self._provide_serial)
+
+            serial_state_observer = cast(
+                providers.Resource[SerialStateObserver],
+                providers.Resource(
+                    self._provide_serial_state_observer,
+                    serial=serial,
+                    executor=cls.executor,
+                ),
+            )
 
             connection = providers.Singleton(Connection, serial=serial)
 
@@ -84,11 +96,23 @@ class ControlPanel(widgets.Tab):
                 self._serial_widget.error(exc)
                 raise exc
 
-            self._activity_widget.instrument(self._serial)
+            self._activity_widget.instrument(self._serial, self.container.executor())
             if self._serial.is_open:
                 self._serial_widget.connect()
 
         return self._serial
+
+    @contextmanager
+    def _provide_serial_state_observer(
+        self: Self, serial: Serial, executor: Executor
+    ) -> Generator[SerialStateObserver, None, None]:
+        observer = SerialStateObserver(
+            serial=serial, executor=executor, widget=self._activity_widget
+        )
+
+        yield observer
+
+        observer.stop()
 
     @property
     def settings(self: Self) -> Settings:
