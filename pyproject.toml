@@ -35,6 +35,7 @@ dependencies = [
   "dependency-injector",
   "ipywidgets",
   "pyserial",
+  "PySide6",
 ]
 
 [dependency-groups]
