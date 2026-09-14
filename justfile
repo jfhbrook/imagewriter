@@ -2,46 +2,15 @@ set dotenv-load := true
 
 # By default, run checks and tests, then format and lint
 default:
-  if [ ! -d .venv ]; then just install; fi
   @just generate
   @just format
   @just check
   @just test
   @just lint
 
-#
-# Installing, updating and upgrading dependencies
-#
-
-_clean-venv:
-  rm -rf .venv
-
 # Install all dependencies
 install:
   uv sync --dev
-
-# Update all dependencies
-update:
-  @just install
-
-# Update all dependencies and rebuild the environment
-upgrade:
-  if [ -d venv ]; then just update && just check && just _upgrade; else just update; fi
-
-_upgrade:
-  @just _clean-venv
-  @just _venv
-  @just install
-
-# Generate locked requirements files based on dependencies in pyproject.toml
-compile:
-  uv pip compile -o requirements.txt pyproject.toml
-  cp requirements.txt requirements_dev.txt
-  python3 -c 'import toml; print("\n".join(toml.load(open("pyproject.toml"))["dependency-groups"]["dev"]))' >> requirements_dev.txt
-
-_clean-compile:
-  rm -f requirements.txt
-  rm -f requirements_dev.txt
 
 #
 # Development tooling - linting, formatting, etc
