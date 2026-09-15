@@ -8,6 +8,10 @@ from imagewriter.render.document import DocumentRenderer
 
 
 class PandocRenderer:
+    """
+    Render a document format, such as Markdown, using pandoc.
+    """
+
     def __init__(self: Self, settings: Settings) -> None:
         self._renderer = DocumentRenderer(settings)
 

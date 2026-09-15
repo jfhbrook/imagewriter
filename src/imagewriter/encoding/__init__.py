@@ -1,3 +1,7 @@
+"""
+Encode structured commands into bytes that the ImageWriter II can understand.
+"""
+
 from typing import List
 
 from imagewriter.encoding.attributes import (

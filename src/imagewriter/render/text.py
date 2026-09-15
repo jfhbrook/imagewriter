@@ -42,6 +42,10 @@ from imagewriter.encoding import (
 
 
 class RichTextBuilder:
+    """
+    A builder for creating simple rich text documents.
+    """
+
     def __init__(self: Self, settings: Settings) -> None:
         self._settings: Settings = settings
         self._character_encoder = CharacterEncoder(
@@ -169,11 +173,18 @@ class RichTextBuilder:
         return self
 
     def space(self: Self) -> Self:
+        """
+        Write a space.
+        """
         command: Command = Space()
         self.write([command])
         return self
 
     def trim_space(self: Self) -> Self:
+        """
+        Trim spaces.
+        """
+
         assert isinstance(self._commands[-1], Space)
         self.trim(1)
         return self
