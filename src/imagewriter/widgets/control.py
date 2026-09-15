@@ -19,6 +19,10 @@ from imagewriter.widgets.test import TestWidget
 
 
 class ControlPanel(widgets.Tab):
+    """
+    A control panel widget for the ImageWriter II.
+    """
+
     def __init__(self: Self, container_cls: Type[Container] = Container) -> None:
         # We need to hook some custom behavior onto the creation of the
         # serial port. We do that by subclassing the container here.
