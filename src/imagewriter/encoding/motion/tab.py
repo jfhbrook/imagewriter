@@ -41,7 +41,7 @@ def _encode_tab_stops(stops: List[int]) -> bytes:
     encoded: bytes = b""
 
     for stop in tab_stops:
-        encoded += bytes(f"{number(stop, 3)},", encoding="ascii")
+        encoded += number(stop, 3)
 
     encoded = encoded[:-1] + b"."
 

@@ -45,7 +45,7 @@ def language_test(title: TitleRenderer) -> List[Command]:
     for language in Language:
         commands += [
             *title(language.value, 3),
-            set_language(language),
+            *set_language(language),
             Print(f"#${chr(64)}[\\]`(|)~".encode(encoding="ascii")),
             *cr_lf(),
         ]

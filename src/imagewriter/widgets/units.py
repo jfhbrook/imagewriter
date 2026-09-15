@@ -1,6 +1,6 @@
 from typing import Callable, cast, Dict, Literal, Self, Type
 
-import ipywidgets as widgets
+import ipywidgets as widgets  # type: ignore
 
 from imagewriter.units import Centimeter, Distance, Inch, Millimeter, Pica, Point
 

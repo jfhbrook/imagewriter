@@ -1,6 +1,6 @@
 from typing import Protocol, Self
 
-import ipywidgets as widgets
+import ipywidgets as widgets  # type: ignore
 
 from imagewriter.connection import Connection
 from imagewriter.encoding import SET_TOP_OF_FORM

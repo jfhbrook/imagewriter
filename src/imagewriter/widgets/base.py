@@ -1,6 +1,6 @@
 from typing import Any, Self
 
-import ipywidgets as widgets
+import ipywidgets as widgets  # type: ignore
 
 
 class Label(widgets.Label):

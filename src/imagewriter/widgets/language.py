@@ -1,6 +1,6 @@
 from typing import Dict, Self
 
-import ipywidgets as widgets
+import ipywidgets as widgets  # type: ignore
 
 from imagewriter.language import Language
 

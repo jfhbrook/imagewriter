@@ -1,6 +1,6 @@
 from typing import List, Protocol, Self
 
-import ipywidgets as widgets
+import ipywidgets as widgets  # type: ignore
 from serial.tools.list_ports import comports
 
 from imagewriter.switch import DIPSwitches

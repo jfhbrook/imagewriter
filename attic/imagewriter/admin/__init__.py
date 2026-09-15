@@ -1,3 +1,7 @@
+"""
+A stub admin API. Will be replaced.
+"""
+
 from aiohttp import web
 
 

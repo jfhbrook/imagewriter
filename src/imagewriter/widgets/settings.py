@@ -1,6 +1,6 @@
 from typing import Optional, Protocol, Self
 
-import ipywidgets as widgets
+import ipywidgets as widgets  # type: ignore
 
 from imagewriter.connection import Connection
 from imagewriter.encoding.settings import apply_settings

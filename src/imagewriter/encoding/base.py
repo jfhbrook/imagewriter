@@ -88,7 +88,7 @@ class Bytes(Command):
         return self.bytes
 
     def __repr__(self: Self) -> str:
-        return f"Bytes({bytes(self)})"
+        return f"Bytes({bytes(self)!r})"
 
 
 class Print(Bytes):
@@ -124,7 +124,7 @@ class Ctrl(Command):
         return self.character
 
     def __repr__(self: Self) -> str:
-        return f"Ctrl({self.character})"
+        return f"Ctrl({self.character!r})"
 
 
 class Esc(Command):

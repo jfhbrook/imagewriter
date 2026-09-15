@@ -63,7 +63,7 @@ class Pitch(Enum):
         }.get(self, None)
 
     @property
-    def characters_per_inch(self: Self) -> int:
+    def characters_per_inch(self: Self) -> float:
         """
         Characters per inch, as per page 66 of the ImageWriter II Technical
         Reference Manual.

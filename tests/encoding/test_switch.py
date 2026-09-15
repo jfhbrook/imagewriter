@@ -21,17 +21,17 @@ from imagewriter.switch import SoftwareSwitch, SoftwareSwitches
 
 
 def test_apply() -> None:
-    switches = {
-        SoftwareSwitch.LANGUAGE_1,
-        SoftwareSwitch.SOFTWARE_SELECT_RESPONSE_DISABLED,
-        SoftwareSwitch.LF_WHEN_LINE_FULL,
-        SoftwareSwitch.PRINT_COMMANDS_INCLUDE_LF_FF,
-        SoftwareSwitch.AUTO_LF_AFTER_CR,
-        SoftwareSwitch.PERFORATION_SKIP_DISABLED,
-        SoftwareSwitch.IGNORE_EIGHTH_DATA_BIT,
-    }
-
-    switches = SoftwareSwitches.from_switches(switches)
+    switches = SoftwareSwitches.from_switches(
+        {
+            SoftwareSwitch.LANGUAGE_1,
+            SoftwareSwitch.SOFTWARE_SELECT_RESPONSE_DISABLED,
+            SoftwareSwitch.LF_WHEN_LINE_FULL,
+            SoftwareSwitch.PRINT_COMMANDS_INCLUDE_LF_FF,
+            SoftwareSwitch.AUTO_LF_AFTER_CR,
+            SoftwareSwitch.PERFORATION_SKIP_DISABLED,
+            SoftwareSwitch.IGNORE_EIGHTH_DATA_BIT,
+        }
+    )
 
     commands = apply_software_switches(switches)
 

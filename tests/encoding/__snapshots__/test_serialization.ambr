@@ -114,7 +114,7 @@
   b'\x1bB'
 # ---
 # name: test_bytes_command[command44]
-  b"\x1b(b'004',b'008',b'012'."
+  b'\x1b(00400801.'
 # ---
 # name: test_bytes_command[command45]
   b'\x1b-'
@@ -132,7 +132,7 @@
   b'\x1bH1584'
 # ---
 # name: test_bytes_command[command4]
-  b"\x1b)b'004',b'008',b'012'."
+  b'\x1b)00400801.'
 # ---
 # name: test_bytes_command[command50]
   b'\x1bO'

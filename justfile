@@ -26,9 +26,9 @@ lint:
   uv run flake8 ./src ./tests
   uv run validate-pyproject ./pyproject.toml
 
-# Check type annotations with pyright
+# Check type annotations
 check:
-  uv run npx pyright@latest
+  uv run mypy ./src ./tests
 
 # Run tests with pytest
 test:

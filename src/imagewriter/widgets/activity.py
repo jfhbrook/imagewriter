@@ -1,7 +1,7 @@
 from concurrent.futures import Executor
-from typing import Any, Optional, Self
+from typing import Any, cast, Optional, Self
 
-import ipywidgets as widgets
+import ipywidgets as widgets  # type: ignore
 
 import imagewriter.debug as debug
 from imagewriter.serial import Serial
@@ -62,7 +62,8 @@ class SerialStateObserver(debug.SerialStateObserver):
             self._on_write(data)
             return _write(data)
 
-        serial.write = write
+        # Shenanigans afoot!
+        cast(Any, serial).write = write
 
     def on_change(self: Self) -> None:
         self._widget.dtr.level = self.serial.dtr

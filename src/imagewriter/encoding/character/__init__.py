@@ -153,8 +153,8 @@ def extract_characters(*text: Text) -> Generator[Character, None, None]:
                 else:
                     yield c
         elif isinstance(tx, list):
-            for c in tx:
-                yield c
+            for s in tx:
+                yield s
         else:
             yield tx
 

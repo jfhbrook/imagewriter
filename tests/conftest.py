@@ -1,5 +1,6 @@
+from collections.abc import Callable
 import importlib.resources
-from typing import Callable, Generator, List, Optional, Self
+from typing import Any, cast, Generator, List, Optional, Self
 from unittest.mock import Mock
 
 import pytest
@@ -68,8 +69,8 @@ class MockSerial(Serial):
         self._xonxoff: bool = protocol == SerialProtocol.XONXOFF
 
         # Mocked methods
-        self.write = Mock(name="Serial().write", return_value=1)
-        self.flush = Mock(name="Serial().flush", return_value=1)
+        cast(Any, self).write = Mock(name="Serial().write", return_value=1)
+        cast(Any, self).flush = Mock(name="Serial().flush", return_value=1)
 
     @property
     def cts(self: Self) -> bool:

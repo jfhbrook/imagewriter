@@ -1,9 +1,9 @@
 from concurrent.futures import Executor
 from contextlib import contextmanager
-from typing import cast, Generator, Optional, Self, Type
+from typing import Any, cast, Generator, Optional, Self, Type
 
 from dependency_injector import providers
-import ipywidgets as widgets
+import ipywidgets as widgets  # type: ignore
 
 from imagewriter.connection import Connection
 from imagewriter.container import Container
@@ -68,7 +68,7 @@ class ControlPanel(widgets.Tab):
 
     def _bind_cls(self: Self, cls: Type[Container]) -> Type[Container]:
 
-        class Container(cls):
+        class Container(cls):  # type: ignore
             serial = providers.Callable(self._provide_serial)
 
             serial_state_observer = cast(
