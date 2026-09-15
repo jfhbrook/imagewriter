@@ -1,3 +1,8 @@
+"""
+Connection management for the ImageWriter II. Supports sending commands as discrete
+packets and interrupting commands (such as a reset).
+"""
+
 from concurrent.futures import Executor, Future
 import logging
 import queue
@@ -12,10 +17,18 @@ logger = logging.getLogger(__name__)
 
 
 class ConnectionError(Exception):
+    """
+    A connection error.
+    """
+
     pass
 
 
 class InterruptError(ConnectionError):
+    """
+    An error while executing an interrupt command.
+    """
+
     pass
 
 

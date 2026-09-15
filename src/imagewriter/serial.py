@@ -1,3 +1,8 @@
+"""
+Support for communicating with the ImageWriter II over serial. Note that the
+ImageWriter II does NOT follow the RS-232 standard for flow control.
+"""
+
 from enum import Enum
 from typing import Literal, Optional, Self
 
