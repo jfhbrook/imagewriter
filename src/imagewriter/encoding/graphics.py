@@ -1,8 +1,8 @@
 from typing import Self
 
+from imagewriter.base.units import Point
 from imagewriter.encoding.base import Command, esc, number
 from imagewriter.encoding.motion import SetDistanceBetweenLines
-from imagewriter.units import Point
 
 
 class PrintGraphicsData(Command):

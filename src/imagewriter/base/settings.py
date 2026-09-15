@@ -1,16 +1,21 @@
 import dataclasses
 from typing import Any, List, Optional, Self, Type
 
-from imagewriter.language import Language
-from imagewriter.pitch import Pitch
-from imagewriter.print import PrintCommands
-from imagewriter.quality import Quality
-from imagewriter.switch import DIPSwitches, SoftwareSwitches
-from imagewriter.units import Distance, Inch, Length, Pica, Point
+from imagewriter.base.language import Language
+from imagewriter.base.pitch import Pitch
+from imagewriter.base.print import PrintCommands
+from imagewriter.base.quality import Quality
+from imagewriter.base.switch import DIPSwitches, SoftwareSwitches
+from imagewriter.base.units import Distance, Inch, Length, Pica, Point
 
 
 @dataclasses.dataclass
 class Settings:
+    """
+    ImageWriter II global settings. These settings are controlled by a combination of
+    physical DIP switches and in-memory software switches.
+    """
+
     # boundaries
     left_margin: Distance
     page_length: Distance

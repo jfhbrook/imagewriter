@@ -1,5 +1,6 @@
 from typing import List
 
+from imagewriter.base.settings import Settings
 from imagewriter.encoding.base import Command
 from imagewriter.encoding.boundaries import SetLeftMargin, SetPageLength
 from imagewriter.encoding.motion import (
@@ -12,7 +13,6 @@ from imagewriter.encoding.paper import SetPaperOutSensor
 from imagewriter.encoding.pitch import SetPitch
 from imagewriter.encoding.quality import SetQuality
 from imagewriter.encoding.switch import apply_software_switches
-from imagewriter.settings import Settings
 
 
 def apply_settings(settings: Settings) -> List[Command]:

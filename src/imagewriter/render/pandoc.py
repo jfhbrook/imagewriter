@@ -1,10 +1,10 @@
 from typing import List, Self
 
+from imagewriter.base.settings import Settings
 from imagewriter.document import PandocFormat
 from imagewriter.encoding import Command
 from imagewriter.pandoc import parse_document
 from imagewriter.render.document import DocumentRenderer
-from imagewriter.settings import Settings
 
 
 class PandocRenderer:

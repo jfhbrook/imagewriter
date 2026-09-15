@@ -17,13 +17,13 @@ See page 87 of the ImageWriter II Technical Reference Manual for more details.
 
 from typing import Self
 
+from imagewriter.base.switch import SoftwareSwitch
 from imagewriter.encoding.base import Ctrl
 from imagewriter.encoding.switch import (
     fmt_switch_banks,
     fmt_switch_position,
     SetSoftwareSwitches,
 )
-from imagewriter.switch import SoftwareSwitch
 
 
 class Select(Ctrl):

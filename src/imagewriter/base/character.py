@@ -1,3 +1,7 @@
+"""
+Classes and utilities for working with MouseText and custom characters.
+"""
+
 from dataclasses import dataclass
 from enum import Enum
 from typing import List, Self

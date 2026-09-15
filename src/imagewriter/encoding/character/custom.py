@@ -1,6 +1,6 @@
 from typing import Dict, Literal, Self, Sequence
 
-from imagewriter.character import CustomCharacterData
+from imagewriter.base.character import CustomCharacterData
 from imagewriter.encoding.base import Bytes, ctrl, esc, Esc
 
 TOP_WIRES = True

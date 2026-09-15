@@ -1,8 +1,8 @@
 from abc import ABC
 from typing import List, Self, Set
 
+from imagewriter.base.switch import SoftwareSwitch, SoftwareSwitches
 from imagewriter.encoding.base import Command, esc
-from imagewriter.switch import SoftwareSwitch, SoftwareSwitches
 
 
 def fmt_switch_position(closed: bool) -> str:

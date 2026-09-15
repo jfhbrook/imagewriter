@@ -3,6 +3,10 @@ from typing import Self
 
 
 class Color(Enum):
+    """
+    A print color.
+    """
+
     BLACK = "0"
     YELLOW = "1"
     MAGENTA = "2"
@@ -15,6 +19,10 @@ class Color(Enum):
 
     @property
     def code(self: Self) -> str:
+        """
+        The color's code, as supported in the ImageWriter II's escape codes.
+        """
+
         value = self.value
 
         try:

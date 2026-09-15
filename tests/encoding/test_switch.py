@@ -1,5 +1,8 @@
 import pytest
 
+from imagewriter.base.language import Language
+from imagewriter.base.print import PrintCommands
+from imagewriter.base.switch import SoftwareSwitch, SoftwareSwitches
 from imagewriter.encoding.attributes import PRINT_SLASHED_ZERO, PRINT_UNSLASHED_ZERO
 from imagewriter.encoding.base import esc
 from imagewriter.encoding.language import set_language
@@ -15,9 +18,6 @@ from imagewriter.encoding.switch import (
     apply_software_switches,
     SetSoftwareSwitches,
 )
-from imagewriter.language import Language
-from imagewriter.print import PrintCommands
-from imagewriter.switch import SoftwareSwitch, SoftwareSwitches
 
 
 def test_apply() -> None:

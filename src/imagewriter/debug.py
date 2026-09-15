@@ -1,3 +1,7 @@
+"""
+Printer debugging utilities.
+"""
+
 from concurrent.futures import Executor
 import datetime
 import time
@@ -7,6 +11,11 @@ from serial import Serial
 
 
 class SerialStateObserver:
+    """
+    Observe the state of the serial connection's DTR, DSR, RTS and CTS lines. Useful
+    for ensuring that flow control is working appropriately.
+    """
+
     def __init__(self: Self, serial: Serial, executor: Executor) -> None:
         self.serial: Serial = serial
         self._executor: Executor = executor

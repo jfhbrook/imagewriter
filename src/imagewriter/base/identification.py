@@ -1,3 +1,7 @@
+"""
+Support for the ImageWriter II's response when commanded to identify itself.
+"""
+
 from dataclasses import dataclass
 from typing import Self, Set
 
@@ -8,6 +12,10 @@ FEAT_SHEET_FEEDER: Feature = "F"
 
 @dataclass
 class Identification:
+    """
+    The ImageWriter II's identification response.
+    """
+
     model: str
     carriage_width: int
     features: Set[Feature]

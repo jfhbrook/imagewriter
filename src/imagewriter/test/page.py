@@ -1,7 +1,9 @@
 import importlib.resources
 from typing import List, Self
 
-from imagewriter.character import MouseTextCharacter
+from imagewriter.base.character import MouseTextCharacter
+from imagewriter.base.language import Language
+from imagewriter.base.pitch import Pitch
 from imagewriter.document import Document, Header, split_text
 from imagewriter.encoding import (
     boldface,
@@ -21,8 +23,6 @@ from imagewriter.encoding import (
     STOP_SUBSCRIPT,
     underline,
 )
-from imagewriter.language import Language
-from imagewriter.pitch import Pitch
 from imagewriter.render import DocumentRenderer, PandocRenderer
 
 

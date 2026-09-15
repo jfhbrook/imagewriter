@@ -5,6 +5,7 @@ from unittest.mock import Mock
 
 import pytest
 
+from imagewriter.base.settings import Settings
 from imagewriter.connection import Connection
 from imagewriter.container import Container
 from imagewriter.encoding import (
@@ -15,7 +16,6 @@ from imagewriter.encoding import (
     Print,
 )
 from imagewriter.serial import BaudRate, Serial, SerialProtocol
-from imagewriter.settings import Settings
 
 CHARACTER_ENCODER = CharacterEncoder()
 

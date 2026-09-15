@@ -1,5 +1,7 @@
 from typing import List, Self
 
+from imagewriter.base.pitch import Pitch
+from imagewriter.base.units import Distance, Length, length_to_int
 from imagewriter.encoding.base import (
     Bytes,
     Command,
@@ -42,8 +44,6 @@ from imagewriter.encoding.motion.tab import (
     TabLengthError,
     to_tab_stops,
 )
-from imagewriter.pitch import Pitch
-from imagewriter.units import Distance, Length, length_to_int
 
 
 class CarriageReturnLengthError(LengthError):

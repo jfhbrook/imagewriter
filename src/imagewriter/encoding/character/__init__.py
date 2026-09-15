@@ -1,13 +1,14 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict, Generator, List, Self
 
-from imagewriter.character import (
+from imagewriter.base.character import (
     Character,
     CustomCharacter,
     map_to_low_ascii,
     MouseTextCharacter,
     Text,
 )
+from imagewriter.base.language import Language
 from imagewriter.encoding.base import Command, Esc, Print
 from imagewriter.encoding.character.custom import (
     BOTTOM_WIRES,
@@ -17,7 +18,6 @@ from imagewriter.encoding.character.custom import (
 )
 from imagewriter.encoding.language import set_language
 from imagewriter.encoding.motion import CR, LF, TAB
-from imagewriter.language import Language
 
 # TODO: Print a test page of alternate language characters, figure out what
 # the alternate characters are, and complete this table.

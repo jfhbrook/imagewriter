@@ -1,5 +1,6 @@
 from typing import List, Self
 
+from imagewriter.base.switch import SoftwareSwitch
 from imagewriter.encoding.base import Command, Ctrl, Esc
 from imagewriter.encoding.switch import (
     CloseSoftwareSwitches,
@@ -7,7 +8,6 @@ from imagewriter.encoding.switch import (
     fmt_switch_position,
     OpenSoftwareSwitches,
 )
-from imagewriter.switch import SoftwareSwitch
 
 
 class StartDoubleWidth(Ctrl):

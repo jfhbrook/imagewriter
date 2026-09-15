@@ -2,9 +2,9 @@ from typing import List, Protocol, Self
 
 import ipywidgets as widgets  # type: ignore
 
+from imagewriter.base.memory import print_buffer_size
 from imagewriter.connection import Connection
 from imagewriter.encoding import Command
-from imagewriter.memory import print_buffer_size
 from imagewriter.serial import Serial
 from imagewriter.test import test_memory
 

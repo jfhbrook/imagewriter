@@ -1,7 +1,7 @@
 from typing import Self
 
+from imagewriter.base.pitch import Pitch
 from imagewriter.encoding.base import Esc
-from imagewriter.pitch import Pitch
 
 
 class SetPitch(Esc):

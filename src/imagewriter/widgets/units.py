@@ -2,7 +2,7 @@ from typing import Callable, cast, Dict, Literal, Self, Type
 
 import ipywidgets as widgets  # type: ignore
 
-from imagewriter.units import Centimeter, Distance, Inch, Millimeter, Pica, Point
+from imagewriter.base.units import Centimeter, Distance, Inch, Millimeter, Pica, Point
 
 UnitName = (
     Literal["in"] | Literal["cm"] | Literal["mm"] | Literal["pt"] | Literal["pica"]

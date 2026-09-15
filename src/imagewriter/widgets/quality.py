@@ -2,7 +2,7 @@ from typing import Dict, Self
 
 import ipywidgets as widgets  # type: ignore
 
-from imagewriter.quality import Quality
+from imagewriter.base.quality import Quality
 
 QUALITIES: Dict[str, Quality] = {
     "Correspondence": Quality.CORRESPONDENCE,

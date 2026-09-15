@@ -12,7 +12,7 @@ class RequestSelfIdentify(Esc):
     print command.
 
     Receiving the response has a number of additional caveats. See the
-    `imagewriter.identification` module for more details.
+    `imagewriter.base.identification` module for more details.
     """
 
     def __init__(self: Self) -> None:

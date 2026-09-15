@@ -1,5 +1,7 @@
 from typing import List, Self
 
+from imagewriter.base.language import Language
+from imagewriter.base.switch import SoftwareSwitch
 from imagewriter.encoding.base import Command
 from imagewriter.encoding.switch import (
     CloseSoftwareSwitches,
@@ -7,8 +9,6 @@ from imagewriter.encoding.switch import (
     fmt_switch_position,
     OpenSoftwareSwitches,
 )
-from imagewriter.language import Language
-from imagewriter.switch import SoftwareSwitch
 
 
 class OpenLanguageSwitches(OpenSoftwareSwitches):

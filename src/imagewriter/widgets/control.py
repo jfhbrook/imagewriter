@@ -1,14 +1,14 @@
 from concurrent.futures import Executor
 from contextlib import contextmanager
-from typing import Any, cast, Generator, Optional, Self, Type
+from typing import cast, Generator, Optional, Self, Type
 
 from dependency_injector import providers
 import ipywidgets as widgets  # type: ignore
 
+from imagewriter.base.settings import Settings
 from imagewriter.connection import Connection
 from imagewriter.container import Container
 from imagewriter.serial import Serial
-from imagewriter.settings import Settings
 from imagewriter.widgets.activity import ActivityWidget, SerialStateObserver
 from imagewriter.widgets.base import header
 from imagewriter.widgets.form_feed import TopOfFormWidget

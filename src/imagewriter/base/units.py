@@ -1,7 +1,12 @@
+"""
+Various distance/length units supported by the ImageWriter II, and conversions
+between them.
+"""
+
 from abc import ABC, abstractmethod
 from typing import Callable, Self, Type, TypeVar
 
-from imagewriter.pitch import Pitch
+from imagewriter.base.pitch import Pitch
 
 VERTICAL_RESOLUTION = 144  # Per inch
 
@@ -9,6 +14,10 @@ D = TypeVar("D", bound="Distance")
 
 
 class Distance(ABC):
+    """
+    A base class for distances - a value in some unit.
+    """
+
     def __init__(self: Self, value: int | float) -> None:
         self.value: float = float(value)
 
@@ -84,6 +93,10 @@ class Distance(ABC):
 
 
 class Inch(Distance):
+    """
+    A distance in inches.
+    """
+
     @property
     def inches(self: Self) -> float:
         return self.value
@@ -94,6 +107,10 @@ class Inch(Distance):
 
 
 class Centimeter(Distance):
+    """
+    A distance in centimeters.
+    """
+
     @property
     def inches(self: Self) -> float:
         return self.value / 2.54
@@ -108,6 +125,10 @@ class Centimeter(Distance):
 
 
 class Millimeter(Distance):
+    """
+    A distance in millimeters.
+    """
+
     @property
     def inches(self: Self) -> float:
         return self.value / 25.4
@@ -126,6 +147,11 @@ class Millimeter(Distance):
 
 
 class Point(Distance):
+    """
+    A distance in points, as commonly used for font sizes. There are 72 points to an
+    inch.
+    """
+
     @property
     def inches(self: Self) -> float:
         return self.value / 72
@@ -140,6 +166,11 @@ class Point(Distance):
 
 
 class Pica(Distance):
+    """
+    A distince in picas, as commonly used in page layouts. There are 6 picas to an
+    inch.
+    """
+
     @property
     def inches(self: Self) -> float:
         return self.value / 6
@@ -152,6 +183,9 @@ class Pica(Distance):
     def from_(cls: Type[Self], from_: Distance) -> Self:
         return cls(from_.picas)
 
+
+# A length is represented either as a Distance, or as a raw int value. This allows for
+# passing either structured Distances or raw length values to encoding functions.
 
 Length = Distance | int
 

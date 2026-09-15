@@ -1,27 +1,23 @@
 from typing import List
 
-from imagewriter.connection import Connection
-from imagewriter.container import Container
-from imagewriter.identification import (
+from imagewriter.base.identification import (
     FEAT_COLOR_RIBBON,
     FEAT_SHEET_FEEDER,
     Feature,
     Identification,
 )
-from imagewriter.job import Job
-from imagewriter.language import Language
-from imagewriter.pitch import Pitch
-from imagewriter.print import PrintCommands
-from imagewriter.quality import Quality
-from imagewriter.serial import Serial, SerialProtocol
-from imagewriter.settings import Settings
-from imagewriter.switch import (
+from imagewriter.base.language import Language
+from imagewriter.base.pitch import Pitch
+from imagewriter.base.print import PrintCommands
+from imagewriter.base.quality import Quality
+from imagewriter.base.settings import Settings
+from imagewriter.base.switch import (
     DIPSwitch,
     DIPSwitches,
     SoftwareSwitch,
     SoftwareSwitches,
 )
-from imagewriter.units import (
+from imagewriter.base.units import (
     Centimeter,
     Distance,
     Inch,
@@ -32,6 +28,9 @@ from imagewriter.units import (
     Pica,
     Point,
 )
+from imagewriter.connection import Connection
+from imagewriter.container import Container
+from imagewriter.serial import Serial, SerialProtocol
 
 __all__: List[str] = [
     "Connection",
@@ -40,7 +39,6 @@ __all__: List[str] = [
     "FEAT_SHEET_FEEDER",
     "Feature",
     "Identification",
-    "Job",
     "Language",
     "Pitch",
     "PrintCommands",

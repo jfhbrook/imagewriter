@@ -2,13 +2,13 @@ from typing import Optional, Protocol, Self
 
 import ipywidgets as widgets  # type: ignore
 
+from imagewriter.base.pitch import Pitch
+from imagewriter.base.print import PrintCommands
+from imagewriter.base.settings import Settings
+from imagewriter.base.switch import DIPSwitches
+from imagewriter.base.units import Distance, Inch, VERTICAL_RESOLUTION
 from imagewriter.connection import Connection
 from imagewriter.encoding.settings import apply_settings
-from imagewriter.pitch import Pitch
-from imagewriter.print import PrintCommands
-from imagewriter.settings import Settings
-from imagewriter.switch import DIPSwitches
-from imagewriter.units import Distance, Inch, VERTICAL_RESOLUTION
 from imagewriter.widgets.base import Label
 from imagewriter.widgets.language import LanguageWidget
 from imagewriter.widgets.pitch import PitchWidget

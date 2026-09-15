@@ -1,12 +1,12 @@
 from typing import Self
 
+from imagewriter.base.switch import SoftwareSwitch
 from imagewriter.encoding.base import Esc
 from imagewriter.encoding.switch import (
     fmt_switch_banks,
     fmt_switch_position,
     SetSoftwareSwitches,
 )
-from imagewriter.switch import SoftwareSwitch
 
 
 class SetAutoLFAfterCR(SetSoftwareSwitches):

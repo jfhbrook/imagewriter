@@ -1,3 +1,8 @@
+"""
+Print quality settings for the ImageWriter II. Higher print qualities look better on
+the page, but are slower to print and use more ribbon.
+"""
+
 from enum import Enum
 from typing import Self
 

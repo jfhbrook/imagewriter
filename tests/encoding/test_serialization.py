@@ -2,8 +2,14 @@ from typing import List
 
 import pytest
 
-from imagewriter.character import CustomCharacter, CustomCharacterData
-from imagewriter.color import Color
+from imagewriter.base.character import CustomCharacter, CustomCharacterData
+from imagewriter.base.color import Color
+from imagewriter.base.language import Language
+from imagewriter.base.pitch import Pitch
+from imagewriter.base.print import PrintCommands
+from imagewriter.base.quality import Quality
+from imagewriter.base.switch import SoftwareSwitch
+from imagewriter.base.units import Inch
 from imagewriter.encoding import (
     BACKSPACE,
     Bytes,
@@ -71,12 +77,6 @@ from imagewriter.encoding import (
     STOP_UNDERLINE,
     TAB,
 )
-from imagewriter.language import Language
-from imagewriter.pitch import Pitch
-from imagewriter.print import PrintCommands
-from imagewriter.quality import Quality
-from imagewriter.switch import SoftwareSwitch
-from imagewriter.units import Inch
 
 COMMANDS: List[Command] = [
     BACKSPACE,

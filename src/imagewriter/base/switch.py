@@ -1,11 +1,16 @@
+"""
+Representations of state for both the ImageWriter II's physical DIP switches and its
+in-memory software switches.
+"""
+
 from dataclasses import dataclass
 from enum import Enum
 from typing import Dict, Optional, Self, Set, Type
 
-from imagewriter.language import Language
-from imagewriter.motion import FormLength
-from imagewriter.pitch import Pitch
-from imagewriter.print import PrintCommands
+from imagewriter.base.language import Language
+from imagewriter.base.motion import FormLength
+from imagewriter.base.pitch import Pitch
+from imagewriter.base.print import PrintCommands
 from imagewriter.serial import BaudRate, SerialProtocol
 
 

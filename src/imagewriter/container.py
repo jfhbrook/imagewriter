@@ -5,14 +5,14 @@ from typing import cast, Generator
 from dependency_injector import containers, providers
 from serial.tools.list_ports import comports
 
+from imagewriter.base.language import Language
+from imagewriter.base.settings import Settings
+from imagewriter.base.switch import DIPSwitches
 from imagewriter.connection import Connection
 from imagewriter.debug import SerialStateObserver
 from imagewriter.encoding.character import CharacterEncoder
-from imagewriter.language import Language
 from imagewriter.render import DocumentRenderer, PandocRenderer, RichTextBuilder
 from imagewriter.serial import BaudRate, Serial, SerialProtocol
-from imagewriter.settings import Settings
-from imagewriter.switch import DIPSwitches
 from imagewriter.test import test_page
 
 DIP_SWITCHES = DIPSwitches.defaults()

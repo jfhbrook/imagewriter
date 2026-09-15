@@ -2,7 +2,7 @@ from typing import Self
 
 import ipywidgets as widgets  # type: ignore
 
-from imagewriter.switch import DIPSwitches
+from imagewriter.base.switch import DIPSwitches
 from imagewriter.widgets.base import Label
 
 

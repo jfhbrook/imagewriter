@@ -1,7 +1,7 @@
 from typing import Self
 
+from imagewriter.base.quality import Quality
 from imagewriter.encoding.base import Esc
-from imagewriter.quality import Quality
 
 
 def _quality_code(quality: Quality, scribe_mode: bool) -> str:

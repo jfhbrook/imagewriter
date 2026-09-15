@@ -1,8 +1,8 @@
 from typing import List, Self, Sequence
 
+from imagewriter.base.pitch import Pitch
+from imagewriter.base.units import Length, length_to_int
 from imagewriter.encoding.base import Bytes, Command, esc, Esc, LengthError, number
-from imagewriter.pitch import Pitch
-from imagewriter.units import Length, length_to_int
 
 
 class TabLengthError(LengthError):

@@ -1,8 +1,11 @@
 from contextlib import contextmanager
 from typing import Generator, List, Optional, Self, Sequence
 
-from imagewriter.character import Text
-from imagewriter.color import Color
+from imagewriter.base.character import Text
+from imagewriter.base.color import Color
+from imagewriter.base.pitch import Pitch
+from imagewriter.base.settings import Settings
+from imagewriter.base.units import Length
 from imagewriter.encoding import (
     apply_settings,
     BACKSPACE,
@@ -36,9 +39,6 @@ from imagewriter.encoding import (
     TabLengthError,
     to_tab_stops,
 )
-from imagewriter.pitch import Pitch
-from imagewriter.settings import Settings
-from imagewriter.units import Length
 
 
 class RichTextBuilder:

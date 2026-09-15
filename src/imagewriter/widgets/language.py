@@ -2,7 +2,7 @@ from typing import Dict, Self
 
 import ipywidgets as widgets  # type: ignore
 
-from imagewriter.language import Language
+from imagewriter.base.language import Language
 
 LANGUAGES: Dict[str, Language] = {language.value: language for language in Language}
 

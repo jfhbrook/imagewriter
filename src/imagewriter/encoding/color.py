@@ -1,10 +1,14 @@
 from typing import Self
 
-from imagewriter.color import Color
+from imagewriter.base.color import Color
 from imagewriter.encoding.base import Bytes, esc
 
 
 class SetColor(Bytes):
+    """
+    Set the color used by the ImageWriter II.
+    """
+
     def __init__(self: Self, color: Color) -> None:
         self.color = color
         super().__init__(esc("K") + color.code.encode(encoding="ascii"))

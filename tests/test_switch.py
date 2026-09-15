@@ -1,8 +1,8 @@
-from imagewriter.language import Language
-from imagewriter.pitch import Pitch
-from imagewriter.print import PrintCommands
+from imagewriter.base.language import Language
+from imagewriter.base.pitch import Pitch
+from imagewriter.base.print import PrintCommands
+from imagewriter.base.switch import DIPSwitches, SoftwareSwitches
 from imagewriter.serial import SerialProtocol
-from imagewriter.switch import DIPSwitches, SoftwareSwitches
 
 
 def test_dip_switch_defaults() -> None:

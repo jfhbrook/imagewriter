@@ -1,5 +1,7 @@
 from typing import Self
 
+from imagewriter.base.motion import LinesPerInch
+from imagewriter.base.units import Length, length_to_int
 from imagewriter.encoding.base import (
     Bytes,
     ctrl,
@@ -8,8 +10,6 @@ from imagewriter.encoding.base import (
     LengthError,
     number,
 )
-from imagewriter.motion import LinesPerInch
-from imagewriter.units import Length, length_to_int
 
 
 def _encode_line_feed_count(lines: int) -> bytes:

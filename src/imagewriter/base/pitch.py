@@ -1,3 +1,12 @@
+"""
+Character pitches, as per page 48 of the ImageWriter II Technical Reference
+Manual.
+
+Pitches are effectively a combination of font and font sizes; each pitch has a
+different height and character width. Non-proportional pitch are effectively
+monospace fonts.
+"""
+
 from enum import Enum
 from typing import Optional, Self
 
@@ -7,7 +16,7 @@ VERTICAL_RESOLUTION = 72  # dots per inch
 
 class Pitch(Enum):
     """
-    Character pitches, as per page 48 of the ImageWriter II Technical
+    Character pitch, as per page 48 of the ImageWriter II Technical
     Reference Manual.
     """
 

@@ -2,7 +2,7 @@ from typing import Dict, Self
 
 import ipywidgets as widgets  # type: ignore
 
-from imagewriter.pitch import Pitch
+from imagewriter.base.pitch import Pitch
 
 PITCHES: Dict[str, Pitch] = {pitch.value: pitch for pitch in Pitch}
 

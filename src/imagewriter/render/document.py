@@ -1,6 +1,7 @@
 from typing import List, Self
 
-from imagewriter.color import Color
+from imagewriter.base.color import Color
+from imagewriter.base.settings import Settings
 from imagewriter.document import (
     Block,
     BlockQuote,
@@ -43,7 +44,6 @@ from imagewriter.document import (
 )
 from imagewriter.encoding import Command, cr_lf
 from imagewriter.render.text import RichTextBuilder
-from imagewriter.settings import Settings
 
 
 class DocumentRenderer(BlockVisitor[None], InlineVisitor[None]):

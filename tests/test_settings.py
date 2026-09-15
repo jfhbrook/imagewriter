@@ -1,9 +1,9 @@
-from imagewriter.language import Language
-from imagewriter.pitch import Pitch
-from imagewriter.print import PrintCommands
-from imagewriter.quality import Quality
-from imagewriter.settings import Settings
-from imagewriter.switch import DIPSwitches, SoftwareSwitches
+from imagewriter.base.language import Language
+from imagewriter.base.pitch import Pitch
+from imagewriter.base.print import PrintCommands
+from imagewriter.base.quality import Quality
+from imagewriter.base.settings import Settings
+from imagewriter.base.switch import DIPSwitches, SoftwareSwitches
 
 
 def test_default_settings() -> None:
