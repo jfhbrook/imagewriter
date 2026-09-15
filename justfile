@@ -8,10 +8,6 @@ default:
   @just test
   @just lint
 
-# Install all dependencies
-install:
-  uv sync --dev
-
 #
 # Development tooling - linting, formatting, etc
 #
@@ -22,13 +18,13 @@ generate:
 
 # Format with black and isort
 format:
-  uv run black './imagewriter' ./tests
-  uv run isort --settings-file . './imagewriter' ./tests
+  uv run black ./src ./tests
+  uv run isort ./src ./tests
 
 # Lint with flake8
 lint:
-  uv run flake8 './imagewriter' ./tests
-  # uv run validate-pyproject ./pyproject.toml
+  uv run flake8 ./src ./tests
+  uv run validate-pyproject ./pyproject.toml
 
 # Check type annotations with pyright
 check:
@@ -89,7 +85,7 @@ publish: build
   uv publish
 
 # Clean up loose files
-clean: _clean-venv _clean-compile _clean-test
+clean: _clean-test
   rm -rf imagewriter.egg-info
   rm -f imagewriter/*.pyc
   rm -rf imagewriter/__pycache__

@@ -7,6 +7,8 @@ from typing import IO, List
 
 NATIVE_FORMATS = ["imagewriter"]
 
+FORMAT_FILE = "./src/imagewriter/document/format.py"
+
 
 def pandoc_formats() -> List[str]:
     process = subprocess.run(
@@ -98,7 +100,7 @@ def write_pandoc_set(f: IO, formats: List[str]) -> None:
 def main() -> None:
     formats = pandoc_formats()
 
-    with open("./imagewriter/document/format.py", "w") as f:
+    with open(FORMAT_FILE, "w") as f:
         f.write(HEAD)
         write_native_type(f)
         write_pandoc_type(f, formats)

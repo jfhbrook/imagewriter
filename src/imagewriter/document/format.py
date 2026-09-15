@@ -56,7 +56,6 @@ PandocFormat = (
     | Literal["twiki"]
     | Literal["typst"]
     | Literal["vimwiki"]
-    | Literal["xml"]
 )
 
 Format = NativeFormat | PandocFormat
@@ -113,7 +112,6 @@ PANDOC_FORMATS: Set[Format] = {
     "twiki",
     "typst",
     "vimwiki",
-    "xml",
 }
 
 FORMATS: Set[Format] = NATIVE_FORMATS | PANDOC_FORMATS
