@@ -100,11 +100,7 @@ class TestWidget(widgets.VBox):
     ) -> None:
         self._test_page_status_widget.running()
         try:
-            for cmd in test_page:
-                connection.serial.write(bytes(cmd))
-
-            # connection.write(test_page)
-            connection.flush()
+            connection.write(test_page).result()
         except Exception as exc:
             self._test_page_status_widget.error(exc)
             raise exc
