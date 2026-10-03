@@ -116,8 +116,6 @@ class TestWidget(widgets.VBox):
         self._memory_test_status_widget.result(memory)
 
     def on_print(self: Self, callback: TestCallback) -> None:
-        print("on_print method called")
-
         def cb(button: widgets.Button) -> None:
             callback(self)
 
