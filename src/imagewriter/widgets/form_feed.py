@@ -53,6 +53,7 @@ class TopOfFormWidget(widgets.HBox):
         self._status_widget.running()
         try:
             connection.write([SET_TOP_OF_FORM])
+            connection.flush()
         except Exception as exc:
             self._status_widget.error(exc)
             raise exc

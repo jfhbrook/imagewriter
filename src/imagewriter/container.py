@@ -1,7 +1,3 @@
-from concurrent.futures import Executor, ThreadPoolExecutor
-from contextlib import contextmanager
-from typing import cast, Generator
-
 from dependency_injector import containers, providers
 from serial.tools.list_ports import comports
 
@@ -9,7 +5,6 @@ from imagewriter.base.language import Language
 from imagewriter.base.settings import Settings
 from imagewriter.base.switch import DIPSwitches
 from imagewriter.connection import Connection
-from imagewriter.debug import SerialStateObserver
 from imagewriter.encoding.character import CharacterEncoder
 from imagewriter.render import DocumentRenderer, PandocRenderer, RichTextBuilder
 from imagewriter.serial import BaudRate, Serial, SerialProtocol
@@ -43,26 +38,6 @@ def provide_language(settings: Settings) -> Language:
     return settings.language
 
 
-@contextmanager
-def provide_executor() -> Generator[Executor, None, None]:
-    executor = ThreadPoolExecutor()
-
-    yield executor
-
-    executor.shutdown(wait=False, cancel_futures=True)
-
-
-@contextmanager
-def provide_serial_state_observer(
-    serial: Serial, executor: Executor
-) -> Generator[SerialStateObserver, None, None]:
-    observer = SerialStateObserver(serial=serial, executor=executor)
-
-    yield observer
-
-    observer.stop()
-
-
 class Container(containers.DeclarativeContainer):
     port = providers.Callable(provide_port)
 
@@ -73,18 +48,10 @@ class Container(containers.DeclarativeContainer):
     settings = providers.Callable(provide_settings, dip_switches=dip_switches)
     language = providers.Callable(provide_language, settings=settings)
 
-    executor = cast(providers.Resource[Executor], providers.Resource(provide_executor))
-
     serial = providers.Factory(
         Serial, port=port, baud_rate=baud_rate, protocol=protocol
     )
-    serial_state_observer = cast(
-        providers.Resource[SerialStateObserver],
-        providers.Resource(
-            provide_serial_state_observer, serial=serial, executor=executor
-        ),
-    )
-    connection = providers.Factory(Connection, serial=serial, executor=executor)
+    connection = providers.Factory(Connection, serial=serial)
 
     map_mousetext = providers.Object(False)
     map_custom = providers.Object(False)
