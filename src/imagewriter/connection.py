@@ -3,7 +3,7 @@ Connection management for the ImageWriter II. Supports sending commands as discr
 packets and interrupting commands (such as a reset).
 """
 
-from concurrent.futures import Executor, ThreadPoolExecutor
+from concurrent.futures import Executor
 import logging
 import queue
 import time
@@ -28,9 +28,9 @@ class Interrupted(Exception):
 
 
 class Connection:
-    def __init__(self: Self, serial: Serial) -> None:
+    def __init__(self: Self, serial: Serial, executor: Executor) -> None:
         self.serial: Serial = serial
-        self._executor: Executor = ThreadPoolExecutor()
+        self._executor: Executor = executor
         self._command_queue: queue.Queue[Command] = queue.Queue(maxsize=0)
         self._interrupt_queue: queue.Queue[Interrupt] = queue.Queue(maxsize=1)
         self._error_queue: queue.Queue[Exception] = queue.Queue(maxsize=0)
@@ -44,7 +44,6 @@ class Connection:
         """
 
         self._running = False
-        self._executor.shutdown()
 
     def write(self: Self, commands: Sequence[Command]) -> None:
         """

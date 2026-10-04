@@ -1,3 +1,7 @@
+from concurrent.futures import Executor, ThreadPoolExecutor
+from contextlib import contextmanager
+from typing import cast, Generator
+
 from dependency_injector import containers, providers
 from serial.tools.list_ports import comports
 
@@ -38,6 +42,26 @@ def provide_language(settings: Settings) -> Language:
     return settings.language
 
 
+@contextmanager
+def provide_executor() -> Generator[Executor, None, None]:
+    executor = ThreadPoolExecutor(max_workers=1)
+
+    yield executor
+
+    executor.shutdown(wait=False, cancel_futures=True)
+
+
+@contextmanager
+def provide_connection(
+    serial: Serial, executor: Executor
+) -> Generator[Connection, None, None]:
+    connection = Connection(serial=serial, executor=executor)
+
+    yield connection
+
+    connection.shutdown()
+
+
 class Container(containers.DeclarativeContainer):
     port = providers.Callable(provide_port)
 
@@ -48,10 +72,15 @@ class Container(containers.DeclarativeContainer):
     settings = providers.Callable(provide_settings, dip_switches=dip_switches)
     language = providers.Callable(provide_language, settings=settings)
 
+    executor = cast(providers.Resource[Executor], providers.Resource(provide_executor))
+
     serial = providers.Factory(
         Serial, port=port, baud_rate=baud_rate, protocol=protocol
     )
-    connection = providers.Factory(Connection, serial=serial)
+    connection = cast(
+        providers.Resource[Connection],
+        providers.Resource(provide_connection, serial=serial, executor=executor),
+    )
 
     map_mousetext = providers.Object(False)
     map_custom = providers.Object(False)
