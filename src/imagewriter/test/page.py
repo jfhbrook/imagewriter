@@ -1,105 +1,134 @@
 import importlib.resources
-from typing import List, Self
 
 from imagewriter.base.character import MouseTextCharacter
 from imagewriter.base.language import Language
 from imagewriter.base.pitch import Pitch
-from imagewriter.document import Document, Header, split_text
-from imagewriter.encoding import (
-    boldface,
-    CharacterEncoder,
-    Command,
-    cr_lf,
-    double_width,
-    FF,
-    half_height,
-    Print,
-    PRINT_SLASHED_ZERO,
-    PRINT_UNSLASHED_ZERO,
-    set_language,
-    SetPitch,
-    START_SUBSCRIPT,
-    START_SUPERSCRIPT,
-    STOP_SUBSCRIPT,
-    underline,
-)
-from imagewriter.render import DocumentRenderer, PandocRenderer
+from imagewriter.base.quality import Quality
+from imagewriter.encoding import Command
+from imagewriter.render import PandocRenderer, RichTextBuilder
 
-
-class TitleRenderer:
-    def __init__(self: Self, renderer: DocumentRenderer) -> None:
-        self._renderer = renderer
-
-    def __call__(self: Self, title: str, level: int) -> List[Command]:
-        return self._renderer.render(
-            Document(blocks=[Header(level=level, contents=split_text(title))])
-        )
-
-
+# A markdown test page
 MARKDOWN: str = importlib.resources.read_text(__name__, "./test.md")
 
 
-def language_test(title: TitleRenderer) -> List[Command]:
-    commands: List[Command] = list()
+def language_test(builder: RichTextBuilder) -> None:
+    """
+    Test each supported language.
+    """
+
+    with builder.header(2):
+        builder.text("Language")
 
     for language in Language:
-        commands += [
-            *title(language.value, 3),
-            *set_language(language),
-            Print(f"#${chr(64)}[\\]`(|)~".encode(encoding="ascii")),
-            *cr_lf(),
-        ]
+        with builder.header(3):
+            builder.text(language.value)
 
-    commands = commands[:-2]
-
-    return commands
+        with builder.language(language):
+            builder.text(f"#${chr(64)}[\\]`(|)~")
 
 
-def pitch_test(title: TitleRenderer) -> List[Command]:
-    commands: List[Command] = list()
+def pitch_test(builder: RichTextBuilder) -> None:
+    """
+    Test each supported pitch.
+    """
+
+    with builder.header(2):
+        builder.text("Pitch")
 
     for pitch in Pitch:
-        commands += [
-            *title(pitch.value, 3),
-            SetPitch(pitch),
-            Print(b"A quick brown fox jumped over the lazy dog"),
-            *cr_lf(),
-        ]
+        with builder.header(3):
+            builder.text(pitch.value)
 
-    commands = commands[:-2]
-
-    return commands
+        with builder.pitch(pitch):
+            builder.text("A quick brown fox jumped over the lazy dog")
 
 
-def attributes_test(encoder: CharacterEncoder) -> List[Command]:
-    return [
-        *encoder.encode("Plain"),
-        *cr_lf(),
-        *double_width(encoder.encode("Double width\r\n")),
-        *cr_lf(),
-        *underline(encoder.encode("Underlined\r\n")),
-        *cr_lf(),
-        *boldface(encoder.encode("Boldface\r\n")),
-        *cr_lf(),
-        *half_height(encoder.encode("Half height\r\n")),
-        *cr_lf(),
-        START_SUPERSCRIPT,
-        *encoder.encode("Superscript\r\n"),
-        *cr_lf(),
-        START_SUBSCRIPT,
-        *encoder.encode("Subscript\r\n"),
-        *cr_lf(),
-        STOP_SUBSCRIPT,
-        PRINT_UNSLASHED_ZERO,
-        *encoder.encode("Unslashed 0\r\n"),
-        *cr_lf(),
-        PRINT_SLASHED_ZERO,
-        *encoder.encode("Slashed 0\r\n"),
-    ]
+def quality_test(builder: RichTextBuilder) -> None:
+    """
+    Test each supported print quality.
+    """
+
+    with builder.header(2):
+        builder.text("Quality")
+
+    for name, quality in [
+        ("correspondence", Quality.CORRESPONDENCE),
+        ("draft", Quality.DRAFT),
+        ("near letter quality", Quality.NEAR_LETTER_QUALITY),
+    ]:
+        with builder.header(3):
+            builder.text(name)
+
+        with builder.quality(quality):
+            builder.text("A quick brown fox jumped over the lazy dog")
 
 
-def mousetext_test(encoder: CharacterEncoder) -> List[Command]:
-    return encoder.encode(
+def attributes_test(builder: RichTextBuilder) -> None:
+    """
+    Test various attributes, such as boldface.
+    """
+
+    with builder.header(2):
+        builder.text("Attributes")
+
+    builder.text("Plain")
+    builder.cr_lf()
+
+    with builder.double_width():
+        builder.text("Double width")
+        builder.cr_lf()
+
+    builder.cr_lf()
+
+    with builder.underline():
+        builder.text("Underlined")
+        builder.cr_lf()
+
+    builder.cr_lf()
+
+    with builder.boldface():
+        builder.text("Boldface")
+        builder.cr_lf()
+
+    builder.cr_lf()
+
+    with builder.half_height():
+        builder.text("Half height")
+        builder.cr_lf()
+
+    builder.cr_lf()
+
+    with builder.superscript():
+        builder.text("Superscript")
+        builder.cr_lf()
+
+    builder.cr_lf()
+
+    with builder.subscript():
+        builder.text("Subscript")
+        builder.cr_lf()
+
+    builder.cr_lf()
+
+    with builder.unslashed_zero():
+        builder.text("Unslashed 0")
+        builder.cr_lf()
+
+    builder.cr_lf()
+
+    with builder.slashed_zero():
+        builder.text("Slashed 0")
+        builder.cr_lf()
+
+    builder.cr_lf()
+
+
+def mousetext_test(builder: RichTextBuilder) -> None:
+    """
+    Test printing mousetext characters.
+    """
+
+    for char in [
         MouseTextCharacter.DARK_APPLE,
         MouseTextCharacter.LIGHT_APPLE,
         MouseTextCharacter.ARROWHEAD_SHAPED_POINTER,
@@ -132,32 +161,29 @@ def mousetext_test(encoder: CharacterEncoder) -> List[Command]:
         MouseTextCharacter.VOIDED_GREEK_CROSS,
         MouseTextCharacter.RIGHT_OPEN_SQUARED_DOT,
         MouseTextCharacter.LEFT_ONE_EIGHTH_BLOCK,
-    )
+    ]:
+        builder.text(char)
 
 
-def markdown_test(renderer: PandocRenderer) -> List[Command]:
+def markdown_test(renderer: PandocRenderer) -> list[Command]:
     return renderer.render(MARKDOWN, format="markdown")
 
 
 def test_page(
-    character_encoder: CharacterEncoder,
-    document_renderer: DocumentRenderer,
+    rich_text_builder: RichTextBuilder,
     pandoc_renderer: PandocRenderer,
-) -> List[Command]:
-    title = TitleRenderer(document_renderer)
-    return [
-        *title("Test Page", 1),
-        *title("Language", 2),
-        *language_test(title),
-        *title("Pitch", 2),
-        *pitch_test(title),
-        *cr_lf(2),
-        *title("Attributes", 2),
-        *attributes_test(character_encoder),
-        *cr_lf(2),
-        *title("MouseText", 2),
-        *mousetext_test(character_encoder),
-        *title("Markdown", 2),
-        *markdown_test(pandoc_renderer),
-        FF,
-    ]
+) -> list[Command]:
+    with rich_text_builder.quality(Quality.CORRESPONDENCE):
+        with rich_text_builder.header(1):
+            rich_text_builder.text("Test Page")
+
+        language_test(rich_text_builder)
+        pitch_test(rich_text_builder)
+        quality_test(rich_text_builder)
+        attributes_test(rich_text_builder)
+        mousetext_test(rich_text_builder)
+
+        commands = rich_text_builder.commands
+        commands += markdown_test(pandoc_renderer)
+
+    return commands

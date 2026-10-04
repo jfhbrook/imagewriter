@@ -1,4 +1,4 @@
-from typing import List, Self
+from typing import Self
 
 from imagewriter.base.color import Color
 from imagewriter.base.settings import Settings
@@ -47,10 +47,18 @@ from imagewriter.render.text import RichTextBuilder
 
 
 class DocumentRenderer(BlockVisitor[None], InlineVisitor[None]):
+    """
+    A document renderer.
+    """
+
     def __init__(self: Self, settings: Settings) -> None:
         self.builder: RichTextBuilder = RichTextBuilder(settings)
 
-    def render(self: Self, document: Document) -> List[Command]:
+    def render(self: Self, document: Document) -> list[Command]:
+        """
+        Render a document.
+        """
+
         for block in document.blocks:
             block.accept(self)
 
@@ -58,7 +66,11 @@ class DocumentRenderer(BlockVisitor[None], InlineVisitor[None]):
 
         return self.builder.commands
 
-    def trim(self: Self, blocks: List[Block]) -> None:
+    def trim(self: Self, blocks: list[Block]) -> None:
+        """
+        Trim trailing blocks from the document.
+        """
+
         for block in reversed(blocks):
             if isinstance(block, Space):
                 self.builder.trim_space()
@@ -94,11 +106,19 @@ class DocumentRenderer(BlockVisitor[None], InlineVisitor[None]):
                 el.accept(self)
 
     def visit_subscript(self: Self, element: Subscript) -> None:
+        """
+        Render subscripted text.
+        """
+
         with self.builder.subscript():
             for el in element.contents:
                 el.accept(self)
 
     def visit_superscript(self: Self, element: Superscript) -> None:
+        """
+        Render superscripted text.
+        """
+
         with self.builder.subscript():
             for el in element.contents:
                 el.accept(self)
@@ -185,47 +205,9 @@ class DocumentRenderer(BlockVisitor[None], InlineVisitor[None]):
         raise NotImplementedError("visit_definition_list")
 
     def visit_header(self: Self, element: Header) -> None:
-        if element.level == 1:
-            self._header_1(element)
-        elif element.level == 2:
-            self._header_2(element)
-        elif element.level == 3:
-            self._header_3(element)
-        elif element.level == 4:
-            self._header_4(element)
-        else:
-            raise NotImplementedError(f"Headers at level {element.level}")
-
-    def _header_1(self: Self, element: Header) -> None:
-        with self.builder.boldface():
-            with self.builder.double_width():
-                self.builder.text("#")
-                self.builder.space()
-                for el in element.contents:
-                    el.accept(self)
-        self.builder.cr_lf(2)
-
-    def _header_2(self: Self, element: Header) -> None:
-        with self.builder.boldface():
-            self.builder.text("##")
-            self.builder.space()
+        with self.builder.header(element.level):
             for el in element.contents:
                 el.accept(self)
-        self.builder.cr_lf(2)
-
-    def _header_3(self: Self, element: Header) -> None:
-        self.builder.text("###")
-        self.builder.space()
-        for el in element.contents:
-            el.accept(self)
-        self.builder.cr_lf(2)
-
-    def _header_4(self: Self, element: Header) -> None:
-        self.builder.text("####")
-        self.builder.space()
-        for el in element.contents:
-            el.accept(self)
-        self.builder.cr_lf(2)
 
     def visit_horizontal_rule(self: Self, element: HorizontalRule) -> None:
         # TODO: Something nicer

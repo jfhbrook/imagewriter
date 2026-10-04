@@ -67,7 +67,6 @@ class Container(containers.DeclarativeContainer):
 
     test_page = providers.Factory(
         test_page,
-        character_encoder=character_encoder,
-        document_renderer=document_renderer,
+        rich_text_builder=rich_text_builder,
         pandoc_renderer=pandoc_renderer,
     )
