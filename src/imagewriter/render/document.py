@@ -173,10 +173,9 @@ class DocumentRenderer(BlockVisitor[None], InlineVisitor[None]):
             el.accept(self)
 
     def visit_para(self: Self, element: Para) -> None:
-        for el in element.contents:
-            el.accept(self)
-
-        self.builder.write(cr_lf(2))
+        with self.builder.graf():
+            for el in element.contents:
+                el.accept(self)
 
     def visit_line_block(self: Self, element: LineBlock) -> None:
         for line in element.contents:
@@ -205,7 +204,7 @@ class DocumentRenderer(BlockVisitor[None], InlineVisitor[None]):
         raise NotImplementedError("visit_definition_list")
 
     def visit_header(self: Self, element: Header) -> None:
-        with self.builder.header(element.level):
+        with self.builder.hed(element.level):
             for el in element.contents:
                 el.accept(self)
 

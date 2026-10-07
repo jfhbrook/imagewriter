@@ -275,12 +275,15 @@ class RichTextBuilder:
         self._write_header()
 
         for _ in range(0, count):
-            cr = self._commands[-1]
-            lf = self._commands[-2]
+            cr = self._commands[-2]
+            lf = self._commands[-1]
 
-            assert isinstance(cr, CarriageReturn)
-            assert isinstance(lf, LineFeed)
-            assert lf.lines == 1
+            try:
+                assert isinstance(cr, CarriageReturn)
+                assert isinstance(lf, LineFeed)
+                assert lf.lines == 1
+            except AssertionError:
+                return self
 
             self.trim(2)
 
@@ -519,18 +522,18 @@ class RichTextBuilder:
                 yield
 
     @contextmanager
-    def header(self: Self, level: int) -> Generator[None, None, None]:
+    def hed(self: Self, level: int) -> Generator[None, None, None]:
         """
-        Write a header.
+        Write a headline.
         """
 
-        header_methods = {1: self._header_1, 2: self._header_2}
-        header_default = self._header_default(level)
+        hed_methods = {1: self._hed_1, 2: self._hed_2}
+        hed_default = self._hed_default(level)
 
-        with header_methods.get(level, header_default)():
+        with hed_methods.get(level, hed_default)():
             yield
 
-    def _header_default(
+    def _hed_default(
         self: Self, level: int
     ) -> Callable[[], AbstractContextManager[None]]:
         # A default header, if no specific header style is specified.
@@ -546,7 +549,7 @@ class RichTextBuilder:
         return _default
 
     @contextmanager
-    def _header_1(self: Self) -> Generator[None, None, None]:
+    def _hed_1(self: Self) -> Generator[None, None, None]:
         # A level 1 header. Printed in boldface and double width.
         with self.boldface():
             with self.double_width():
@@ -558,7 +561,7 @@ class RichTextBuilder:
         self.cr_lf(2)
 
     @contextmanager
-    def _header_2(self: Self) -> Generator[None, None, None]:
+    def _hed_2(self: Self) -> Generator[None, None, None]:
         # A level 2 header. Printed in boldface.
         with self.boldface():
             self.text("##")
@@ -566,4 +569,26 @@ class RichTextBuilder:
 
             yield
 
+        self.cr_lf(2)
+
+    @contextmanager
+    def line(self: Self) -> Generator[None, None, None]:
+        """
+        Terminate commands with a new line.
+        """
+
+        yield
+
+        self.trim_cr_lf()
+        self.cr_lf(1)
+
+    @contextmanager
+    def graf(self: Self) -> Generator[None, None, None]:
+        """
+        Create a paragraph.
+        """
+
+        yield
+
+        self.trim_cr_lf()
         self.cr_lf(2)

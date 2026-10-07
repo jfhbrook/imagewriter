@@ -4,11 +4,32 @@ from imagewriter.base.character import MouseTextCharacter
 from imagewriter.base.language import Language
 from imagewriter.base.pitch import Pitch
 from imagewriter.base.quality import Quality
-from imagewriter.encoding import Command
+from imagewriter.encoding import Command, FF
 from imagewriter.render import PandocRenderer, RichTextBuilder
 
 # A markdown test page
 MARKDOWN: str = importlib.resources.read_text(__name__, "./test.md")
+
+LANGUAGE_TABLE: list[tuple[str, str]] = [
+    ("pound", "#"),
+    ("dollar", "$"),
+    ("at", chr(64)),
+    ("left bracket", "["),
+    ("backslash", "\\"),
+    ("right bracket", "]"),
+    ("left parenthesis", "("),
+    ("right parenthesis", ")"),
+    ("pipe", "|"),
+    ("tilde", "~"),
+]
+
+
+def language_table(builder: RichTextBuilder) -> None:
+    length = max([len(name) for name, _ in LANGUAGE_TABLE])
+
+    for name, char in LANGUAGE_TABLE:
+        builder.text(f"{name:>{length}} - {char}")
+        builder.cr_lf()
 
 
 def language_test(builder: RichTextBuilder) -> None:
@@ -16,15 +37,16 @@ def language_test(builder: RichTextBuilder) -> None:
     Test each supported language.
     """
 
-    with builder.header(2):
+    with builder.hed(2):
         builder.text("Language")
 
     for language in Language:
-        with builder.header(3):
+        with builder.hed(3):
             builder.text(language.value)
 
-        with builder.language(language):
-            builder.text(f"#${chr(64)}[\\]`(|)~")
+        with builder.graf():
+            with builder.language(language):
+                language_table(builder)
 
 
 def pitch_test(builder: RichTextBuilder) -> None:
@@ -32,15 +54,16 @@ def pitch_test(builder: RichTextBuilder) -> None:
     Test each supported pitch.
     """
 
-    with builder.header(2):
+    with builder.hed(2):
         builder.text("Pitch")
 
     for pitch in Pitch:
-        with builder.header(3):
+        with builder.hed(3):
             builder.text(pitch.value)
 
         with builder.pitch(pitch):
-            builder.text("A quick brown fox jumped over the lazy dog")
+            with builder.graf():
+                builder.text("A quick brown fox jumped over the lazy dog")
 
 
 def quality_test(builder: RichTextBuilder) -> None:
@@ -48,19 +71,20 @@ def quality_test(builder: RichTextBuilder) -> None:
     Test each supported print quality.
     """
 
-    with builder.header(2):
+    with builder.hed(2):
         builder.text("Quality")
 
     for name, quality in [
-        ("correspondence", Quality.CORRESPONDENCE),
         ("draft", Quality.DRAFT),
+        ("correspondence", Quality.CORRESPONDENCE),
         ("near letter quality", Quality.NEAR_LETTER_QUALITY),
     ]:
-        with builder.header(3):
+        with builder.hed(3):
             builder.text(name)
 
         with builder.quality(quality):
-            builder.text("A quick brown fox jumped over the lazy dog")
+            with builder.graf():
+                builder.text("A quick brown fox jumped over the lazy dog")
 
 
 def attributes_test(builder: RichTextBuilder) -> None:
@@ -68,59 +92,28 @@ def attributes_test(builder: RichTextBuilder) -> None:
     Test various attributes, such as boldface.
     """
 
-    with builder.header(2):
+    attrs = [
+        ("Double width", builder.double_width),
+        ("Underlined", builder.underline),
+        ("Boldface", builder.boldface),
+        ("Half height", builder.half_height),
+        ("Superscript", builder.superscript),
+        ("Subscript", builder.subscript),
+        ("Unslashed zero", builder.unslashed_zero),
+        ("Slashed zero", builder.slashed_zero),
+    ]
+
+    with builder.hed(2):
         builder.text("Attributes")
 
-    builder.text("Plain")
-    builder.cr_lf()
+    with builder.graf():
+        with builder.line():
+            builder.text("Plain")
 
-    with builder.double_width():
-        builder.text("Double width")
-        builder.cr_lf()
-
-    builder.cr_lf()
-
-    with builder.underline():
-        builder.text("Underlined")
-        builder.cr_lf()
-
-    builder.cr_lf()
-
-    with builder.boldface():
-        builder.text("Boldface")
-        builder.cr_lf()
-
-    builder.cr_lf()
-
-    with builder.half_height():
-        builder.text("Half height")
-        builder.cr_lf()
-
-    builder.cr_lf()
-
-    with builder.superscript():
-        builder.text("Superscript")
-        builder.cr_lf()
-
-    builder.cr_lf()
-
-    with builder.subscript():
-        builder.text("Subscript")
-        builder.cr_lf()
-
-    builder.cr_lf()
-
-    with builder.unslashed_zero():
-        builder.text("Unslashed 0")
-        builder.cr_lf()
-
-    builder.cr_lf()
-
-    with builder.slashed_zero():
-        builder.text("Slashed 0")
-        builder.cr_lf()
-
-    builder.cr_lf()
+        for name, ctx in attrs:
+            with builder.line():
+                with ctx():
+                    builder.text(name)
 
 
 def mousetext_test(builder: RichTextBuilder) -> None:
@@ -162,7 +155,8 @@ def mousetext_test(builder: RichTextBuilder) -> None:
         MouseTextCharacter.RIGHT_OPEN_SQUARED_DOT,
         MouseTextCharacter.LEFT_ONE_EIGHTH_BLOCK,
     ]:
-        builder.text(char)
+        with builder.line():
+            builder.text(char)
 
 
 def markdown_test(renderer: PandocRenderer) -> list[Command]:
@@ -173,8 +167,8 @@ def test_page(
     rich_text_builder: RichTextBuilder,
     pandoc_renderer: PandocRenderer,
 ) -> list[Command]:
-    with rich_text_builder.quality(Quality.CORRESPONDENCE):
-        with rich_text_builder.header(1):
+    with rich_text_builder.quality(Quality.NEAR_LETTER_QUALITY):
+        with rich_text_builder.hed(1):
             rich_text_builder.text("Test Page")
 
         language_test(rich_text_builder)
@@ -185,5 +179,6 @@ def test_page(
 
         commands = rich_text_builder.commands
         commands += markdown_test(pandoc_renderer)
+        commands.append(FF)
 
     return commands
