@@ -20,6 +20,7 @@ from imagewriter.encoding import (
     Command,
     CR,
     cr_lf,
+    FF,
     LineFeed,
     LineFeedLengthError,
     Print,
@@ -265,6 +266,13 @@ class RichTextBuilder:
         """
 
         self.write(cr_lf(count))
+        return self
+
+    def ff(self: Self) -> Self:
+        """
+        Write a form feed.
+        """
+        self.write(FF)
         return self
 
     def trim_cr_lf(self: Self, count: int = 1) -> Self:

@@ -53,16 +53,24 @@ class DocumentRenderer(BlockVisitor[None], InlineVisitor[None]):
 
     def __init__(self: Self, settings: Settings) -> None:
         self.builder: RichTextBuilder = RichTextBuilder(settings)
+        self._standalone: bool = True
 
-    def render(self: Self, document: Document) -> list[Command]:
+    def render(
+        self: Self, document: Document, standalone: bool = True
+    ) -> list[Command]:
         """
         Render a document.
         """
+
+        self._standalone = standalone
 
         for block in document.blocks:
             block.accept(self)
 
         self.trim(document.blocks)
+
+        if standalone:
+            self.builder.ff()
 
         return self.builder.commands
 
@@ -204,7 +212,8 @@ class DocumentRenderer(BlockVisitor[None], InlineVisitor[None]):
         raise NotImplementedError("visit_definition_list")
 
     def visit_header(self: Self, element: Header) -> None:
-        with self.builder.hed(element.level):
+        level = element.level if self._standalone else element.level + 1
+        with self.builder.hed(level):
             for el in element.contents:
                 el.accept(self)
 

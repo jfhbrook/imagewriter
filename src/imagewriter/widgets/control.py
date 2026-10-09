@@ -166,7 +166,9 @@ class ControlPanel(widgets.Tab):
         widget.set_top_of_form(self.container.connection())
 
     def _print_test_page(self: Self, widget: TestWidget) -> None:
-        widget.print_test_page(self.container.connection(), self.container.test_page())
+        test_page = self.container.test_page()
+
+        widget.print_test_page(self.container.connection(), test_page.full_monty())
 
     def _run_memory_test(self: Self, widget: TestWidget) -> None:
         widget.run_memory_test(self.container.serial(), self.container.connection())
