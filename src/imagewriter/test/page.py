@@ -193,8 +193,7 @@ class TestPage:
     def _mousetext(self: Self, standalone: bool = True) -> None:
         with self._report("MouseText", standalone=standalone):
             for char in MOUSETEXT_CHARS:
-                with self.builder.line():
-                    self.builder.text(char)
+                self.builder.text(char)
 
     def _markdown(self: Self, standalone: bool = True) -> list[Command]:
         return self.pandoc.render(MARKDOWN, format="markdown", standalone=standalone)
