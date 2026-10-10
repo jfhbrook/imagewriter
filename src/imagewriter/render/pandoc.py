@@ -16,7 +16,10 @@ class PandocRenderer:
         self._renderer = DocumentRenderer(settings)
 
     def render(
-        self: Self, document: str, format: PandocFormat = "markdown"
+        self: Self,
+        document: str,
+        format: PandocFormat = "markdown",
+        standalone: bool = False,
     ) -> List[Command]:
         doc = parse_document(document, format)
-        return self._renderer.render(doc)
+        return self._renderer.render(doc, standalone=standalone)

@@ -1,7 +1,19 @@
-from typing import List
+import pytest
 
-from imagewriter.encoding import Command
+from imagewriter.test import TestPage as _TestPage
 
 
-def test_render(test_page: List[Command], snapshot) -> None:
-    assert test_page == snapshot
+@pytest.mark.parametrize(
+    "method",
+    [
+        "full_monty",
+        "languages",
+        "pitch",
+        "quality",
+        "attributes",
+        "mousetext",
+        "markdown",
+    ],
+)
+def test_render(method: str, test_page: _TestPage, snapshot) -> None:
+    assert getattr(test_page, method)() == snapshot

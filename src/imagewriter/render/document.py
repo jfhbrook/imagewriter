@@ -1,4 +1,4 @@
-from typing import List, Self
+from typing import Self
 
 from imagewriter.base.color import Color
 from imagewriter.base.settings import Settings
@@ -42,23 +42,43 @@ from imagewriter.document import (
     Table,
     Underline,
 )
-from imagewriter.encoding import Command, cr_lf
+from imagewriter.encoding import Command
 from imagewriter.render.text import RichTextBuilder
 
 
 class DocumentRenderer(BlockVisitor[None], InlineVisitor[None]):
+    """
+    A document renderer.
+    """
+
     def __init__(self: Self, settings: Settings) -> None:
         self.builder: RichTextBuilder = RichTextBuilder(settings)
+        self._standalone: bool = True
 
-    def render(self: Self, document: Document) -> List[Command]:
+    def render(
+        self: Self, document: Document, standalone: bool = True
+    ) -> list[Command]:
+        """
+        Render a document.
+        """
+
+        self._standalone = standalone
+
         for block in document.blocks:
             block.accept(self)
 
         self.trim(document.blocks)
 
+        if standalone:
+            self.builder.ff()
+
         return self.builder.commands
 
-    def trim(self: Self, blocks: List[Block]) -> None:
+    def trim(self: Self, blocks: list[Block]) -> None:
+        """
+        Trim trailing blocks from the document.
+        """
+
         for block in reversed(blocks):
             if isinstance(block, Space):
                 self.builder.trim_space()
@@ -153,16 +173,15 @@ class DocumentRenderer(BlockVisitor[None], InlineVisitor[None]):
             el.accept(self)
 
     def visit_para(self: Self, element: Para) -> None:
-        for el in element.contents:
-            el.accept(self)
-
-        self.builder.write(cr_lf(2))
+        with self.builder.graf():
+            for el in element.contents:
+                el.accept(self)
 
     def visit_line_block(self: Self, element: LineBlock) -> None:
         for line in element.contents:
             for el in line:
                 el.accept(self)
-            self.builder.write(cr_lf())
+            self.builder.cr_lf()
 
     def visit_code_block(self: Self, element: CodeBlock) -> None:
         with self.builder.code_block():
@@ -185,53 +204,16 @@ class DocumentRenderer(BlockVisitor[None], InlineVisitor[None]):
         raise NotImplementedError("visit_definition_list")
 
     def visit_header(self: Self, element: Header) -> None:
-        if element.level == 1:
-            self._header_1(element)
-        elif element.level == 2:
-            self._header_2(element)
-        elif element.level == 3:
-            self._header_3(element)
-        elif element.level == 4:
-            self._header_4(element)
-        else:
-            raise NotImplementedError(f"Headers at level {element.level}")
-
-    def _header_1(self: Self, element: Header) -> None:
-        with self.builder.boldface():
-            with self.builder.double_width():
-                self.builder.text("#")
-                self.builder.space()
-                for el in element.contents:
-                    el.accept(self)
-        self.builder.cr_lf(2)
-
-    def _header_2(self: Self, element: Header) -> None:
-        with self.builder.boldface():
-            self.builder.text("##")
-            self.builder.space()
+        level = element.level if self._standalone else element.level + 1
+        with self.builder.hed(level):
             for el in element.contents:
                 el.accept(self)
-        self.builder.cr_lf(2)
-
-    def _header_3(self: Self, element: Header) -> None:
-        self.builder.text("###")
-        self.builder.space()
-        for el in element.contents:
-            el.accept(self)
-        self.builder.cr_lf(2)
-
-    def _header_4(self: Self, element: Header) -> None:
-        self.builder.text("####")
-        self.builder.space()
-        for el in element.contents:
-            el.accept(self)
-        self.builder.cr_lf(2)
 
     def visit_horizontal_rule(self: Self, element: HorizontalRule) -> None:
         # TODO: Something nicer
-        self.builder.write(cr_lf(2))
+        self.builder.cr_lf(2)
         self.builder.text("---")
-        self.builder.write(cr_lf(2))
+        self.builder.cr_lf(2)
 
     def visit_table(self: Self, element: Table) -> None:
         raise NotImplementedError("visit_table")
