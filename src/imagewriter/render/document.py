@@ -42,7 +42,7 @@ from imagewriter.document import (
     Table,
     Underline,
 )
-from imagewriter.encoding import Command, FF
+from imagewriter.encoding import Command
 from imagewriter.render.text import RichTextBuilder
 
 
@@ -71,7 +71,7 @@ class DocumentRenderer(BlockVisitor[None], InlineVisitor[None]):
 
         if standalone:
             self.builder.ff()
- 
+
         return self.builder.commands
 
     def trim(self: Self, blocks: list[Block]) -> None:
@@ -114,19 +114,11 @@ class DocumentRenderer(BlockVisitor[None], InlineVisitor[None]):
                 el.accept(self)
 
     def visit_subscript(self: Self, element: Subscript) -> None:
-        """
-        Render subscripted text.
-        """
-
         with self.builder.subscript():
             for el in element.contents:
                 el.accept(self)
 
     def visit_superscript(self: Self, element: Superscript) -> None:
-        """
-        Render superscripted text.
-        """
-
         with self.builder.subscript():
             for el in element.contents:
                 el.accept(self)

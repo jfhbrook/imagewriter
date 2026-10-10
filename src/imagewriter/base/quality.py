@@ -14,7 +14,7 @@ class Quality(Enum):
 
     * draft
     * correspondence
-    * newar letter quality (or NLQ)
+    * near letter quality (or NLQ)
 
     The default quality is "draft". This may either be set with the print quality
     button on the printer, or through software.

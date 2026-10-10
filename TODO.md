@@ -1,6 +1,0 @@
-- RichTextBuilder
-  - [ ] Test for tab stops 
-  - [ ] Tests for strikeout
-  - [ ] Test that builder can be reused
-- DocumentRenderer
-  - [ ] Test that the document renderer can be reused
