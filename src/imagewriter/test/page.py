@@ -1,7 +1,8 @@
-from contextlib import contextmanager
+from collections.abc import Callable
+from contextlib import AbstractContextManager, contextmanager
 from enum import Enum
 import importlib.resources
-from typing import Generator, Self, Type
+from typing import Any, Generator, Self, Type
 
 from imagewriter.base.character import MouseTextCharacter
 from imagewriter.base.language import Language
@@ -145,12 +146,12 @@ class TestPage:
     #
 
     def _languages(self: Self, standalone: bool = True) -> None:
-        with self._report("Language", standalone=standalone):
-            self._enum(Language, LANGUAGE_CHARS)
+        with self._report("Languages", standalone=standalone):
+            self._enum_test(Language, LANGUAGE_CHARS, ctx=self.builder.language)
 
     def _pitch(self: Self, standalone: bool = True) -> None:
         with self._report("Pitch", standalone=standalone):
-            self._enum(Pitch, TEST_PHRASE)
+            self._enum_test(Pitch, TEST_PHRASE, ctx=self.builder.pitch)
 
     def _quality(self: Self, standalone: bool = True) -> None:
         length = len("near letter quality")
@@ -175,8 +176,8 @@ class TestPage:
             ("Half height", self.builder.half_height),
             ("Superscript", self.builder.superscript),
             ("Subscript", self.builder.subscript),
-            ("Unslashed zero", self.builder.unslashed_zero),
-            ("Slashed zero", self.builder.slashed_zero),
+            ("Unslashed 0", self.builder.unslashed_zero),
+            ("Slashed 0", self.builder.slashed_zero),
         ]
 
         with self._report("Attributes", standalone=standalone):
@@ -192,8 +193,9 @@ class TestPage:
 
     def _mousetext(self: Self, standalone: bool = True) -> None:
         with self._report("MouseText", standalone=standalone):
-            for char in MOUSETEXT_CHARS:
-                self.builder.text(char)
+            with self.builder.graf():
+                for char in MOUSETEXT_CHARS:
+                    self.builder.text(char)
 
     def _markdown(self: Self, standalone: bool = True) -> list[Command]:
         return self.pandoc.render(MARKDOWN, format="markdown", standalone=standalone)
@@ -231,11 +233,17 @@ class TestPage:
 
             self._standalone = True
 
-    def _enum(self: Self, enum_cls: Type[Enum], value: str) -> None:
+    def _enum_test(
+        self: Self,
+        enum_cls: Type[Enum],
+        value: str,
+        ctx: Callable[[Any], AbstractContextManager[None]],
+    ) -> None:
         length = enum_value_length(enum_cls)
 
         for enum in enum_cls:
             with self.builder.line():
                 with self.builder.boldface():
                     self.builder.text(f"{enum.value:>{length}}:")
-                self.builder.text(f" {value}")
+                    with ctx(enum):
+                        self.builder.text(f" {value}")
