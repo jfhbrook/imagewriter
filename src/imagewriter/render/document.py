@@ -42,7 +42,7 @@ from imagewriter.document import (
     Table,
     Underline,
 )
-from imagewriter.encoding import Command, cr_lf
+from imagewriter.encoding import Command, FF
 from imagewriter.render.text import RichTextBuilder
 
 
@@ -69,10 +69,12 @@ class DocumentRenderer(BlockVisitor[None], InlineVisitor[None]):
 
         self.trim(document.blocks)
 
-        if standalone:
-            self.builder.ff()
+        commands = self.builder.commands
 
-        return self.builder.commands
+        if standalone:
+            commands.append(FF)
+
+        return commands
 
     def trim(self: Self, blocks: list[Block]) -> None:
         """
@@ -189,7 +191,7 @@ class DocumentRenderer(BlockVisitor[None], InlineVisitor[None]):
         for line in element.contents:
             for el in line:
                 el.accept(self)
-            self.builder.write(cr_lf())
+            self.builder.cr_lf()
 
     def visit_code_block(self: Self, element: CodeBlock) -> None:
         with self.builder.code_block():
@@ -219,9 +221,9 @@ class DocumentRenderer(BlockVisitor[None], InlineVisitor[None]):
 
     def visit_horizontal_rule(self: Self, element: HorizontalRule) -> None:
         # TODO: Something nicer
-        self.builder.write(cr_lf(2))
+        self.builder.cr_lf(2)
         self.builder.text("---")
-        self.builder.write(cr_lf(2))
+        self.builder.cr_lf(2)
 
     def visit_table(self: Self, element: Table) -> None:
         raise NotImplementedError("visit_table")
