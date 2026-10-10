@@ -1,9 +1,12 @@
-from contextlib import contextmanager
-from typing import Generator, List, Optional, Self, Sequence
+from collections.abc import Callable
+from contextlib import AbstractContextManager, contextmanager
+from typing import Generator, Self, Sequence
 
 from imagewriter.base.character import Text
 from imagewriter.base.color import Color
+from imagewriter.base.language import Language
 from imagewriter.base.pitch import Pitch
+from imagewriter.base.quality import Quality
 from imagewriter.base.settings import Settings
 from imagewriter.base.units import Length
 from imagewriter.encoding import (
@@ -13,15 +16,21 @@ from imagewriter.encoding import (
     CarriageReturn,
     CarriageReturnLengthError,
     CharacterEncoder,
+    CLEAR_ALL_TABS,
     Command,
     CR,
     cr_lf,
+    FF,
     LineFeed,
     LineFeedLengthError,
     Print,
+    PRINT_SLASHED_ZERO,
+    PRINT_UNSLASHED_ZERO,
     reset_tabs,
+    set_language,
     SetColor,
     SetPitch,
+    SetQuality,
     Space,
     START_BOLDFACE,
     START_DOUBLE_WIDTH,
@@ -53,16 +62,38 @@ class RichTextBuilder:
             map_mousetext=not settings.include_eighth_data_bit,
             map_custom=not settings.include_eighth_data_bit,
         )
+
+        self._commands: list[Command] = list()
+
+        # A header is a series of commands at the top of the document that
+        # configures all settings. In cases where the header is already set,
+        # we often write more targeted commands.
         self._has_header: bool = False
-        self._commands: List[Command] = list()
-        self._tab_size: Optional[int] = None
+
+        # The ImageWriter II uses individual tab stops internally. But the renderer
+        # supports setting those tab stops based on a consistent tab size. This field is
+        self._tab_size: int | None = None
+
+    #
+    # Settings related functionality.
+    #
 
     @property
     def settings(self: Self) -> Settings:
+        """
+        Print settings.
+        """
+
         return self._settings
 
     @settings.setter
     def settings(self: Self, settings: Settings) -> None:
+        # Update and apply settings.
+        self._update_settings(settings)
+        self._apply_settings()
+
+    def _update_settings(self: Self, settings: Settings) -> None:
+        # Update internal settings and the character encoder accordingly.
         self._settings = settings
         self._character_encoder = CharacterEncoder(
             settings.language,
@@ -70,79 +101,161 @@ class RichTextBuilder:
             map_custom=not settings.include_eighth_data_bit,
         )
 
-    def __len__(self: Self) -> int:
-        return len(self._commands)
+    def _apply_settings(self: Self) -> None:
+        # Write settings to commands.
+        self._commands += [*apply_settings(self._settings), CR]
 
-    def _write_header(self: Self) -> None:
+        # Applying settings implies a header.
         if not self._has_header:
-            self._commands += [*apply_settings(self._settings), CR]
             self._has_header = True
 
-    def write(self: Self, commands: Command | str | List[Command]) -> Self:
+    def _write_header(self: Self) -> None:
+        # Write the settings header, if it hasn't been written already.
+        if not self._has_header:
+            self._apply_settings()
+
+    #
+    # Tab settings.
+    #
+
+    def tab_stops(self: Self, tab_stops: Sequence[Length]) -> Self:
+        """
+        Set tab stops.
+        """
+
+        self._settings = Settings.replace(self._settings, tab_stops=tab_stops)
+
+        if not self._has_header:
+            # Tab stops are included in the header.
+            self._write_header()
+        else:
+            # Otherwise, we just reset the tabs.
+            self._commands += reset_tabs(to_tab_stops(tab_stops, self._settings.pitch))
+
+        return self
+
+    def tab_size(self: Self, size: int | None) -> Self:
+        """
+        Set the tab size by setting appropriate tab stops.
+        """
+
+        self._tab_size = size
+
+        if size is None:
+            # If no size is set, clear all tabs - this is the default behavior.
+            self._commands.append(CLEAR_ALL_TABS)
+        else:
+            # If there is a size, generate tab stops and set them.
+            tab_stops = list(range(0, self.settings.pitch.max_character_position, size))
+            self.tab_stops(tab_stops)
+
+        return self
+
+    #
+    # The basics.
+    #
+
+    def __len__(self: Self) -> int:
+        """
+        The number of staged commands.
+        """
+
+        return len(self._commands)
+
+    def write(self: Self, commands: Command | str | list[Command]) -> Self:
         """
         Write raw commands.
         """
 
+        # Write the header, if it hasn't already been written
         self._write_header()
+
         if isinstance(commands, Command):
+            # Just a command!
             self._commands.append(commands)
         elif isinstance(commands, str):
+            # Raw text!
             for c in commands.encode(encoding="ascii"):
                 self._commands.append(Print(c.to_bytes(byteorder="big")))
         else:
+            # A list of commands!
             self._commands += commands
 
         return self
 
     @property
-    def commands(self: Self) -> List[Command]:
+    def commands(self: Self) -> list[Command]:
         """
-        Commands to write to the printer to complete the job.
+        Rendered commands.
         """
 
+        # Make sure the header has been written
         self._write_header()
+
+        # Add a CR so the document flushes correctly
         self._commands.append(CR)
 
-        return self._commands
+        commands = self._commands
 
-    def pitch(self: Self, pitch: Pitch) -> Self:
+        # Reset the commands, allowing the renderer to be reused.
+        self._commands = list()
+
+        return commands
+
+    #
+    # Language, pitch and quality.
+    #
+
+    @contextmanager
+    def language(self: Self, language: Language) -> Generator[None, None, None]:
         """
-        Set the current pitch.
+        Use a given language.
         """
 
-        self.settings = Settings.replace(self.settings, pitch=pitch)
-        if self._has_header:
-            self._commands.append(SetPitch(pitch))
+        self.write(set_language(language))
 
-            if self._tab_size:
-                self.tab_size(self._tab_size)
-            else:
-                self.tab_stops(self.settings.tab_stops)
+        yield
 
-        return self
+        self.write(set_language(self.settings.language))
 
-    def tab_stops(self: Self, tab_stops: Sequence[Length]) -> Self:
+    @contextmanager
+    def pitch(self: Self, pitch: Pitch) -> Generator[None, None, None]:
         """
-        Set the current tab stops.
+        Use a given pitch.
         """
-        self._tab_size = None
 
-        self._settings = Settings.replace(self._settings, tab_stops=tab_stops)
+        self.write(SetPitch(pitch))
+        self.tab_size(self._tab_size)
 
-        if self._has_header:
-            self._commands += reset_tabs(to_tab_stops(tab_stops, self._settings.pitch))
-        return self
+        yield
 
-    def tab_size(self: Self, size: int) -> Self:
-        tab_stops = list(range(0, self.settings.pitch.max_character_position, size))
-        self.tab_stops(tab_stops)
-        self._tab_size = size
-        return self
+        self.write(SetPitch(self.settings.pitch))
+        self.tab_size(self._tab_size)
+
+    @contextmanager
+    def quality(self: Self, quality: Quality) -> Generator[None, None, None]:
+        """
+        Print at a given quality.
+        """
+
+        original_quality = self.settings.quality
+
+        self.write(SetQuality(quality))
+
+        yield
+
+        self.write(SetQuality(original_quality))
+
+    #
+    # Whitespace management.
+    #
 
     def trim(self: Self, count: int) -> Self:
         """
         Remove the last count commands.
         """
+
+        self._write_header()
 
         self._commands = self._commands[:-count]
         return self
@@ -152,7 +265,14 @@ class RichTextBuilder:
         Write a CR and an LF.
         """
 
-        self._commands += cr_lf(count)
+        self.write(cr_lf(count))
+        return self
+
+    def ff(self: Self) -> Self:
+        """
+        Write a form feed.
+        """
+        self.write(FF)
         return self
 
     def trim_cr_lf(self: Self, count: int = 1) -> Self:
@@ -160,13 +280,18 @@ class RichTextBuilder:
         Trim tailing CRFLs.
         """
 
-        for _ in range(0, count):
-            cr = self._commands[-1]
-            lf = self._commands[-2]
+        self._write_header()
 
-            assert isinstance(cr, CarriageReturn)
-            assert isinstance(lf, LineFeed)
-            assert lf.lines == 1
+        for _ in range(0, count):
+            cr = self._commands[-2]
+            lf = self._commands[-1]
+
+            try:
+                assert isinstance(cr, CarriageReturn)
+                assert isinstance(lf, LineFeed)
+                assert lf.lines == 1
+            except AssertionError:
+                return self
 
             self.trim(2)
 
@@ -176,14 +301,15 @@ class RichTextBuilder:
         """
         Write a space.
         """
-        command: Command = Space()
-        self.write([command])
+        self.write(Space())
         return self
 
     def trim_space(self: Self) -> Self:
         """
         Trim spaces.
         """
+
+        self._write_header()
 
         assert isinstance(self._commands[-1], Space)
         self.trim(1)
@@ -303,7 +429,8 @@ class RichTextBuilder:
             except TabLengthError:
                 if self._tab_size:
                     backspace_ct += self._tab_size
-                raise
+                else:
+                    raise
             except (LineFeedLengthError, CarriageReturnLengthError) as exc:
                 raise NotImplementedError(
                     "Strikeout is not implement across lines"
@@ -313,11 +440,11 @@ class RichTextBuilder:
 
         for cmd in self._commands[start:]:
             try:
-                self._commands.append(Print(b"-" * len(cmd)))
+                self.write(Print(b"-" * len(cmd)))
             except BackspaceLengthError:
                 pass
             except TabLengthError:
-                self._commands.append(TAB)
+                self.write(TAB)
 
     @contextmanager
     def superscript(self: Self) -> Generator[None, None, None]:
@@ -349,6 +476,38 @@ class RichTextBuilder:
 
         self.write(STOP_SUBSCRIPT)
 
+    @contextmanager
+    def slashed_zero(self: Self) -> Generator[None, None, None]:
+        """
+        Print slashed zeroes.
+        """
+
+        slashed_zero = self.settings.slashed_zero
+
+        if not slashed_zero:
+            self._commands.append(PRINT_SLASHED_ZERO)
+
+        yield
+
+        if not slashed_zero:
+            self._commands.append(PRINT_UNSLASHED_ZERO)
+
+    @contextmanager
+    def unslashed_zero(self: Self) -> Generator[None, None, None]:
+        """
+        Print unslashed zeroes.
+        """
+
+        slashed_zero = self.settings.slashed_zero
+
+        if slashed_zero:
+            self._commands.append(PRINT_UNSLASHED_ZERO)
+
+        yield
+
+        if slashed_zero:
+            self._commands.append(PRINT_SLASHED_ZERO)
+
     def code(self: Self, *text: Text) -> Self:
         """
         Write inline code.
@@ -369,3 +528,75 @@ class RichTextBuilder:
         with self.monospace():
             with self.color(Color.GREEN):
                 yield
+
+    @contextmanager
+    def hed(self: Self, level: int) -> Generator[None, None, None]:
+        """
+        Write a headline.
+        """
+
+        hed_methods = {1: self._hed_1, 2: self._hed_2}
+        hed_default = self._hed_default(level)
+
+        with hed_methods.get(level, hed_default)():
+            yield
+
+    def _hed_default(
+        self: Self, level: int
+    ) -> Callable[[], AbstractContextManager[None]]:
+        # A default header, if no specific header style is specified.
+        @contextmanager
+        def _default() -> Generator[None, None, None]:
+            self.text("#" * level)
+            self.space()
+
+            yield
+
+            self.cr_lf(2)
+
+        return _default
+
+    @contextmanager
+    def _hed_1(self: Self) -> Generator[None, None, None]:
+        # A level 1 header. Printed in boldface and double width.
+        with self.boldface():
+            with self.double_width():
+                self.text("#")
+                self.space()
+
+                yield
+
+        self.cr_lf(2)
+
+    @contextmanager
+    def _hed_2(self: Self) -> Generator[None, None, None]:
+        # A level 2 header. Printed in boldface.
+        with self.boldface():
+            self.text("##")
+            self.space()
+
+            yield
+
+        self.cr_lf(2)
+
+    @contextmanager
+    def line(self: Self) -> Generator[None, None, None]:
+        """
+        Terminate commands with a new line.
+        """
+
+        yield
+
+        self.trim_cr_lf()
+        self.cr_lf(1)
+
+    @contextmanager
+    def graf(self: Self) -> Generator[None, None, None]:
+        """
+        Create a paragraph.
+        """
+
+        yield
+
+        self.trim_cr_lf()
+        self.cr_lf(2)

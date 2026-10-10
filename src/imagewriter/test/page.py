@@ -1,163 +1,249 @@
+from collections.abc import Callable
+from contextlib import AbstractContextManager, contextmanager
+from enum import Enum
 import importlib.resources
-from typing import List, Self
+from typing import Any, Generator, Self, Type
 
 from imagewriter.base.character import MouseTextCharacter
 from imagewriter.base.language import Language
 from imagewriter.base.pitch import Pitch
-from imagewriter.document import Document, Header, split_text
-from imagewriter.encoding import (
-    boldface,
-    CharacterEncoder,
-    Command,
-    cr_lf,
-    double_width,
-    FF,
-    half_height,
-    Print,
-    PRINT_SLASHED_ZERO,
-    PRINT_UNSLASHED_ZERO,
-    set_language,
-    SetPitch,
-    START_SUBSCRIPT,
-    START_SUPERSCRIPT,
-    STOP_SUBSCRIPT,
-    underline,
-)
-from imagewriter.render import DocumentRenderer, PandocRenderer
+from imagewriter.base.quality import Quality
+from imagewriter.encoding import Command
+from imagewriter.render import PandocRenderer, RichTextBuilder
 
-
-class TitleRenderer:
-    def __init__(self: Self, renderer: DocumentRenderer) -> None:
-        self._renderer = renderer
-
-    def __call__(self: Self, title: str, level: int) -> List[Command]:
-        return self._renderer.render(
-            Document(blocks=[Header(level=level, contents=split_text(title))])
-        )
-
-
+# A markdown test page
 MARKDOWN: str = importlib.resources.read_text(__name__, "./test.md")
 
+TEST_PHRASE: str = "A quick brown fox jumped over the lazy dog"
 
-def language_test(title: TitleRenderer) -> List[Command]:
-    commands: List[Command] = list()
+LANGUAGE_CHARS: str = f"#${chr(64)}`\\|~[]()"
 
-    for language in Language:
-        commands += [
-            *title(language.value, 3),
-            *set_language(language),
-            Print(f"#${chr(64)}[\\]`(|)~".encode(encoding="ascii")),
-            *cr_lf(),
+MOUSETEXT_CHARS: list[MouseTextCharacter] = [
+    MouseTextCharacter.DARK_APPLE,
+    MouseTextCharacter.LIGHT_APPLE,
+    MouseTextCharacter.ARROWHEAD_SHAPED_POINTER,
+    MouseTextCharacter.HOURGLASS,
+    MouseTextCharacter.CHECK_MARK,
+    MouseTextCharacter.INVERSE_CHECK_MARK,
+    MouseTextCharacter.DOWNWARDS_ARROW_WITH_TIP_LEFTWARDS,
+    MouseTextCharacter.TITLE_BAR,
+    MouseTextCharacter.LEFTWARDS_ARROW,
+    MouseTextCharacter.ELLIPSIS,
+    MouseTextCharacter.DOWNWARDS_ARROW,
+    MouseTextCharacter.UPWARDS_ARROW,
+    MouseTextCharacter.UPPER_RIGHT_ONE_EIGHT_BLOCK,
+    MouseTextCharacter.CARRIAGE_RETURN,
+    MouseTextCharacter.FULL_BLOCK,
+    MouseTextCharacter.LEFTWARDS_ARROW_AND_UPPER_AND_LOWER_ONE_EIGHT_BLOCK,
+    MouseTextCharacter.RIGHTWARDS_ARROW_AND_UPPER_AND_LOWER_ONE_EIGHT_BLOCK,
+    MouseTextCharacter.DOWNWARDS_ARROW_AND_RIGHT_ONE_EIGHT_BLOCK,
+    MouseTextCharacter.UPWARDS_ARROW_AND_RIGHT_ONE_EIGHT_BLOCK,
+    MouseTextCharacter.UPPER_ONE_EIGHT_BLOCK,
+    MouseTextCharacter.LEFT_AND_LOWER_ONE_EIGHT_BLOCK,
+    MouseTextCharacter.RIGHTWARDS_ARROW,
+    MouseTextCharacter.MEDIUM_SHADE,
+    MouseTextCharacter.DARK_SHADE,
+    MouseTextCharacter.LEFT_HALF_FOLDER,
+    MouseTextCharacter.RIGHT_HALF_FOLDER,
+    MouseTextCharacter.RIGHT_ONE_EIGHT_BLOCK,
+    MouseTextCharacter.BLACK_DIAMOND,
+    MouseTextCharacter.LOWER_ONE_EIGHT_BLOCK,
+    MouseTextCharacter.VOIDED_GREEK_CROSS,
+    MouseTextCharacter.RIGHT_OPEN_SQUARED_DOT,
+    MouseTextCharacter.LEFT_ONE_EIGHT_BLOCK,
+]
+
+
+def enum_value_length(enum_cls: Type[Enum]) -> int:
+    return max([len(e.value) for e in enum_cls])
+
+
+class TestPage:
+    """
+    Print test pages.
+    """
+
+    def __init__(
+        self: Self, rich_text_builder: RichTextBuilder, pandoc_renderer: PandocRenderer
+    ) -> None:
+        self.builder = rich_text_builder
+        self.pandoc = pandoc_renderer
+
+        self._standalone: bool = True
+
+    #
+    # Public methods
+    #
+
+    def full_monty(self: Self) -> list[Command]:
+        """
+        Print all tests.
+        """
+
+        with self._report("Test Page"):
+            self._languages(standalone=False)
+            self._pitch(standalone=False)
+            self._quality(standalone=False)
+            self._mousetext(standalone=False)
+            self._markdown(standalone=False)
+
+        return self.builder.commands
+
+    def languages(self: Self) -> list[Command]:
+        """
+        Test each supported language.
+        """
+
+        self._languages(standalone=True)
+
+        return self.builder.commands
+
+    def pitch(self: Self) -> list[Command]:
+        """
+        Test each supported pitch.
+        """
+
+        self._pitch(standalone=True)
+
+        return self.builder.commands
+
+    def quality(self: Self) -> list[Command]:
+        """
+        Test each supported print quality.
+        """
+
+        self._quality(standalone=True)
+
+        return self.builder.commands
+
+    def attributes(self: Self) -> list[Command]:
+        """
+        Test various attributes, such as boldface.
+        """
+
+        self._attributes(standalone=True)
+
+        return self.builder.commands
+
+    def mousetext(self: Self) -> list[Command]:
+        """
+        Test printing mousetext characters.
+        """
+
+        self._mousetext(standalone=True)
+
+        return self.builder.commands
+
+    def markdown(self: Self) -> list[Command]:
+        """
+        Test printing markdown.
+        """
+
+        return self._markdown(standalone=True)
+
+    #
+    # Individual reports
+    #
+
+    def _languages(self: Self, standalone: bool = True) -> None:
+        with self._report("Languages", standalone=standalone):
+            self._enum_test(Language, LANGUAGE_CHARS, ctx=self.builder.language)
+
+    def _pitch(self: Self, standalone: bool = True) -> None:
+        with self._report("Pitch", standalone=standalone):
+            self._enum_test(Pitch, TEST_PHRASE, ctx=self.builder.pitch)
+
+    def _quality(self: Self, standalone: bool = True) -> None:
+        length = len("near letter quality")
+
+        with self._report("Quality", standalone=standalone):
+            for name, quality in [
+                ("draft", Quality.DRAFT),
+                ("correspondence", Quality.CORRESPONDENCE),
+                ("near letter quality", Quality.NEAR_LETTER_QUALITY),
+            ]:
+                with self.builder.line():
+                    with self.builder.quality(quality):
+                        with self.builder.boldface():
+                            self.builder.text(f"{name:>{length}}:")
+                        self.builder.text(f" {TEST_PHRASE}")
+
+    def _attributes(self: Self, standalone: bool = True) -> None:
+        attrs = [
+            ("Double width", self.builder.double_width),
+            ("Underlined", self.builder.underline),
+            ("Boldface", self.builder.boldface),
+            ("Half height", self.builder.half_height),
+            ("Superscript", self.builder.superscript),
+            ("Subscript", self.builder.subscript),
+            ("Unslashed 0", self.builder.unslashed_zero),
+            ("Slashed 0", self.builder.slashed_zero),
         ]
 
-    commands = commands[:-2]
+        with self._report("Attributes", standalone=standalone):
 
-    return commands
+            with self.builder.graf():
+                with self.builder.line():
+                    self.builder.text("Plain")
 
+                for name, ctx in attrs:
+                    with self.builder.line():
+                        with ctx():
+                            self.builder.text(name)
 
-def pitch_test(title: TitleRenderer) -> List[Command]:
-    commands: List[Command] = list()
+    def _mousetext(self: Self, standalone: bool = True) -> None:
+        with self._report("MouseText", standalone=standalone):
+            with self.builder.graf():
+                for char in MOUSETEXT_CHARS:
+                    self.builder.text(char)
 
-    for pitch in Pitch:
-        commands += [
-            *title(pitch.value, 3),
-            SetPitch(pitch),
-            Print(b"A quick brown fox jumped over the lazy dog"),
-            *cr_lf(),
-        ]
+    def _markdown(self: Self, standalone: bool = True) -> list[Command]:
+        return self.pandoc.render(MARKDOWN, format="markdown", standalone=standalone)
 
-    commands = commands[:-2]
+    #
+    # Helpers
+    #
 
-    return commands
+    @contextmanager
+    def _report(
+        self: Self, name: str, standalone: bool = True
+    ) -> Generator[None, None, None]:
 
+        def title() -> None:
+            with self.builder.hed(1):
+                self.builder.text(name)
 
-def attributes_test(encoder: CharacterEncoder) -> List[Command]:
-    return [
-        *encoder.encode("Plain"),
-        *cr_lf(),
-        *double_width(encoder.encode("Double width\r\n")),
-        *cr_lf(),
-        *underline(encoder.encode("Underlined\r\n")),
-        *cr_lf(),
-        *boldface(encoder.encode("Boldface\r\n")),
-        *cr_lf(),
-        *half_height(encoder.encode("Half height\r\n")),
-        *cr_lf(),
-        START_SUPERSCRIPT,
-        *encoder.encode("Superscript\r\n"),
-        *cr_lf(),
-        START_SUBSCRIPT,
-        *encoder.encode("Subscript\r\n"),
-        *cr_lf(),
-        STOP_SUBSCRIPT,
-        PRINT_UNSLASHED_ZERO,
-        *encoder.encode("Unslashed 0\r\n"),
-        *cr_lf(),
-        PRINT_SLASHED_ZERO,
-        *encoder.encode("Slashed 0\r\n"),
-    ]
+        if standalone:
+            with self.builder.quality(Quality.NEAR_LETTER_QUALITY):
+                title()
 
+                self._hed_level = 2
 
-def mousetext_test(encoder: CharacterEncoder) -> List[Command]:
-    return encoder.encode(
-        MouseTextCharacter.DARK_APPLE,
-        MouseTextCharacter.LIGHT_APPLE,
-        MouseTextCharacter.ARROWHEAD_SHAPED_POINTER,
-        MouseTextCharacter.HOURGLASS,
-        MouseTextCharacter.CHECK_MARK,
-        MouseTextCharacter.INVERSE_CHECK_MARK,
-        MouseTextCharacter.DOWNWARDS_ARROW_WITH_TIP_LEFTWARDS,
-        MouseTextCharacter.TITLE_BAR,
-        MouseTextCharacter.LEFTWARDS_ARROW,
-        MouseTextCharacter.ELLIPSIS,
-        MouseTextCharacter.DOWNWARDS_ARROW,
-        MouseTextCharacter.UPWARDS_ARROW,
-        MouseTextCharacter.UPPER_ONE_EIGHTS_BLOCK,
-        MouseTextCharacter.CARRIAGE_RETURN,
-        MouseTextCharacter.FULL_BLOCK,
-        MouseTextCharacter.LEFTWARDS_ARROW_AND_UPPER_AND_LOWER_ONE_EIGHTH_BLOCK,
-        MouseTextCharacter.RIGHTWARDS_ARROW_AND_UPPER_AND_LOWER_ONE_EIGHTH_BLOCK,
-        MouseTextCharacter.DOWNWARDS_ARROW_AND_RIGHT_ONE_EIGHTH_BLOCK,
-        MouseTextCharacter.UPWARDS_ARROW_AND_RIGHT_ONE_EIGHTH_BLOCK,
-        MouseTextCharacter.ALSO_UPPER_ONE_EIGHTS_BLOCK,
-        MouseTextCharacter.LEFT_AND_LOWER_ONE_EIGHTH_BLOCK,
-        MouseTextCharacter.RIGHTWARDS_ARROW,
-        MouseTextCharacter.BLOCK_2,
-        MouseTextCharacter.BLOCK_3,
-        MouseTextCharacter.LEFT_HALF_FOLDER,
-        MouseTextCharacter.RIGHT_HALF_FOLDER,
-        MouseTextCharacter.RIGHT_ONE_EIGHTH_BLOCK,
-        MouseTextCharacter.BLACK_DIAMOND,
-        MouseTextCharacter.UPPER_AND_LOWER_ONE_EIGHTH_BLOCK,
-        MouseTextCharacter.VOIDED_GREEK_CROSS,
-        MouseTextCharacter.RIGHT_OPEN_SQUARED_DOT,
-        MouseTextCharacter.LEFT_ONE_EIGHTH_BLOCK,
-    )
+                yield
 
+                self._hed_level = 1
 
-def markdown_test(renderer: PandocRenderer) -> List[Command]:
-    return renderer.render(MARKDOWN, format="markdown")
+            self.builder.ff()
+        else:
+            self._standalone = False
 
+            title()
 
-def test_page(
-    character_encoder: CharacterEncoder,
-    document_renderer: DocumentRenderer,
-    pandoc_renderer: PandocRenderer,
-) -> List[Command]:
-    title = TitleRenderer(document_renderer)
-    return [
-        *title("Test Page", 1),
-        *title("Language", 2),
-        *language_test(title),
-        *title("Pitch", 2),
-        *pitch_test(title),
-        *cr_lf(2),
-        *title("Attributes", 2),
-        *attributes_test(character_encoder),
-        *cr_lf(2),
-        *title("MouseText", 2),
-        *mousetext_test(character_encoder),
-        *title("Markdown", 2),
-        *markdown_test(pandoc_renderer),
-        FF,
-    ]
+            yield
+
+            self._standalone = True
+
+    def _enum_test(
+        self: Self,
+        enum_cls: Type[Enum],
+        value: str,
+        ctx: Callable[[Any], AbstractContextManager[None]],
+    ) -> None:
+        length = enum_value_length(enum_cls)
+
+        for enum in enum_cls:
+            with self.builder.line():
+                with self.builder.boldface():
+                    self.builder.text(f"{enum.value:>{length}}:")
+                    with ctx(enum):
+                        self.builder.text(f" {value}")
