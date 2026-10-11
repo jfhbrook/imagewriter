@@ -210,7 +210,8 @@ class TestPage:
     ) -> Generator[None, None, None]:
 
         def title() -> None:
-            with self.builder.hed(1):
+            level = 1 if standalone else 2
+            with self.builder.hed(level):
                 self.builder.text(name)
 
         if standalone:
