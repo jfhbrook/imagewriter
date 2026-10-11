@@ -44,9 +44,9 @@ MOUSETEXT_CHARACTERS: Dict[str, MouseTextCharacter] = {
     "↵": MouseTextCharacter.CARRIAGE_RETURN,
     "▉": MouseTextCharacter.FULL_BLOCK,
     "→": MouseTextCharacter.RIGHTWARDS_ARROW,
-    "▕": MouseTextCharacter.RIGHT_ONE_EIGHTH_BLOCK,
+    "▕": MouseTextCharacter.RIGHT_ONE_EIGHT_BLOCK,
     "◆": MouseTextCharacter.BLACK_DIAMOND,
-    "▏": MouseTextCharacter.LEFT_ONE_EIGHTH_BLOCK,
+    "▏": MouseTextCharacter.LEFT_ONE_EIGHT_BLOCK,
 }
 
 

@@ -1,7 +1,6 @@
 from typing import Self
 
 from imagewriter.base.color import Color
-from imagewriter.base.quality import Quality
 from imagewriter.base.settings import Settings
 from imagewriter.document import (
     Block,
