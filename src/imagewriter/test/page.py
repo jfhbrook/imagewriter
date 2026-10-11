@@ -1,5 +1,6 @@
 from collections.abc import Callable
 from contextlib import AbstractContextManager, contextmanager
+import dataclasses
 from enum import Enum
 import importlib.resources
 from typing import Any, Generator, Self, Type
@@ -68,6 +69,12 @@ class TestPage:
     ) -> None:
         self.builder = rich_text_builder
         self.pandoc = pandoc_renderer
+
+        settings = dataclasses.replace(
+            self.builder.settings, quality=Quality.NEAR_LETTER_QUALITY
+        )
+        self.builder.settings = settings
+        self.pandoc.settings = settings
 
         self._standalone: bool = True
 
@@ -218,14 +225,13 @@ class TestPage:
             with self.builder.hed(level):
                 self.builder.text(name)
 
-        with self.builder.quality(Quality.NEAR_LETTER_QUALITY):
-            title()
+        title()
 
-            self._standalone = standalone
+        self._standalone = standalone
 
-            yield
+        yield
 
-            self._standalone = True
+        self._standalone = True
 
         self.builder.ff()
 

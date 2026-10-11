@@ -75,6 +75,14 @@ class DocumentRenderer(BlockVisitor[None], InlineVisitor[None]):
 
         return self.builder.commands
 
+    @property
+    def settings(self: Self) -> Settings:
+        return self.builder.settings
+
+    @settings.setter
+    def settings(self: Self, settings: Settings) -> None:
+        self.builder.settings = settings
+
     def trim(self: Self, blocks: list[Block]) -> None:
         """
         Trim trailing blocks from the document.
