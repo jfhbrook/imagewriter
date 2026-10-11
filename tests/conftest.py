@@ -16,6 +16,7 @@ from imagewriter.encoding import (
     Print,
 )
 from imagewriter.serial import BaudRate, Serial, SerialProtocol
+from imagewriter.test import TestPage as _TestPage
 
 CHARACTER_ENCODER = CharacterEncoder()
 
@@ -137,7 +138,7 @@ def hello_world() -> List[Command]:
 
 
 @pytest.fixture
-def test_page(container: Container) -> List[Command]:
+def test_page(container: Container) -> _TestPage:
     return container.test_page()
 
 

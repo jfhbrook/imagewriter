@@ -5,6 +5,7 @@ from imagewriter.document import PandocFormat
 from imagewriter.encoding import Command
 from imagewriter.pandoc import parse_document
 from imagewriter.render.document import DocumentRenderer
+from imagewriter.render.text import RichTextBuilder
 
 
 class PandocRenderer:
@@ -15,8 +16,23 @@ class PandocRenderer:
     def __init__(self: Self, settings: Settings) -> None:
         self._renderer = DocumentRenderer(settings)
 
+    @property
+    def builder(self: Self) -> RichTextBuilder:
+        return self._renderer.builder
+
+    @property
+    def settings(self: Self) -> Settings:
+        return self.builder.settings
+
+    @settings.setter
+    def settings(self: Self, settings: Settings) -> None:
+        self.builder.settings = settings
+
     def render(
-        self: Self, document: str, format: PandocFormat = "markdown"
+        self: Self,
+        document: str,
+        format: PandocFormat = "markdown",
+        standalone: bool = False,
     ) -> List[Command]:
         doc = parse_document(document, format)
-        return self._renderer.render(doc)
+        return self._renderer.render(doc, standalone=standalone)

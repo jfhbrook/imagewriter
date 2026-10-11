@@ -10,16 +10,31 @@ from typing import Self
 class Quality(Enum):
     """
     A Print-Quality Font, as per page 39 of the ImageWriter II Technical
-    Reference Manual. Lower quality fonts print more quickly.
+    Reference Manual. There are three font qualities, listed from lowest to highest:
+
+    * draft
+    * correspondence
+    * near letter quality (or NLQ)
+
+    The default quality is "draft". This may either be set with the print quality
+    button on the printer, or through software.
+
+    Different qualities print at different speeds:
+
+    | Name                | Print Speed (CPS) |
+    |---------------------|-------------------|
+    | draft               | 250               |
+    | correspondence      | 180               |
+    | near letter quality |  45               |
 
     Note that boldface, double-width, half-height, subscript, superscript
     and proportional printing will always print at the Correspondence quality
     setting.
     """
 
-    CORRESPONDENCE = "0"
     DRAFT = "1"
-    NEAR_LETTER_QUALITY = "2"  # or "NLQ"
+    CORRESPONDENCE = "0"
+    NEAR_LETTER_QUALITY = "2"
 
     @property
     def print_speed(self: Self) -> int:

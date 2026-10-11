@@ -1,4 +1,4 @@
-from typing import List, Protocol, Self
+from typing import Protocol, Self
 
 import ipywidgets as widgets  # type: ignore
 
@@ -6,7 +6,43 @@ from imagewriter.base.memory import print_buffer_size
 from imagewriter.connection import Connection
 from imagewriter.encoding import Command
 from imagewriter.serial import Serial
-from imagewriter.test import test_memory
+from imagewriter.test import test_memory, TestPage
+
+FULL_MONTY = "Full Monty!"
+
+TEST_PAGES = {
+    FULL_MONTY: "full_monty",
+    "Languages": "languages",
+    "Pitch": "pitch",
+    "Quality": "quality",
+    "Attributes": "attributes",
+    "MouseText": "mousetext",
+    "Markdown": "markdown",
+}
+
+
+class TestPageButtonWidget(widgets.Button):
+    def __init__(self: Self) -> None:
+        super().__init__(
+            description="Print Test Page",
+            disabled=False,
+            button_style="",
+            tooltip="Print the selected test page.",
+        )
+
+
+class TestPageSelectWidget(widgets.Dropdown):
+    def __init__(self: Self) -> None:
+        super().__init__(
+            options=list(TEST_PAGES.keys()), value=FULL_MONTY, disabled=False
+        )
+
+    @property
+    def page_name(self: Self) -> str:
+        if not isinstance(self.value, str):
+            return FULL_MONTY
+
+        return TEST_PAGES[self.value]
 
 
 class TestPageStatusWidget(widgets.Label):
@@ -47,16 +83,6 @@ class MemoryTestStatusWidget(widgets.Label):
         self.value = self.ERROR.format(err=err)
 
 
-class TestPageButtonWidget(widgets.Button):
-    def __init__(self: Self) -> None:
-        super().__init__(
-            description="Print Test Page",
-            disabled=False,
-            button_style="",
-            tooltip="Print a test page.",
-        )
-
-
 class MemoryTestButtonWidget(widgets.Button):
     def __init__(self: Self) -> None:
         super().__init__(
@@ -74,6 +100,7 @@ class TestCallback(Protocol):
 class TestWidget(widgets.VBox):
     def __init__(self: Self) -> None:
         self._test_page_button_widget = TestPageButtonWidget()
+        self._test_page_select_widget = TestPageSelectWidget()
         self._test_page_status_widget = TestPageStatusWidget()
         self._memory_test_button_widget = MemoryTestButtonWidget()
         self._memory_test_status_widget = MemoryTestStatusWidget()
@@ -83,6 +110,7 @@ class TestWidget(widgets.VBox):
                 widgets.HBox(
                     [
                         self._test_page_button_widget,
+                        self._test_page_select_widget,
                         self._test_page_status_widget,
                     ]
                 ),
@@ -96,11 +124,14 @@ class TestWidget(widgets.VBox):
         )
 
     def print_test_page(
-        self: Self, connection: Connection, test_page: List[Command]
+        self: Self, connection: Connection, test_page: TestPage
     ) -> None:
+        commands: list[Command] = getattr(
+            test_page, self._test_page_select_widget.page_name
+        )()
         self._test_page_status_widget.running()
         try:
-            for cmd in test_page:
+            for cmd in commands:
                 connection.serial.write(bytes(cmd))
 
             # connection.write(test_page)
