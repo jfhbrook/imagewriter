@@ -233,7 +233,8 @@ class TestPage:
 
         self._standalone = True
 
-        self.builder.ff()
+        if standalone:
+            self.builder.ff()
 
     def _enum_test(
         self: Self,

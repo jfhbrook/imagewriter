@@ -535,6 +535,9 @@ class RichTextBuilder:
         Write a headline.
         """
 
+        self.trim_cr_lf()
+        self.cr_lf(2)
+
         hed_methods = {1: self._hed_1, 2: self._hed_2}
         hed_default = self._hed_default(level)
 
