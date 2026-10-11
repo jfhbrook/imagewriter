@@ -19,13 +19,13 @@ MOUSETEXT_LOOKUP: dict[str, list[MouseTextCharacter]] = {
 MOUSETEXT_EMOJI_CODES: dict[MouseTextCharacter, list[str]] = {
     _M.DARK_APPLE: [":dark_apple:", "🍎"],
     _M.LIGHT_APPLE: [":light_apple:", "🍏"],
-    _M.HOURGLASS: [":hourglass:", "⏳", "⌛"],
+    _M.HOURGLASS: [":hourglass:", "⏳", "⌛"],  # TODO: "⌛︎" fails to parse
     _M.CHECK_MARK: [":white_check_mark:", ":heavy_check_mark:", "✅", "✔️"],
     _M.INVERSE_CHECK_MARK: [":ballot_box_with_check:", "☑️"],
-    _M.LEFTWARDS_ARROW: [":arrow_left:", "⬅️"],
-    _M.RIGHTWARDS_ARROW: [":arrow_right:", "➡️"],
-    _M.DOWNWARDS_ARROW: [":arrow_down:", "⬇️"],
-    _M.UPWARDS_ARROW: [":arrow_up:", "⬆️"],
+    _M.LEFTWARDS_ARROW: [":arrow_left:", "⬅️", "←"],
+    _M.RIGHTWARDS_ARROW: [":arrow_right:", "➡️", "→"],
+    _M.DOWNWARDS_ARROW: [":arrow_down:", "⬇️", "↓"],
+    _M.UPWARDS_ARROW: [":arrow_up:", "⬆️", "↑"],
 }
 
 MOUSETEXT_SMART_TEXT_CODES: dict[MouseTextCharacter, list[str]] = {_M.ELLIPSIS: ["…"]}

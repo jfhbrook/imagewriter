@@ -1,4 +1,10 @@
 # serializer version: 1
+# name: test_language_character[\xa3]
+  tuple(
+    <Language.BRITISH: 'British'>,
+    '#',
+  )
+# ---
 # name: test_mousetext_character[:arrow_down:]
   list([
     <MouseTextCharacter.DOWNWARDS_ARROW: 202>,
@@ -150,6 +156,26 @@
 # name: test_mousetext_character[\u2026]
   list([
     <MouseTextCharacter.ELLIPSIS: 201>,
+  ])
+# ---
+# name: test_mousetext_character[\u2190]
+  list([
+    <MouseTextCharacter.LEFTWARDS_ARROW: 200>,
+  ])
+# ---
+# name: test_mousetext_character[\u2191]
+  list([
+    <MouseTextCharacter.UPWARDS_ARROW: 203>,
+  ])
+# ---
+# name: test_mousetext_character[\u2192]
+  list([
+    <MouseTextCharacter.RIGHTWARDS_ARROW: 213>,
+  ])
+# ---
+# name: test_mousetext_character[\u2193]
+  list([
+    <MouseTextCharacter.DOWNWARDS_ARROW: 202>,
   ])
 # ---
 # name: test_mousetext_character[\u21b5]

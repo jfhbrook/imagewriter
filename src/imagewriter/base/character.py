@@ -92,10 +92,8 @@ class CustomCharacter:
             self.point = buffer[0]
         elif isinstance(point, bytes):
             self.point = point[0]
-        elif isinstance(point, int):
-            self.point = point
         else:
-            assert False, f"Unknown type {type(point)}"
+            self.point = point
 
         if self.point < 160:
             self.point = map_to_high_ascii(self.point)
