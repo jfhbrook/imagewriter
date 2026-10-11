@@ -134,12 +134,12 @@ class TestPage:
 
         return self.builder.commands
 
-    def markdown(self: Self) -> list[Command]:
+    def markdown(self: Self) -> None:
         """
         Test printing markdown.
         """
 
-        return self._markdown(standalone=True)
+        self._markdown(standalone=True)
 
     #
     # Individual reports
@@ -197,8 +197,12 @@ class TestPage:
                 for char in MOUSETEXT_CHARS:
                     self.builder.text(char)
 
-    def _markdown(self: Self, standalone: bool = True) -> list[Command]:
-        return self.pandoc.render(MARKDOWN, format="markdown", standalone=standalone)
+    def _markdown(self: Self, standalone: bool = True) -> None:
+        commands = self.pandoc.render(
+            MARKDOWN, format="markdown", standalone=standalone
+        )
+
+        self.builder.write(commands)
 
     #
     # Helpers
@@ -214,25 +218,16 @@ class TestPage:
             with self.builder.hed(level):
                 self.builder.text(name)
 
-        if standalone:
-            with self.builder.quality(Quality.NEAR_LETTER_QUALITY):
-                title()
-
-                self._hed_level = 2
-
-                yield
-
-                self._hed_level = 1
-
-            self.builder.ff()
-        else:
-            self._standalone = False
-
+        with self.builder.quality(Quality.NEAR_LETTER_QUALITY):
             title()
+
+            self._standalone = standalone
 
             yield
 
             self._standalone = True
+
+        self.builder.ff()
 
     def _enum_test(
         self: Self,
