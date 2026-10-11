@@ -1,0 +1,265 @@
+# serializer version: 1
+# name: test_mousetext_character[:arrow_down:]
+  list([
+    <MouseTextCharacter.DOWNWARDS_ARROW: 202>,
+  ])
+# ---
+# name: test_mousetext_character[:arrow_left:]
+  list([
+    <MouseTextCharacter.LEFTWARDS_ARROW: 200>,
+  ])
+# ---
+# name: test_mousetext_character[:arrow_right:]
+  list([
+    <MouseTextCharacter.RIGHTWARDS_ARROW: 213>,
+  ])
+# ---
+# name: test_mousetext_character[:arrow_up:]
+  list([
+    <MouseTextCharacter.UPWARDS_ARROW: 203>,
+  ])
+# ---
+# name: test_mousetext_character[:ballot_box_with_check:]
+  list([
+    <MouseTextCharacter.INVERSE_CHECK_MARK: 197>,
+  ])
+# ---
+# name: test_mousetext_character[:black_diamond:]
+  list([
+    <MouseTextCharacter.BLACK_DIAMOND: 219>,
+  ])
+# ---
+# name: test_mousetext_character[:carriage_return:]
+  list([
+    <MouseTextCharacter.CARRIAGE_RETURN: 205>,
+  ])
+# ---
+# name: test_mousetext_character[:cr:]
+  list([
+    <MouseTextCharacter.CARRIAGE_RETURN: 205>,
+  ])
+# ---
+# name: test_mousetext_character[:dark_apple:]
+  list([
+    <MouseTextCharacter.DARK_APPLE: 192>,
+  ])
+# ---
+# name: test_mousetext_character[:diamond:]
+  list([
+    <MouseTextCharacter.BLACK_DIAMOND: 219>,
+  ])
+# ---
+# name: test_mousetext_character[:folder:]
+  list([
+    <MouseTextCharacter.LEFT_HALF_FOLDER: 216>,
+    <MouseTextCharacter.RIGHT_HALF_FOLDER: 217>,
+  ])
+# ---
+# name: test_mousetext_character[:greek_cross:]
+  list([
+    <MouseTextCharacter.VOIDED_GREEK_CROSS: 221>,
+  ])
+# ---
+# name: test_mousetext_character[:heavy_check_mark:]
+  list([
+    <MouseTextCharacter.CHECK_MARK: 196>,
+  ])
+# ---
+# name: test_mousetext_character[:hourglass:]
+  list([
+    <MouseTextCharacter.HOURGLASS: 195>,
+  ])
+# ---
+# name: test_mousetext_character[:light_apple:]
+  list([
+    <MouseTextCharacter.LIGHT_APPLE: 193>,
+  ])
+# ---
+# name: test_mousetext_character[:pointer:]
+  list([
+    <MouseTextCharacter.ARROWHEAD_SHAPED_POINTER: 194>,
+  ])
+# ---
+# name: test_mousetext_character[:squared_dot:]
+  list([
+    <MouseTextCharacter.RIGHT_ONE_EIGHT_BLOCK: 218>,
+    <MouseTextCharacter.RIGHT_OPEN_SQUARED_DOT: 222>,
+  ])
+# ---
+# name: test_mousetext_character[:title_bar:]
+  list([
+    <MouseTextCharacter.TITLE_BAR: 199>,
+  ])
+# ---
+# name: test_mousetext_character[:white_check_mark:]
+  list([
+    <MouseTextCharacter.CHECK_MARK: 196>,
+  ])
+# ---
+# name: test_mousetext_character[\U0001f34e]
+  list([
+    <MouseTextCharacter.DARK_APPLE: 192>,
+  ])
+# ---
+# name: test_mousetext_character[\U0001f34f]
+  list([
+    <MouseTextCharacter.LIGHT_APPLE: 193>,
+  ])
+# ---
+# name: test_mousetext_character[\U0001f4c1]
+  list([
+    <MouseTextCharacter.LEFT_HALF_FOLDER: 216>,
+    <MouseTextCharacter.RIGHT_HALF_FOLDER: 217>,
+  ])
+# ---
+# name: test_mousetext_character[\U0001fb81]
+  list([
+    <MouseTextCharacter.TITLE_BAR: 199>,
+  ])
+# ---
+# name: test_mousetext_character[\U0001fbb0]
+  list([
+    <MouseTextCharacter.ARROWHEAD_SHAPED_POINTER: 194>,
+  ])
+# ---
+# name: test_mousetext_character[\U0001fbb5]
+  list([
+    <MouseTextCharacter.LEFTWARDS_ARROW_AND_UPPER_AND_LOWER_ONE_EIGHT_BLOCK: 207>,
+  ])
+# ---
+# name: test_mousetext_character[\U0001fbb6]
+  list([
+    <MouseTextCharacter.RIGHTWARDS_ARROW_AND_UPPER_AND_LOWER_ONE_EIGHT_BLOCK: 208>,
+  ])
+# ---
+# name: test_mousetext_character[\U0001fbb7]
+  list([
+    <MouseTextCharacter.DOWNWARDS_ARROW_AND_RIGHT_ONE_EIGHT_BLOCK: 209>,
+  ])
+# ---
+# name: test_mousetext_character[\U0001fbb8]
+  list([
+    <MouseTextCharacter.UPWARDS_ARROW_AND_RIGHT_ONE_EIGHT_BLOCK: 210>,
+  ])
+# ---
+# name: test_mousetext_character[\U0001fbbc]
+  list([
+    <MouseTextCharacter.RIGHT_OPEN_SQUARED_DOT: 222>,
+  ])
+# ---
+# name: test_mousetext_character[\u2026]
+  list([
+    <MouseTextCharacter.ELLIPSIS: 201>,
+  ])
+# ---
+# name: test_mousetext_character[\u21b5]
+  list([
+    <MouseTextCharacter.CARRIAGE_RETURN: 205>,
+  ])
+# ---
+# name: test_mousetext_character[\u22a1]
+  list([
+    <MouseTextCharacter.RIGHT_ONE_EIGHT_BLOCK: 218>,
+    <MouseTextCharacter.RIGHT_OPEN_SQUARED_DOT: 222>,
+  ])
+# ---
+# name: test_mousetext_character[\u231b]
+  list([
+    <MouseTextCharacter.HOURGLASS: 195>,
+  ])
+# ---
+# name: test_mousetext_character[\u23ce]
+  list([
+    <MouseTextCharacter.CARRIAGE_RETURN: 205>,
+  ])
+# ---
+# name: test_mousetext_character[\u23f3]
+  list([
+    <MouseTextCharacter.HOURGLASS: 195>,
+  ])
+# ---
+# name: test_mousetext_character[\u2581]
+  list([
+    <MouseTextCharacter.LOWER_ONE_EIGHT_BLOCK: 220>,
+  ])
+# ---
+# name: test_mousetext_character[\u2588]
+  list([
+    <MouseTextCharacter.FULL_BLOCK: 206>,
+  ])
+# ---
+# name: test_mousetext_character[\u258f]
+  list([
+    <MouseTextCharacter.LEFT_ONE_EIGHT_BLOCK: 223>,
+  ])
+# ---
+# name: test_mousetext_character[\u2592]
+  list([
+    <MouseTextCharacter.MEDIUM_SHADE: 214>,
+  ])
+# ---
+# name: test_mousetext_character[\u2593]
+  list([
+    <MouseTextCharacter.DARK_SHADE: 215>,
+  ])
+# ---
+# name: test_mousetext_character[\u2594]
+  list([
+    <MouseTextCharacter.UPPER_ONE_EIGHT_BLOCK: 211>,
+  ])
+# ---
+# name: test_mousetext_character[\u2595]
+  list([
+    <MouseTextCharacter.RIGHT_ONE_EIGHT_BLOCK: 218>,
+  ])
+# ---
+# name: test_mousetext_character[\u2599]
+  list([
+    <MouseTextCharacter.LEFT_AND_LOWER_ONE_EIGHT_BLOCK: 212>,
+  ])
+# ---
+# name: test_mousetext_character[\u25c6]
+  list([
+    <MouseTextCharacter.BLACK_DIAMOND: 219>,
+  ])
+# ---
+# name: test_mousetext_character[\u2611\ufe0f]
+  list([
+    <MouseTextCharacter.INVERSE_CHECK_MARK: 197>,
+  ])
+# ---
+# name: test_mousetext_character[\u2705]
+  list([
+    <MouseTextCharacter.CHECK_MARK: 196>,
+  ])
+# ---
+# name: test_mousetext_character[\u2714\ufe0f]
+  list([
+    <MouseTextCharacter.CHECK_MARK: 196>,
+  ])
+# ---
+# name: test_mousetext_character[\u2719]
+  list([
+    <MouseTextCharacter.VOIDED_GREEK_CROSS: 221>,
+  ])
+# ---
+# name: test_mousetext_character[\u27a1\ufe0f]
+  list([
+    <MouseTextCharacter.RIGHTWARDS_ARROW: 213>,
+  ])
+# ---
+# name: test_mousetext_character[\u2b05\ufe0f]
+  list([
+    <MouseTextCharacter.LEFTWARDS_ARROW: 200>,
+  ])
+# ---
+# name: test_mousetext_character[\u2b06\ufe0f]
+  list([
+    <MouseTextCharacter.UPWARDS_ARROW: 203>,
+  ])
+# ---
+# name: test_mousetext_character[\u2b07\ufe0f]
+  list([
+    <MouseTextCharacter.DOWNWARDS_ARROW: 202>,
+  ])
+# ---
