@@ -39,16 +39,7 @@ from imagewriter.encoding.base import (
 from imagewriter.encoding.boundaries import SetLeftMargin, SetPageLength
 from imagewriter.encoding.cancel import CANCEL_CURRENT_LINE
 from imagewriter.encoding.character import (
-    BOTTOM_WIRES,
     CharacterEncoder,
-    DISABLE_MODE,
-    DisableMode,
-    ENABLE_MOUSE_TEXT_MAPPING_MODE,
-    EnableCustomCharacterMode,
-    EnableMouseTextMappingMode,
-    LoadCustomCharacters,
-    SetMaxCustomCharacterWidth,
-    TOP_WIRES,
 )
 from imagewriter.encoding.color import SetColor
 from imagewriter.encoding.graphics import (
@@ -147,16 +138,7 @@ __all__: List[str] = [
     "SetLeftMargin",
     "SetPageLength",
     "CANCEL_CURRENT_LINE",
-    "SetMaxCustomCharacterWidth",
-    "LoadCustomCharacters",
-    "DisableMode",
-    "DISABLE_MODE",
-    "EnableCustomCharacterMode",
-    "EnableMouseTextMappingMode",
-    "ENABLE_MOUSE_TEXT_MAPPING_MODE",
     "CharacterEncoder",
-    "TOP_WIRES",
-    "BOTTOM_WIRES",
     "SetColor",
     "PrintGraphicsData",
     "SET_GRAPHICS_DISTANCE_BETWEEN_LINES",

@@ -1,12 +1,13 @@
-from typing import Dict, Literal, Self, Sequence
+from typing import Any, Literal, Self, Sequence
 
 from imagewriter.base.character import CustomCharacterData
-from imagewriter.encoding.base import Bytes, ctrl, esc, Esc
+from imagewriter.encoding.base import Bytes, Command, ctrl, esc, Esc
+from imagewriter.encoding.character.base import DISABLE_MODE, Mode
 
 TOP_WIRES = True
 BOTTOM_WIRES = False
 
-TOP_WIRE_CHARACTER_WIDTHS: Dict[int, bytes] = {
+TOP_WIRE_CHARACTER_WIDTHS: dict[int, bytes] = {
     1: b"A",
     2: b"B",
     3: b"C",
@@ -25,7 +26,7 @@ TOP_WIRE_CHARACTER_WIDTHS: Dict[int, bytes] = {
     16: b"P",
 }
 
-BOTTOM_WIRE_CHARACTER_WIDTHS: Dict[int, bytes] = {
+BOTTOM_WIRE_CHARACTER_WIDTHS: dict[int, bytes] = {
     1: b"a",
     2: b"b",
     3: b"c",
@@ -100,3 +101,37 @@ class LoadCustomCharacters(Bytes):
 
     def __repr__(self: Self) -> str:
         return f"LoadCustomCharacters({self.character_data})"
+
+
+# TODO: Custom characters don't map to high ascii, they're ALLOWED to be stored in the
+# high ASCII range
+class EnableCustomCharacterMode(Esc):
+    """
+    Enable a custom character mode.
+
+    TODO: Document, page 99.
+    """
+
+    def __init__(self: Self, map: bool) -> None:
+        self._map = map
+        super().__init__("*" if map else "'")
+
+    def __repr__(self: Self) -> str:
+        return f"EnableCustomCharacterMode(map={self._map})"
+
+
+class CustomCharacterMode(Mode):
+    def __init__(self: Self, map: bool = True) -> None:
+        self.map: bool = map
+
+    def enable(self: Self) -> list[Command]:
+        return [EnableCustomCharacterMode(self.map)]
+
+    def disable(self: Self) -> list[Command]:
+        return [DISABLE_MODE]
+
+    def __eq__(self: Self, other: Any) -> bool:
+        return isinstance(other, CustomCharacterMode) and self.map == other.map
+
+        # TODO: It looks like I thought character mode mapping was equivalent here?
+        # return isinstance(other, MouseTextMode) and self.map == other.map

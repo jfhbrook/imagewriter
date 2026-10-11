@@ -81,7 +81,7 @@ class MouseTextCharacter(Enum):
 
 class CustomCharacter:
     """
-    A custom character.
+    A custom character, as specified by an ASCII code point.
     """
 
     def __init__(self: Self, point: str | bytes | int) -> None:
