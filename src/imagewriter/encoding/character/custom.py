@@ -155,7 +155,9 @@ class EnableCustomCharacterMode(Esc):
     and high ASCII (decimal values 160-239) are used. This mode is able to access the
     whole range of custom characters, but requires access to the 8th data bit.
 
-    In high ASCII mode, low ASCII code points are mapped to high ASCII by adding 128 (0x80) to the sent code point. This allows for use of high ASCII characters without using the 8th data bit.
+    In high ASCII mode, low ASCII code points are mapped to high ASCII by adding
+    128 (0x80) to the sent code point. This allows for use of high ASCII characters
+    without using the 8th data bit.
 
     For more information on these modes, see page 99 of the ImageWriter II Technical
     Reference Manual.

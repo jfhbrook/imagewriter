@@ -1,4 +1,16 @@
 # serializer version: 1
+# name: test_custom_character[:custom_160:]
+  CustomCharacter(160)
+# ---
+# name: test_custom_character[:custom_32:]
+  CustomCharacter(32)
+# ---
+# name: test_custom_character[:custom_\\.test_custom_character[:custom_\\::]
+  CustomCharacter(58)
+# ---
+# name: test_custom_character[:custom_a:]
+  CustomCharacter(97)
+# ---
 # name: test_language_character[\xa3]
   tuple(
     <Language.BRITISH: 'British'>,
