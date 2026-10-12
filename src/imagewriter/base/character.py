@@ -6,32 +6,103 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Self
 
+CodePoint = str | bytes | int
+
+
+def is_low_ascii(point: int) -> bool:
+    """
+    Whether or not a code point is valid low ASCII.
+    """
+
+    return 32 <= point <= 126
+
+
+def is_high_ascii(point: int) -> bool:
+    """
+    Whether or not a code point is valid high ASCII.
+    """
+
+    return 160 <= point <= 239
+
+
+def assert_low_ascii(point: int) -> None:
+    """
+    Assert that a code point is low ASCII.
+    """
+
+    assert is_low_ascii(point), "Code point is not valid low ASCII"
+
+
+def assert_high_ascii(point: int) -> None:
+    """
+    Assert that a code point is high ASCII.
+    """
+
+    assert is_high_ascii(point), "Code point is not valid high ASCII"
+
 
 def map_to_low_ascii(point: int) -> int:
     """
-    Map a code point (either MouseText or a custom character) to low ASCII, as
-    per page 40 (MouseText) and page 45 (custom characters) of the ImageWriter
-    II Technical Reference Manual.
+    Map a code point (either MouseText or a custom character) to low ASCII. This is
+    necessary if the eighth data bit is ignored.
 
-    This is necessary if the eighth data bit is ignored.
+    For more information, see pages 40 and 45 - for MouseText and custom characters
+    respectively - of the ImageWriter II Technical Reference Manual.
     """
 
-    assert 160 <= point <= 239, "Code point is not valid upper ASCII"
+    assert_high_ascii(point)
     return point - 128
 
 
 def map_to_high_ascii(point: int) -> int:
     """
-    Map a code point to high ascii.
+    Map a code point to high ASCII. This is necessary in character modes which map low
+    ASCII to high ASCII. These modes allow for accessing high ASCII without the 8th
+    data bit.
+
+    For more information, see pages 40 and 45 - for MouseText and custom characters
+    respectively - of the ImageWriter II Technical Reference Manual.
     """
 
-    assert point < 160, "Code point is already upper ASCII"
+    assert_low_ascii(point)
     return point + 128
+
+
+def is_single_byte(point: bytes) -> bool:
+    """
+    Check that a code point is a single byte.
+    """
+
+    return len(point) == 1
+
+
+def from_code_point(point: CodePoint) -> int:
+    """
+    Convert a code point to an integer value.
+    """
+
+    buffer: bytes = b""
+    result: int = -1
+
+    if isinstance(point, str):
+        buffer = point.encode(encoding="ascii")
+    elif isinstance(point, bytes):
+        buffer = point
+    else:
+        result = point
+
+    if buffer:
+        assert is_single_byte(buffer)
+        result = buffer[0]
+
+    assert is_low_ascii(result) or is_high_ascii(result)
+
+    return result
 
 
 class MouseTextCharacter(Enum):
     """
-    MouseText characters.
+    A MouseText character.
 
     Many of these characters are included in the Symbols for Legacy Computing
     Unicode block:
@@ -84,21 +155,8 @@ class CustomCharacter:
     A custom character, as specified by an ASCII code point.
     """
 
-    def __init__(self: Self, point: str | bytes | int) -> None:
-        if isinstance(point, str):
-            buffer: bytes = b""
-            buffer = point.encode(encoding="ascii")
-            assert len(buffer) == 1, f"Invalid character {point}"
-            self.point = buffer[0]
-        elif isinstance(point, bytes):
-            self.point = point[0]
-        else:
-            self.point = point
-
-        if self.point < 160:
-            self.point = map_to_high_ascii(self.point)
-
-        assert 160 <= self.point <= 239, "Point must be valid ASCII"
+    def __init__(self: Self, point: CodePoint) -> None:
+        self.point: int = from_code_point(point)
 
     def __repr__(self: Self) -> str:
         return f"CustomCharacter({self.point})"
@@ -124,3 +182,19 @@ class CustomCharacterData:
 
 Character = str | MouseTextCharacter | CustomCharacter
 Text = Character | list[Character]
+
+__all__: list[str] = [
+    "CodePoint",
+    "Character",
+    "Text",
+    "is_low_ascii",
+    "is_high_ascii",
+    "assert_low_ascii",
+    "assert_high_ascii",
+    "map_to_low_ascii",
+    "map_to_high_ascii",
+    "from_code_point",
+    "MouseTextCharacter",
+    "CustomCharacter",
+    "CustomCharacterData",
+]
