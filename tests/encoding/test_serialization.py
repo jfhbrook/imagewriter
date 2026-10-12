@@ -80,7 +80,7 @@ from imagewriter.encoding.character.custom import (
     LoadCustomCharacters,
     SetMaxCustomCharacterWidth,
 )
-from imagewriter.encoding.character.mousetext import ENABLE_MOUSE_TEXT_MAPPING_MODE
+from imagewriter.encoding.character.mousetext import ENABLE_MOUSETEXT_MAPPING_MODE
 
 COMMANDS: List[Command] = [
     BACKSPACE,
@@ -93,7 +93,7 @@ COMMANDS: List[Command] = [
     Ctrl("Q"),
     DESELECT,
     DISABLE_MODE,
-    ENABLE_MOUSE_TEXT_MAPPING_MODE,
+    ENABLE_MOUSETEXT_MAPPING_MODE,
     EnableCustomCharacterMode(True),
     EnableCustomCharacterMode(False),
     Esc("x"),

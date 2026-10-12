@@ -61,10 +61,10 @@ class CharacterEncoder:
 
     def _next_mode(self: Self, character: Character) -> Mode:
         if isinstance(character, MouseTextCharacter):
-            return MouseTextMode(map=self.map_mousetext)
+            return MouseTextMode(map_ascii=self.map_mousetext)
 
         if isinstance(character, CustomCharacter):
-            return CustomCharacterMode(map=self.map_custom)
+            return CustomCharacterMode(high_ascii=self.map_custom)
 
         supported: list[LanguageMode] = LANGUAGE_MODES.get(
             character, [self.language_mode]

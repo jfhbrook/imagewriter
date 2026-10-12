@@ -243,10 +243,10 @@
   'EnableMouseTextMappingMode()'
 # ---
 # name: test_repr_command[command11]
-  'EnableCustomCharacterMode(map=True)'
+  'EnableCustomCharacterMode(high_ascii=True)'
 # ---
 # name: test_repr_command[command12]
-  'EnableCustomCharacterMode(map=False)'
+  'EnableCustomCharacterMode(high_ascii=False)'
 # ---
 # name: test_repr_command[command13]
   'Esc(x)'

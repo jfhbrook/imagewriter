@@ -79,6 +79,8 @@ class EnableMouseTextMappingMode(Esc):
     """
     Enable MouseText mapping mode. In this mode, low ascii is mapped to the high ascii
     points that typically encode MouseText.
+
+    For more information, see page 41 of the ImageWriter II Technical Reference Manual.
     """
 
     def __init__(self: Self) -> None:
@@ -88,22 +90,33 @@ class EnableMouseTextMappingMode(Esc):
         return "EnableMouseTextMappingMode()"
 
 
-ENABLE_MOUSE_TEXT_MAPPING_MODE = EnableMouseTextMappingMode()
+ENABLE_MOUSETEXT_MAPPING_MODE = EnableMouseTextMappingMode()
 
 
 class MouseTextMode(Mode):
     """
-    A MouseText mode. Supports mapping to high ASCII, otherwise a no-op.
+    A MouseText mode.
+
+    MouseText is available in the standard mode as high ASCII. However, MouseText also
+    supports a mode that maps low ASCII to high ASCII by adding 128 (0x80) to the code
+    point.
+
+    For more information, see page 41 of the ImageWriter II Technical Reference Manual.
     """
 
-    def __init__(self, map: bool = True) -> None:
-        self.map: bool = map
+    def __init__(self, map_ascii: bool = False) -> None:
+        self.map_ascii: bool = map_ascii
 
     def enable(self: Self) -> list[Command]:
-        return [ENABLE_MOUSE_TEXT_MAPPING_MODE] if self.map else list()
+        if self.map_ascii:
+            return [ENABLE_MOUSETEXT_MAPPING_MODE]
+
+        return []
 
     def disable(self: Self) -> list[Command]:
-        return [DISABLE_MODE] if self.map else list()
+        if self.map_ascii:
+            return [DISABLE_MODE]
+        return []
 
     def __eq__(self: Self, other: Any) -> bool:
-        return isinstance(other, MouseTextMode) and self.map == other.map
+        return isinstance(other, MouseTextMode) and self.map_ascii == other.map_ascii

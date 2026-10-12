@@ -103,35 +103,50 @@ class LoadCustomCharacters(Bytes):
         return f"LoadCustomCharacters({self.character_data})"
 
 
-# TODO: Custom characters don't map to high ascii, they're ALLOWED to be stored in the
-# high ASCII range
+STANDARD_MODE = "'"
+HIGH_ASCII_MODE = "*"
+
+
 class EnableCustomCharacterMode(Esc):
     """
     Enable a custom character mode.
 
-    TODO: Document, page 99.
+    Custom characters support two modes: standard and high ASCII mode.
+
+    In standard mode, characters assigned to both low ASCII (decimal values 32-126)
+    and high ASCII (decimal values 160-239) are used. This mode is able to access the
+    whole range of custom characters, but requires access to the 8th data bit.
+
+    In high ASCII mode, low ASCII code points are mapped to high ASCII by adding 128 (0x80) to the sent code point. This allows for use of high ASCII characters without using the 8th data bit.
+
+    For more information on these modes, see page 99 of the ImageWriter II Technical
+    Reference Manual.
     """
 
-    def __init__(self: Self, map: bool) -> None:
-        self._map = map
-        super().__init__("*" if map else "'")
+    def __init__(self: Self, high_ascii: bool = False) -> None:
+        self.high_ascii: bool = high_ascii
+        super().__init__(HIGH_ASCII_MODE if high_ascii else STANDARD_MODE)
 
     def __repr__(self: Self) -> str:
-        return f"EnableCustomCharacterMode(map={self._map})"
+        return f"EnableCustomCharacterMode(high_ascii={self.high_ascii})"
 
 
 class CustomCharacterMode(Mode):
-    def __init__(self: Self, map: bool = True) -> None:
-        self.map: bool = map
+    """
+    A custom character mode.
+    """
+
+    def __init__(self: Self, high_ascii: bool = False) -> None:
+        self.high_ascii: bool = high_ascii
 
     def enable(self: Self) -> list[Command]:
-        return [EnableCustomCharacterMode(self.map)]
+        return [EnableCustomCharacterMode(self.high_ascii)]
 
     def disable(self: Self) -> list[Command]:
         return [DISABLE_MODE]
 
     def __eq__(self: Self, other: Any) -> bool:
-        return isinstance(other, CustomCharacterMode) and self.map == other.map
-
-        # TODO: It looks like I thought character mode mapping was equivalent here?
-        # return isinstance(other, MouseTextMode) and self.map == other.map
+        return (
+            isinstance(other, CustomCharacterMode)
+            and self.high_ascii == other.high_ascii
+        )

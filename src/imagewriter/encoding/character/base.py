@@ -38,7 +38,9 @@ class DisableMode(Esc):
     """
     Disable the current character mode, switching back to the standard character set.
 
-    TODO: This is documented in multiple places...
+    This command is used with both MouseText high ASCII mode and custom characters
+    modes - see pages 41 and 98 of the ImageWriter II Technical Reference Manual,
+    respectively.
     """
 
     def __init__(self: Self) -> None:
