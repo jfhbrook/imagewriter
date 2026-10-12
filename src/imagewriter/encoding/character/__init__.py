@@ -1,5 +1,4 @@
-from abc import ABC, abstractmethod
-from typing import Any, Dict, Generator, List, Self
+from typing import Generator, Self
 
 from imagewriter.base.character import (
     Character,
@@ -9,141 +8,21 @@ from imagewriter.base.character import (
     Text,
 )
 from imagewriter.base.language import Language
-from imagewriter.encoding.base import Command, Esc, Print
-from imagewriter.encoding.character.custom import (
-    BOTTOM_WIRES,
-    LoadCustomCharacters,
-    SetMaxCustomCharacterWidth,
-    TOP_WIRES,
-)
-from imagewriter.encoding.language import set_language
+from imagewriter.encoding.base import Command, Print
+from imagewriter.encoding.character.base import Mode
+from imagewriter.encoding.character.custom import CustomCharacterMode
+from imagewriter.encoding.character.language import LANGUAGE_MODES, LanguageMode
+from imagewriter.encoding.character.mousetext import MOUSETEXT_LOOKUP, MouseTextMode
 from imagewriter.encoding.motion import CR, LF, TAB
 
-# TODO: Print a test page of alternate language characters, figure out what
-# the alternate characters are, and complete this table.
-
-LANGUAGE_ENCODINGS: Dict[Language, Dict[str, str]] = {
-    Language.AMERICAN: dict(),
-    Language.BRITISH: {"£": "#"},
-    Language.GERMAN: dict(),
-    Language.FRENCH: dict(),
-    Language.SWEDISH: dict(),
-    Language.ITALIAN: dict(),
-    Language.SPANISH: dict(),
-    Language.DANISH: dict(),
-}
-
-LANGUAGE_CHARACTERS: Dict[str, List[Language]] = {"£": [Language.BRITISH]}
-
-MOUSETEXT_CHARACTERS: Dict[str, MouseTextCharacter] = {
-    "⌛︎": MouseTextCharacter.HOURGLASS,
-    "←": MouseTextCharacter.LEFTWARDS_ARROW,
-    "…": MouseTextCharacter.ELLIPSIS,
-    "↓": MouseTextCharacter.DOWNWARDS_ARROW,
-    "↑": MouseTextCharacter.UPWARDS_ARROW,
-    "↵": MouseTextCharacter.CARRIAGE_RETURN,
-    "▉": MouseTextCharacter.FULL_BLOCK,
-    "→": MouseTextCharacter.RIGHTWARDS_ARROW,
-    "▕": MouseTextCharacter.RIGHT_ONE_EIGHTH_BLOCK,
-    "◆": MouseTextCharacter.BLACK_DIAMOND,
-    "▏": MouseTextCharacter.LEFT_ONE_EIGHTH_BLOCK,
+# TODO: Deprecate and remove
+MOUSETEXT_CHARACTERS: dict[str, MouseTextCharacter] = {
+    name: char[0] for name, char in MOUSETEXT_LOOKUP.items()
 }
 
 
-class DisableMode(Esc):
-    def __init__(self: Self) -> None:
-        super().__init__("$")
-
-    def __repr__(self: Self) -> str:
-        return "DisableMode()"
-
-
-DISABLE_MODE = DisableMode()
-
-
-class EnableMouseTextMappingMode(Esc):
-    def __init__(self: Self) -> None:
-        super().__init__("&")
-
-    def __repr__(self: Self) -> str:
-        return "EnableMouseTextMappingMode()"
-
-
-ENABLE_MOUSE_TEXT_MAPPING_MODE = EnableMouseTextMappingMode()
-
-
-class EnableCustomCharacterMode(Esc):
-    def __init__(self: Self, map: bool) -> None:
-        self._map = map
-        super().__init__("*" if map else "'")
-
-    def __repr__(self: Self) -> str:
-        return f"EnableCustomCharacterMode(map={self._map})"
-
-
-class Mode(ABC):
-    @abstractmethod
-    def enable(self: Self) -> List[Command]:
-        pass
-
-    @abstractmethod
-    def disable(self: Self) -> List[Command]:
-        pass
-
-    @abstractmethod
-    def __eq__(self: Self, other: Any) -> bool:
-        pass
-
-
-class LanguageMode(Mode):
-    def __init__(self: Self, language: Language) -> None:
-        self.language: Language = language
-
-    def enable(self: Self) -> List[Command]:
-        return set_language(self.language)
-
-    def disable(self: Self) -> List[Command]:
-        # Language modes can not be disabled
-        return []
-
-    def __eq__(self: Self, other: Any) -> bool:
-        return isinstance(other, LanguageMode) and self.language == other.language
-
-
-LANGUAGE_MODES: Dict[str, List[LanguageMode]] = {
-    ch: [LanguageMode(lang) for lang in langs]
-    for ch, langs in LANGUAGE_CHARACTERS.items()
-}
-
-
-class MouseTextMode(Mode):
-    def __init__(self, map: bool = True) -> None:
-        self.map: bool = map
-
-    def enable(self: Self) -> List[Command]:
-        return [ENABLE_MOUSE_TEXT_MAPPING_MODE] if self.map else list()
-
-    def disable(self: Self) -> List[Command]:
-        return [DISABLE_MODE] if self.map else list()
-
-    def __eq__(self: Self, other: Any) -> bool:
-        return isinstance(other, MouseTextMode) and self.map == other.map
-
-
-class CustomCharacterMode(Mode):
-    def __init__(self: Self, map: bool = True) -> None:
-        self.map: bool = map
-
-    def enable(self: Self) -> List[Command]:
-        return [EnableCustomCharacterMode(self.map)]
-
-    def disable(self: Self) -> List[Command]:
-        return [DISABLE_MODE]
-
-    def __eq__(self: Self, other: Any) -> bool:
-        return isinstance(other, MouseTextMode) and self.map == other.map
-
-
+# Recall that Text is either a string or a list of various Character classes
+# (including strings).
 def extract_characters(*text: Text) -> Generator[Character, None, None]:
     for tx in text:
         if isinstance(tx, str):
@@ -182,12 +61,12 @@ class CharacterEncoder:
 
     def _next_mode(self: Self, character: Character) -> Mode:
         if isinstance(character, MouseTextCharacter):
-            return MouseTextMode(map=self.map_mousetext)
+            return MouseTextMode(map_ascii=self.map_mousetext)
 
         if isinstance(character, CustomCharacter):
-            return CustomCharacterMode(map=self.map_custom)
+            return CustomCharacterMode(high_ascii=self.map_custom)
 
-        supported: List[LanguageMode] = LANGUAGE_MODES.get(
+        supported: list[LanguageMode] = LANGUAGE_MODES.get(
             character, [self.language_mode]
         )
 
@@ -196,12 +75,12 @@ class CharacterEncoder:
         else:
             return supported[0]
 
-    def _set_mode(self: Self, mode: Mode) -> List[Command]:
+    def _set_mode(self: Self, mode: Mode) -> list[Command]:
         if mode == self.mode:
             return []
 
         # Disable the current mode and enable the new mode
-        encoded: List[Command] = self.mode.disable() + mode.enable()
+        encoded: list[Command] = self.mode.disable() + mode.enable()
 
         # Save the newest language mode
         if isinstance(mode, LanguageMode):
@@ -211,7 +90,7 @@ class CharacterEncoder:
 
         return encoded
 
-    def _from_buffer(self: Self, buffer: bytes) -> List[Command]:
+    def _from_buffer(self: Self, buffer: bytes) -> list[Command]:
         def _to_command(byte: int) -> Command:
             data = byte.to_bytes(byteorder="big")
             if data == b"\r":
@@ -224,8 +103,8 @@ class CharacterEncoder:
 
         return [_to_command(byte) for byte in buffer]
 
-    def encode(self: Self, *text: Text) -> List[Command]:
-        encoded: List[Command] = list()
+    def encode(self: Self, *text: Text) -> list[Command]:
+        encoded: list[Command] = list()
         mode: Mode = self.language_mode
         buffer: bytes = b""
 
@@ -265,17 +144,3 @@ class CharacterEncoder:
             encoded += self.default_mode.enable()
 
         return encoded
-
-
-__all__: List[str] = [
-    "SetMaxCustomCharacterWidth",
-    "LoadCustomCharacters",
-    "DisableMode",
-    "DISABLE_MODE",
-    "EnableMouseTextMappingMode",
-    "ENABLE_MOUSE_TEXT_MAPPING_MODE",
-    "EnableCustomCharacterMode",
-    "CharacterEncoder",
-    "TOP_WIRES",
-    "BOTTOM_WIRES",
-]

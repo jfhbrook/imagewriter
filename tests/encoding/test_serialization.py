@@ -21,9 +21,6 @@ from imagewriter.encoding import (
     CR,
     Ctrl,
     DESELECT,
-    DISABLE_MODE,
-    ENABLE_MOUSE_TEXT_MAPPING_MODE,
-    EnableCustomCharacterMode,
     Esc,
     FF,
     InsertSpaces,
@@ -31,7 +28,6 @@ from imagewriter.encoding import (
     LINE_FEED_FORWARD,
     LINE_FEED_REVERSE,
     LineFeed,
-    LoadCustomCharacters,
     OpenSoftwareSwitches,
     Print,
     PRINT_SLASHED_ZERO,
@@ -50,7 +46,6 @@ from imagewriter.encoding import (
     SetLFWhenLineFull,
     SetLinesPerInch,
     SetManyTabs,
-    SetMaxCustomCharacterWidth,
     SetOneTab,
     SetPageLength,
     SetPaperOutSensor,
@@ -78,6 +73,15 @@ from imagewriter.encoding import (
     TAB,
 )
 
+# TODO: Expose these in imagewriter.encoding again
+from imagewriter.encoding.character.base import DISABLE_MODE
+from imagewriter.encoding.character.custom import (
+    EnableCustomCharacterMode,
+    LoadCustomCharacters,
+    SetMaxCustomCharacterWidth,
+)
+from imagewriter.encoding.character.mousetext import ENABLE_MOUSETEXT_MAPPING_MODE
+
 COMMANDS: List[Command] = [
     BACKSPACE,
     Bytes(b"hello"),
@@ -89,7 +93,7 @@ COMMANDS: List[Command] = [
     Ctrl("Q"),
     DESELECT,
     DISABLE_MODE,
-    ENABLE_MOUSE_TEXT_MAPPING_MODE,
+    ENABLE_MOUSETEXT_MAPPING_MODE,
     EnableCustomCharacterMode(True),
     EnableCustomCharacterMode(False),
     Esc("x"),

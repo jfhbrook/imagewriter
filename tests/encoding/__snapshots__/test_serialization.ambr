@@ -36,7 +36,7 @@
   b'hello'
 # ---
 # name: test_bytes_command[command20]
-  b'\x1bI\xe1D1234\x04'
+  b'\x1bIaD1234\x04'
 # ---
 # name: test_bytes_command[command21]
   b'\x1bZ\xc0\x00'
@@ -243,10 +243,10 @@
   'EnableMouseTextMappingMode()'
 # ---
 # name: test_repr_command[command11]
-  'EnableCustomCharacterMode(map=True)'
+  'EnableCustomCharacterMode(high_ascii=True)'
 # ---
 # name: test_repr_command[command12]
-  'EnableCustomCharacterMode(map=False)'
+  'EnableCustomCharacterMode(high_ascii=False)'
 # ---
 # name: test_repr_command[command13]
   'Esc(x)'
@@ -273,7 +273,7 @@
   "Bytes(b'hello')"
 # ---
 # name: test_repr_command[command20]
-  "LoadCustomCharacters([CustomCharacterData(character=CustomCharacter(225), data=b'1234', top_wires=True)])"
+  "LoadCustomCharacters([CustomCharacterData(character=CustomCharacter(97), data=b'1234', wires=<Wires.TOP: 'top'>)])"
 # ---
 # name: test_repr_command[command21]
   'OpenSoftwareSwitches([0b11000000, 0b00000000])'
