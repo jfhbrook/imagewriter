@@ -1,7 +1,5 @@
 from typing import Any, Self
 
-from parsy import alt, Parser, string  # type: ignore
-
 from imagewriter.base.language import Language
 from imagewriter.encoding.base import Command
 from imagewriter.encoding.character.base import Mode
@@ -23,22 +21,27 @@ LANGUAGE_ENCODINGS: dict[Language, dict[str, str]] = {
     Language.DANISH: dict(),
 }
 
+# Multiple languages can support the same character. In practice, we just choose one.
 LANGUAGE_CHARACTERS: dict[str, list[Language]] = {"£": [Language.BRITISH]}
 
 
-def map_character(character: str) -> LanguageEncoding:
+def language_encoding(character: str) -> LanguageEncoding:
+    """
+    Get the language and the encoding for a language-supported character.
+    """
+
     language = LANGUAGE_CHARACTERS[character][0]
     encoded: str = LANGUAGE_ENCODINGS[language][character]
 
     return language, encoded
 
 
-language_character: Parser = alt(
-    *[string(char) for char in LANGUAGE_CHARACTERS.keys()]
-).map(map_character)
-
-
 class LanguageMode(Mode):
+    """
+    A language mode.
+    """
+
+    # TODO: Set default language?
     def __init__(self: Self, language: Language) -> None:
         self.language: Language = language
 

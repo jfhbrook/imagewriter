@@ -1,7 +1,5 @@
 from typing import Any, Self
 
-from parsy import alt, Parser, string  # type: ignore
-
 from imagewriter.base.character import MouseTextCharacter
 from imagewriter.encoding.base import Command, Esc
 from imagewriter.encoding.character.base import DISABLE_MODE, Mode
@@ -68,10 +66,13 @@ for block in [
         for name in codes:
             MOUSETEXT_LOOKUP[name] = [char]
 
-# A parser for mousetext characters
-mousetext_character: Parser = alt(
-    *[string(name) for name in MOUSETEXT_LOOKUP.keys()]
-).map(lambda name: MOUSETEXT_LOOKUP[name])
+
+def mousetext_lookup(name: str) -> list[MouseTextCharacter]:
+    """
+    Look up a MouseText character.
+    """
+
+    return MOUSETEXT_LOOKUP[name]
 
 
 class EnableMouseTextMappingMode(Esc):
@@ -91,6 +92,10 @@ ENABLE_MOUSE_TEXT_MAPPING_MODE = EnableMouseTextMappingMode()
 
 
 class MouseTextMode(Mode):
+    """
+    A MouseText mode. Supports mapping to high ASCII, otherwise a no-op.
+    """
+
     def __init__(self, map: bool = True) -> None:
         self.map: bool = map
 

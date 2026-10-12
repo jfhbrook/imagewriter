@@ -3,12 +3,14 @@ import pytest
 from imagewriter.base.character import MouseTextCharacter
 from imagewriter.base.language import Language
 from imagewriter.encoding.character.language import (
-    language_character,
     LANGUAGE_CHARACTERS,
 )
 from imagewriter.encoding.character.mousetext import (
-    mousetext_character,
     MOUSETEXT_LOOKUP,
+)
+from imagewriter.encoding.character.parser import (
+    language_character,
+    mousetext_character,
 )
 
 

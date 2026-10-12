@@ -11,14 +11,26 @@ class Mode(ABC):
 
     @abstractmethod
     def enable(self: Self) -> list[Command]:
+        """
+        Enable the mode. Once enabled, the printer is in this mode.
+        """
+
         pass
 
     @abstractmethod
     def disable(self: Self) -> list[Command]:
+        """
+        Disable the mode. Once disabled, the printer is in its standard state.
+        """
+
         pass
 
     @abstractmethod
     def __eq__(self: Self, other: Any) -> bool:
+        """
+        Check if two modes are equivalent.
+        """
+
         pass
 
 
