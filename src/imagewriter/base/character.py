@@ -4,9 +4,10 @@ Classes and utilities for working with MouseText and custom characters.
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Self
+from typing import Literal, Self, TypeGuard
 
 CodePoint = str | bytes | int
+CharacterMaxWidth = Literal[8] | Literal[16]
 
 
 def is_low_ascii(point: int) -> bool:
@@ -150,6 +151,24 @@ class MouseTextCharacter(Enum):
     LEFT_ONE_EIGHT_BLOCK = 223
 
 
+class Wires(Enum):
+    """
+    The print head has 9 wires (the part of the print head that strikes the paper).
+    Only 8 of which can be used for a given custom character.
+
+    The "top wires" are wires 1-8, and the "bottom wires" are wires 2-9.
+
+    For more information, see page 93 of the ImageWriter II Technical Reference Manual.
+    """
+
+    TOP = "top"
+    BOTTOM = "bottom"
+
+
+def is_valid_max_width(width: int) -> TypeGuard[CharacterMaxWidth]:
+    return width == 8 or width == 16
+
+
 class CustomCharacter:
     """
     A custom character, as specified by an ASCII code point.
@@ -177,7 +196,7 @@ class CustomCharacterData:
 
     character: CustomCharacter
     data: bytes
-    top_wires: bool = True
+    wires: Wires = Wires.TOP
 
 
 Character = str | MouseTextCharacter | CustomCharacter
@@ -197,4 +216,6 @@ __all__: list[str] = [
     "MouseTextCharacter",
     "CustomCharacter",
     "CustomCharacterData",
+    "Wires",
+    "is_valid_max_width",
 ]
