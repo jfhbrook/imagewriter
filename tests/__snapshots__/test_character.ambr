@@ -1,54 +1,54 @@
 # serializer version: 1
-# name: test_code_point[1-assert_ascii-False]
+# name: test_code_point_assertions[1-assert_ascii-False]
   "Code point 1 ('\\x01') is not valid ASCII"
 # ---
-# name: test_code_point[1-assert_high_ascii-False]
+# name: test_code_point_assertions[1-assert_high_ascii-False]
   "Code point 1 ('\\x01') is not valid high ASCII"
 # ---
-# name: test_code_point[1-assert_low_ascii-False]
+# name: test_code_point_assertions[1-assert_low_ascii-False]
   "Code point 1 ('\\x01') is not valid low ASCII"
 # ---
-# name: test_code_point[126-assert_high_ascii-False]
+# name: test_code_point_assertions[126-assert_high_ascii-False]
   "Code point 126 ('~') is not valid high ASCII"
 # ---
-# name: test_code_point[150-assert_ascii-False]
+# name: test_code_point_assertions[150-assert_ascii-False]
   "Code point 150 ('\\x96') is not valid ASCII"
 # ---
-# name: test_code_point[150-assert_high_ascii-False]
+# name: test_code_point_assertions[150-assert_high_ascii-False]
   "Code point 150 ('\\x96') is not valid high ASCII"
 # ---
-# name: test_code_point[150-assert_low_ascii-False]
+# name: test_code_point_assertions[150-assert_low_ascii-False]
   "Code point 150 ('\\x96') is not valid low ASCII"
 # ---
-# name: test_code_point[160-assert_low_ascii-False]
+# name: test_code_point_assertions[160-assert_low_ascii-False]
   "Code point 160 ('\\xa0') is not valid low ASCII"
 # ---
-# name: test_code_point[239-assert_low_ascii-False]
+# name: test_code_point_assertions[239-assert_low_ascii-False]
   "Code point 239 ('ï') is not valid low ASCII"
 # ---
-# name: test_code_point[250-assert_ascii-False]
+# name: test_code_point_assertions[250-assert_ascii-False]
   "Code point 250 ('ú') is not valid ASCII"
 # ---
-# name: test_code_point[250-assert_high_ascii-False]
+# name: test_code_point_assertions[250-assert_high_ascii-False]
   "Code point 250 ('ú') is not valid high ASCII"
 # ---
-# name: test_code_point[250-assert_low_ascii-False]
+# name: test_code_point_assertions[250-assert_low_ascii-False]
   "Code point 250 ('ú') is not valid low ASCII"
 # ---
-# name: test_code_point[32-assert_high_ascii-False]
+# name: test_code_point_assertions[32-assert_high_ascii-False]
   "Code point 32 (' ') is not valid high ASCII"
 # ---
 # name: test_custom_character[:custom_160:]
-  CustomCharacter(160)
+  CustomCharacter(160 ('\xa0'))
 # ---
 # name: test_custom_character[:custom_32:]
-  CustomCharacter(32)
+  CustomCharacter(32 (' '))
 # ---
 # name: test_custom_character[:custom_\\.test_custom_character[:custom_\\::]
-  CustomCharacter(58)
+  CustomCharacter(58 (':'))
 # ---
 # name: test_custom_character[:custom_a:]
-  CustomCharacter(97)
+  CustomCharacter(97 ('a'))
 # ---
 # name: test_language_character[\xa3]
   LanguageCharacter(
@@ -360,4 +360,240 @@
 # ---
 # name: test_repr_code_point[97]
   "97 ('a')"
+# ---
+# name: test_text_parser[:custom_160:-True]
+  list([
+    CustomCharacter(160 ('\xa0')),
+  ])
+# ---
+# name: test_text_parser[:folder:-True]
+  list([
+    <MouseTextCharacter.LEFT_HALF_FOLDER: 216>,
+    <MouseTextCharacter.RIGHT_HALF_FOLDER: 217>,
+  ])
+# ---
+# name: test_text_parser[A quick brown fox jumped over the lazy dog :folder: \xa3-True]
+  list([
+    'A',
+    ' ',
+    'q',
+    'u',
+    'i',
+    'c',
+    'k',
+    ' ',
+    'b',
+    'r',
+    'o',
+    'w',
+    'n',
+    ' ',
+    'f',
+    'o',
+    'x',
+    ' ',
+    'j',
+    'u',
+    'm',
+    'p',
+    'e',
+    'd',
+    ' ',
+    'o',
+    'v',
+    'e',
+    'r',
+    ' ',
+    't',
+    'h',
+    'e',
+    ' ',
+    'l',
+    'a',
+    'z',
+    'y',
+    ' ',
+    'd',
+    'o',
+    'g',
+    ' ',
+    <MouseTextCharacter.LEFT_HALF_FOLDER: 216>,
+    <MouseTextCharacter.RIGHT_HALF_FOLDER: 217>,
+    ' ',
+    LanguageCharacter(
+      encoded='#',
+      language=<Language.BRITISH: 'British'>,
+    ),
+  ])
+# ---
+# name: test_text_parser[A quick brown fox jumped over the lazy dog-False]
+  list([
+    'A quick brown fox jumped over the lazy dog',
+  ])
+# ---
+# name: test_text_parser[A quick brown fox jumped over the lazy dog-True]
+  list([
+    'A',
+    ' ',
+    'q',
+    'u',
+    'i',
+    'c',
+    'k',
+    ' ',
+    'b',
+    'r',
+    'o',
+    'w',
+    'n',
+    ' ',
+    'f',
+    'o',
+    'x',
+    ' ',
+    'j',
+    'u',
+    'm',
+    'p',
+    'e',
+    'd',
+    ' ',
+    'o',
+    'v',
+    'e',
+    'r',
+    ' ',
+    't',
+    'h',
+    'e',
+    ' ',
+    'l',
+    'a',
+    'z',
+    'y',
+    ' ',
+    'd',
+    'o',
+    'g',
+  ])
+# ---
+# name: test_text_parser[\u2588-True]
+  list([
+    <MouseTextCharacter.FULL_BLOCK: 206>,
+  ])
+# ---
+# name: test_text_parser[\xa3-False]
+  list([
+    '£',
+  ])
+# ---
+# name: test_text_parser[\xa3-True]
+  list([
+    LanguageCharacter(
+      encoded='#',
+      language=<Language.BRITISH: 'British'>,
+    ),
+  ])
+# ---
+# name: test_text_parser[text8-True]
+  list([
+    'A',
+    ' ',
+    'q',
+    'u',
+    'i',
+    'c',
+    'k',
+    ' ',
+    'b',
+    'r',
+    'o',
+    'w',
+    'n',
+    ' ',
+    'f',
+    'o',
+    'x',
+    ' ',
+    'j',
+    'u',
+    'm',
+    'p',
+    'e',
+    'd',
+    ' ',
+    'o',
+    'v',
+    'e',
+    'r',
+    ' ',
+    't',
+    'h',
+    'e',
+    ' ',
+    'l',
+    'a',
+    'z',
+    'y',
+    ' ',
+    'd',
+    'o',
+    'g',
+    ' ',
+    <MouseTextCharacter.LEFT_HALF_FOLDER: 216>,
+    <MouseTextCharacter.RIGHT_HALF_FOLDER: 217>,
+    ' ',
+    LanguageCharacter(
+      encoded='#',
+      language=<Language.BRITISH: 'British'>,
+    ),
+    <MouseTextCharacter.DARK_APPLE: 192>,
+    LanguageCharacter(
+      encoded='#',
+      language=<Language.BRITISH: 'British'>,
+    ),
+    CustomCharacter(97 ('a')),
+    'A',
+    ' ',
+    'q',
+    'u',
+    'i',
+    'c',
+    'k',
+    ' ',
+    'b',
+    'r',
+    'o',
+    'w',
+    'n',
+    ' ',
+    'f',
+    'o',
+    'x',
+    ' ',
+    'j',
+    'u',
+    'm',
+    'p',
+    'e',
+    'd',
+    ' ',
+    'o',
+    'v',
+    'e',
+    'r',
+    ' ',
+    't',
+    'h',
+    'e',
+    ' ',
+    'l',
+    'a',
+    'z',
+    'y',
+    ' ',
+    'd',
+    'o',
+    'g',
+  ])
 # ---

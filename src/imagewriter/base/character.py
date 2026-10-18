@@ -247,7 +247,7 @@ class CustomCharacter:
         self.point: int = from_code_point(point)
 
     def __repr__(self: Self) -> str:
-        return f"CustomCharacter({self.point})"
+        return f"CustomCharacter({repr_code_point(self.point)})"
 
 
 @dataclass

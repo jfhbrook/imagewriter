@@ -12,6 +12,7 @@ from imagewriter.base.character import (
     MouseTextCharacter,
     repr_code_point,
 )
+from imagewriter.base.language import Language
 from imagewriter.encoding.character.language import (
     LANGUAGE_CHARACTERS,
 )
@@ -22,10 +23,14 @@ from imagewriter.encoding.character.parser import (
     custom_character,
     language_character,
     mousetext_character,
+    parse_text,
 )
+from imagewriter.test.page import TEST_PHRASE
 
 
-@pytest.mark.parametrize("point", [1, 97, 126, 150, 160, 239, 250])  # "a"
+@pytest.mark.parametrize(
+    "point", [1, "a".encode("ascii")[0], 126, 150, 160, 239, 250]
+)  # "a"
 def test_repr_code_point(point: int, snapshot) -> None:
     assert repr_code_point(point) == snapshot
 
@@ -56,7 +61,7 @@ def test_repr_code_point(point: int, snapshot) -> None:
         (250, assert_ascii, False),
     ],
 )
-def test_code_point(
+def test_code_point_assertions(
     point: int, assertion: Callable[[int], None], passes: bool, snapshot
 ) -> None:
 
@@ -72,7 +77,7 @@ def test_code_point(
 
 @pytest.mark.parametrize("character", MOUSETEXT_LOOKUP.keys())
 def test_mousetext_character(character: str, snapshot) -> None:
-    result = mousetext_character.parse(character)
+    result = mousetext_character(True).parse(character)
 
     assert isinstance(result, list)
     for character in result:
@@ -84,9 +89,11 @@ def test_mousetext_character(character: str, snapshot) -> None:
 def test_language_character(character: str, snapshot) -> None:
     result = language_character.parse(character)
 
-    assert isinstance(result, LanguageCharacter)
+    assert len(result) == 1
 
-    assert result == snapshot
+    assert isinstance(result[0], LanguageCharacter)
+
+    assert result[0] == snapshot
 
 
 @pytest.mark.parametrize(
@@ -95,6 +102,43 @@ def test_language_character(character: str, snapshot) -> None:
 def test_custom_character(character: str, snapshot) -> None:
     result = custom_character.parse(character)
 
-    assert isinstance(result, CustomCharacter)
+    assert len(result) == 1
 
-    assert result == snapshot
+    assert isinstance(result[0], CustomCharacter)
+
+    assert result[0] == snapshot
+
+
+@pytest.mark.parametrize(
+    "text,encode_emoji",
+    [
+        # MouseText
+        (":folder:", True),
+        # (":folder:", False),
+        ("█", True),
+        # Language
+        ("£", True),
+        ("£", False),
+        # Custom
+        (":custom_160:", True),
+        # Plain text
+        (TEST_PHRASE, True),
+        (TEST_PHRASE, False),
+        # Mixed
+        (f"{TEST_PHRASE} :folder: £", True),
+        # (f"{TEST_PHRASE} :folder: £", False),
+        # Structured
+        (
+            [
+                f"{TEST_PHRASE} :folder: £",
+                MouseTextCharacter.DARK_APPLE,
+                LanguageCharacter(language=Language.BRITISH, encoded="#"),
+                CustomCharacter("a"),
+                TEST_PHRASE,
+            ],
+            True,
+        ),
+    ],
+)
+def test_text_parser(text: str, encode_emoji: bool, snapshot) -> None:
+    assert parse_text(text, encode_emoji) == snapshot
