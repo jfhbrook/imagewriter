@@ -1,6 +1,14 @@
 from typing import Any, Generator
 
-from parsy import alt, any_char, generate, Parser, regex, string  # type: ignore
+from parsy import (  # type: ignore
+    alt,
+    any_char,
+    generate,
+    ParseError,
+    Parser,
+    regex,
+    string,
+)
 
 from imagewriter.base.character import (
     Character,
@@ -17,6 +25,13 @@ from imagewriter.encoding.character.mousetext import (
     mousetext_lookup,
     MOUSETEXT_LOOKUP,
 )
+
+
+class CharacterParseError(Exception):
+    """
+    An error when parsing characters.
+    """
+
 
 #
 # Language encoded character
@@ -81,7 +96,7 @@ def collect(parsed: list[list[Character]]) -> list[Character]:
 
 
 code_parser: Parser = (
-    alt(language_character, mousetext_character(True), custom_character, regex(r"[^:]"))
+    alt(language_character, mousetext_character(True), custom_character, any_char)
     .many()
     .map(collect)
 )
@@ -110,6 +125,9 @@ def parse_text(text: Text, emoji_codes: bool) -> list[Character]:
 
 def _parse_text(text: Character, emoji_codes: bool) -> list[Character]:
     if isinstance(text, str):
-        return _get_parser(emoji_codes).parse(text)
+        try:
+            return _get_parser(emoji_codes).parse(text)
+        except ParseError as exc:
+            raise CharacterParseError(f"Failed to parse {text!r}") from exc
 
     return [text]

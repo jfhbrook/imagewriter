@@ -816,6 +816,14 @@
     ':',
   ])
 # ---
+# name: test_text_parser[foo:-True]
+  list([
+    'f',
+    'o',
+    'o',
+    ':',
+  ])
+# ---
 # name: test_text_parser[text10-True]
   list([
     'A',

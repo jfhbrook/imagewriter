@@ -14,6 +14,7 @@ from imagewriter.encoding.character.base import Mode
 from imagewriter.encoding.character.custom import CustomCharacterMode
 from imagewriter.encoding.character.language import LANGUAGE_MODES, LanguageMode
 from imagewriter.encoding.character.mousetext import MOUSETEXT_LOOKUP, MouseTextMode
+from imagewriter.encoding.character.parser import parse_text
 from imagewriter.encoding.motion import CR, LF, TAB
 
 # TODO: Deprecate and remove
@@ -22,21 +23,12 @@ MOUSETEXT_CHARACTERS: dict[str, MouseTextCharacter] = {
 }
 
 
-# Recall that Text is either a string or a list of various Character classes
-# (including strings).
-def extract_characters(*text: Text) -> Generator[Character, None, None]:
+def extract_characters(
+    *text: Text, emoji_codes: bool
+) -> Generator[Character, None, None]:
     for tx in text:
-        if isinstance(tx, str):
-            for c in tx:
-                if c in MOUSETEXT_CHARACTERS:
-                    yield MOUSETEXT_CHARACTERS[c]
-                else:
-                    yield c
-        elif isinstance(tx, list):
-            for s in tx:
-                yield s
-        else:
-            yield tx
+        for ch in parse_text(tx, emoji_codes=emoji_codes):
+            yield ch
 
 
 class CharacterEncoder:
@@ -49,13 +41,15 @@ class CharacterEncoder:
         self: Self,
         language: Language = Language.AMERICAN,
         map_mousetext: bool = True,
-        map_custom: bool = True,
+        low_ascii: bool = True,
+        emoji_codes: bool = True,
     ) -> None:
         default_mode: LanguageMode = LanguageMode(language)
 
         self.default_mode: LanguageMode = default_mode
         self.map_mousetext: bool = map_mousetext
-        self.map_custom: bool = map_custom
+        self.low_ascii: bool = low_ascii
+        self.emoji_codes: bool = emoji_codes
 
         self.language_mode: LanguageMode = default_mode
         self.mode: Mode = default_mode
@@ -67,7 +61,7 @@ class CharacterEncoder:
             return MouseTextMode(map_ascii=self.map_mousetext)
 
         if isinstance(character, CustomCharacter):
-            return CustomCharacterMode(high_ascii=self.map_custom)
+            return CustomCharacterMode(high_ascii=self.low_ascii)
 
         supported: list[LanguageMode] = LANGUAGE_MODES.get(
             character, [self.language_mode]
@@ -111,7 +105,7 @@ class CharacterEncoder:
         mode: Mode = self.language_mode
         buffer: bytes = b""
 
-        for ch in extract_characters(*text):
+        for ch in extract_characters(*text, emoji_codes=self.emoji_codes):
             # Get the new mode
             mode = self._next_mode(ch)
 
@@ -135,7 +129,7 @@ class CharacterEncoder:
                 else:
                     buffer += bytes([ch.value])
             else:
-                if self.map_custom:
+                if self.low_ascii:
                     buffer += bytes([map_to_low_ascii(ch.point)])
                 else:
                     buffer += bytes([ch.point])
