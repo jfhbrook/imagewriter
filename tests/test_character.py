@@ -163,6 +163,9 @@ def test_custom_character(character: str, snapshot) -> None:
             ],
             False,
         ),
+        # Known Edge Cases
+        ("foo:", True),
+        ("foo:", False),
     ],
 )
 def test_text_parser(text: str, encode_emoji: bool, snapshot) -> None:

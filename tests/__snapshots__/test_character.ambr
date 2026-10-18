@@ -808,6 +808,14 @@
     ),
   ])
 # ---
+# name: test_text_parser[foo:-False]
+  list([
+    'f',
+    'o',
+    'o',
+    ':',
+  ])
+# ---
 # name: test_text_parser[text10-True]
   list([
     'A',
