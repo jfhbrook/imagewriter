@@ -3,6 +3,7 @@ from typing import Generator, Self
 from imagewriter.base.character import (
     Character,
     CustomCharacter,
+    LanguageCharacter,
     map_to_low_ascii,
     MouseTextCharacter,
     Text,
@@ -60,6 +61,8 @@ class CharacterEncoder:
         self.mode: Mode = default_mode
 
     def _next_mode(self: Self, character: Character) -> Mode:
+        if isinstance(character, LanguageCharacter):
+            return LanguageMode(character.language)
         if isinstance(character, MouseTextCharacter):
             return MouseTextMode(map_ascii=self.map_mousetext)
 
@@ -121,7 +124,9 @@ class CharacterEncoder:
             encoded += self._set_mode(mode)
 
             # Add the new text to the buffer
-            if isinstance(ch, str):
+            if isinstance(ch, LanguageCharacter):
+                buffer += bytes(ch.encoded, encoding="ascii")
+            elif isinstance(ch, str):
                 # Recall that we already extracted MouseText characters
                 buffer += bytes(ch, encoding="ascii")
             elif isinstance(ch, MouseTextCharacter):

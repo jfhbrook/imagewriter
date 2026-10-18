@@ -1,11 +1,10 @@
 from typing import Any, Self
 
+from imagewriter.base.character import LanguageCharacter
 from imagewriter.base.language import Language
 from imagewriter.encoding.base import Command
 from imagewriter.encoding.character.base import Mode
 from imagewriter.encoding.language import set_language
-
-LanguageEncoding = tuple[Language, str]
 
 # TODO: Print a test page of alternate language characters, figure out what
 # the alternate characters are, and complete this table.
@@ -25,7 +24,7 @@ LANGUAGE_ENCODINGS: dict[Language, dict[str, str]] = {
 LANGUAGE_CHARACTERS: dict[str, list[Language]] = {"£": [Language.BRITISH]}
 
 
-def language_encoding(character: str) -> LanguageEncoding:
+def language_encoding(character: str) -> LanguageCharacter:
     """
     Get the language and the encoding for a language-supported character.
     """
@@ -33,7 +32,7 @@ def language_encoding(character: str) -> LanguageEncoding:
     language = LANGUAGE_CHARACTERS[character][0]
     encoded: str = LANGUAGE_ENCODINGS[language][character]
 
-    return language, encoded
+    return LanguageCharacter(language=language, encoded=encoded)
 
 
 class LanguageMode(Mode):

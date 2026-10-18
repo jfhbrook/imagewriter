@@ -2,12 +2,44 @@
 Classes and utilities for working with MouseText and custom characters.
 """
 
+from contextlib import contextmanager
 from dataclasses import dataclass
 from enum import Enum
-from typing import Literal, Self, TypeGuard
+from typing import Generator, Literal, Self, Type, TypeGuard
+
+from imagewriter.base.language import Language
 
 CodePoint = str | bytes | int
 CharacterMaxWidth = Literal[8] | Literal[16]
+
+
+class CodePointError(Exception):
+    """
+    An error related to code point operations.
+    """
+
+    @classmethod
+    @contextmanager
+    def capture(cls: Type[Self]) -> Generator[None, None, None]:
+        try:
+            yield
+        except Exception as exc:
+            raise CodePointError(str(exc)) from exc
+
+
+def repr_code_point(point: int) -> str:
+    """
+    A representation of a code point.
+    """
+
+    character = ""
+
+    try:
+        character = chr(point)
+    except ValueError:
+        return f"{point}"
+    else:
+        return f"{point} ({character!r})"
 
 
 def is_low_ascii(point: int) -> bool:
@@ -26,12 +58,22 @@ def is_high_ascii(point: int) -> bool:
     return 160 <= point <= 239
 
 
+def is_ascii(point: int) -> bool:
+    """
+    Whether or not a code point is valid ASCII.
+    """
+
+    return is_low_ascii(point) or is_high_ascii(point)
+
+
 def assert_low_ascii(point: int) -> None:
     """
     Assert that a code point is low ASCII.
     """
-
-    assert is_low_ascii(point), "Code point is not valid low ASCII"
+    with CodePointError.capture():
+        assert is_low_ascii(
+            point
+        ), f"Code point {repr_code_point(point)} is not valid low ASCII"
 
 
 def assert_high_ascii(point: int) -> None:
@@ -39,7 +81,21 @@ def assert_high_ascii(point: int) -> None:
     Assert that a code point is high ASCII.
     """
 
-    assert is_high_ascii(point), "Code point is not valid high ASCII"
+    with CodePointError.capture():
+        assert is_high_ascii(
+            point
+        ), f"Code point {repr_code_point(point)} is not valid high ASCII"
+
+
+def assert_ascii(point: int) -> None:
+    """
+    Assert that a code point is valid ASCII.
+    """
+
+    with CodePointError.capture():
+        assert is_ascii(
+            point
+        ), f"Code point {repr_code_point(point)} is not valid ASCII"
 
 
 def map_to_low_ascii(point: int) -> int:
@@ -96,9 +152,22 @@ def from_code_point(point: CodePoint) -> int:
         assert is_single_byte(buffer)
         result = buffer[0]
 
-    assert is_low_ascii(result) or is_high_ascii(result)
+    assert_ascii(result)
 
     return result
+
+
+@dataclass
+class LanguageCharacter:
+    """
+    A character encoded in a language. Certain non-ASCII characters are
+    encoded as corresponding ASCII characters in a particular language.
+
+    For more information, see page 42 of the ImageWriter II Technical Reference manual.
+    """
+
+    language: Language
+    encoded: str
 
 
 class MouseTextCharacter(Enum):
@@ -199,7 +268,7 @@ class CustomCharacterData:
     wires: Wires = Wires.TOP
 
 
-Character = str | MouseTextCharacter | CustomCharacter
+Character = str | LanguageCharacter | MouseTextCharacter | CustomCharacter
 Text = Character | list[Character]
 
 __all__: list[str] = [

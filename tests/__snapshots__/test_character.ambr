@@ -1,4 +1,43 @@
 # serializer version: 1
+# name: test_code_point[1-assert_ascii-False]
+  "Code point 1 ('\\x01') is not valid ASCII"
+# ---
+# name: test_code_point[1-assert_high_ascii-False]
+  "Code point 1 ('\\x01') is not valid high ASCII"
+# ---
+# name: test_code_point[1-assert_low_ascii-False]
+  "Code point 1 ('\\x01') is not valid low ASCII"
+# ---
+# name: test_code_point[126-assert_high_ascii-False]
+  "Code point 126 ('~') is not valid high ASCII"
+# ---
+# name: test_code_point[150-assert_ascii-False]
+  "Code point 150 ('\\x96') is not valid ASCII"
+# ---
+# name: test_code_point[150-assert_high_ascii-False]
+  "Code point 150 ('\\x96') is not valid high ASCII"
+# ---
+# name: test_code_point[150-assert_low_ascii-False]
+  "Code point 150 ('\\x96') is not valid low ASCII"
+# ---
+# name: test_code_point[160-assert_low_ascii-False]
+  "Code point 160 ('\\xa0') is not valid low ASCII"
+# ---
+# name: test_code_point[239-assert_low_ascii-False]
+  "Code point 239 ('ï') is not valid low ASCII"
+# ---
+# name: test_code_point[250-assert_ascii-False]
+  "Code point 250 ('ú') is not valid ASCII"
+# ---
+# name: test_code_point[250-assert_high_ascii-False]
+  "Code point 250 ('ú') is not valid high ASCII"
+# ---
+# name: test_code_point[250-assert_low_ascii-False]
+  "Code point 250 ('ú') is not valid low ASCII"
+# ---
+# name: test_code_point[32-assert_high_ascii-False]
+  "Code point 32 (' ') is not valid high ASCII"
+# ---
 # name: test_custom_character[:custom_160:]
   CustomCharacter(160)
 # ---
@@ -12,9 +51,9 @@
   CustomCharacter(97)
 # ---
 # name: test_language_character[\xa3]
-  tuple(
-    <Language.BRITISH: 'British'>,
-    '#',
+  LanguageCharacter(
+    encoded='#',
+    language=<Language.BRITISH: 'British'>,
   )
 # ---
 # name: test_mousetext_character[:arrow_down:]
@@ -300,4 +339,25 @@
   list([
     <MouseTextCharacter.DOWNWARDS_ARROW: 202>,
   ])
+# ---
+# name: test_repr_code_point[126]
+  "126 ('~')"
+# ---
+# name: test_repr_code_point[150]
+  "150 ('\\x96')"
+# ---
+# name: test_repr_code_point[160]
+  "160 ('\\xa0')"
+# ---
+# name: test_repr_code_point[1]
+  "1 ('\\x01')"
+# ---
+# name: test_repr_code_point[239]
+  "239 ('ï')"
+# ---
+# name: test_repr_code_point[250]
+  "250 ('ú')"
+# ---
+# name: test_repr_code_point[97]
+  "97 ('a')"
 # ---
