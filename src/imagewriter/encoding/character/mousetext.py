@@ -6,41 +6,65 @@ from imagewriter.encoding.character.base import DISABLE_MODE, Mode
 
 _M = MouseTextCharacter
 
-# The full lookup from name to mousetext characters
+# Lookup for codes that parse to MouseText
+MOUSETEXT_CODE_LOOKUP: dict[str, list[MouseTextCharacter]] = {
+    ":folder:": [_M.LEFT_HALF_FOLDER, _M.RIGHT_HALF_FOLDER],
+    ":squared_dot:": [_M.RIGHT_ONE_EIGHT_BLOCK, _M.RIGHT_OPEN_SQUARED_DOT],
+}
+
+# Lookup for emojis/symbols to MouseText
 MOUSETEXT_LOOKUP: dict[str, list[MouseTextCharacter]] = {
     # Codes which require multiple mousetext characters
-    ":folder:": [_M.LEFT_HALF_FOLDER, _M.RIGHT_HALF_FOLDER],
     "📁": [_M.LEFT_HALF_FOLDER, _M.RIGHT_HALF_FOLDER],
-    ":squared_dot:": [_M.RIGHT_ONE_EIGHT_BLOCK, _M.RIGHT_OPEN_SQUARED_DOT],
     "⊡": [_M.RIGHT_ONE_EIGHT_BLOCK, _M.RIGHT_OPEN_SQUARED_DOT],
     "🮼": [_M.RIGHT_OPEN_SQUARED_DOT],
 }
 
-# Characters and codes which correspond to a given mousetect character
-
+# Emoji codes which correspond to a given MouseText character
 MOUSETEXT_EMOJI_CODES: dict[MouseTextCharacter, list[str]] = {
-    _M.DARK_APPLE: [":dark_apple:", "🍎"],
-    _M.LIGHT_APPLE: [":light_apple:", "🍏"],
-    _M.HOURGLASS: [":hourglass:", "⏳", "⌛"],  # TODO: "⌛︎" fails to parse
-    _M.CHECK_MARK: [":white_check_mark:", ":heavy_check_mark:", "✅", "✔️"],
-    _M.INVERSE_CHECK_MARK: [":ballot_box_with_check:", "☑️"],
-    _M.LEFTWARDS_ARROW: [":arrow_left:", "⬅️", "←"],
-    _M.RIGHTWARDS_ARROW: [":arrow_right:", "➡️", "→"],
-    _M.DOWNWARDS_ARROW: [":arrow_down:", "⬇️", "↓"],
-    _M.UPWARDS_ARROW: [":arrow_up:", "⬆️", "↑"],
+    _M.DARK_APPLE: [":dark_apple:"],
+    _M.LIGHT_APPLE: [":light_apple:"],
+    _M.HOURGLASS: [":hourglass:"],
+    _M.CHECK_MARK: [":white_check_mark:", ":heavy_check_mark:"],
+    _M.INVERSE_CHECK_MARK: [":ballot_box_with_check:"],
+    _M.LEFTWARDS_ARROW: [":arrow_left:"],
+    _M.RIGHTWARDS_ARROW: [":arrow_right:"],
+    _M.DOWNWARDS_ARROW: [":arrow_down:"],
+    _M.UPWARDS_ARROW: [":arrow_up:"],
 }
 
-MOUSETEXT_SMART_TEXT_CODES: dict[MouseTextCharacter, list[str]] = {_M.ELLIPSIS: ["…"]}
+# Emojis which correspond to a given MouseText character
+MOUSETEXT_EMOJIS: dict[MouseTextCharacter, list[str]] = {
+    _M.DARK_APPLE: ["🍎"],
+    _M.LIGHT_APPLE: ["🍏"],
+    _M.HOURGLASS: ["⏳", "⌛"],  # TODO: "⌛︎" fails to parse
+    _M.CHECK_MARK: ["✅", "✔️"],
+    _M.INVERSE_CHECK_MARK: ["☑️"],
+    _M.LEFTWARDS_ARROW: ["⬅️", "←"],
+    _M.RIGHTWARDS_ARROW: ["➡️", "→"],
+    _M.DOWNWARDS_ARROW: ["⬇️", "↓"],
+    _M.UPWARDS_ARROW: ["⬆️", "↑"],
+}
+
+MOUSETEXT_SMART_TEXT: dict[MouseTextCharacter, list[str]] = {_M.ELLIPSIS: ["…"]}
 
 MOUSETEXT_SYMBOL_CODES: dict[MouseTextCharacter, list[str]] = {
-    _M.ARROWHEAD_SHAPED_POINTER: [":pointer:", "🮰"],
-    _M.TITLE_BAR: [":title_bar:", "🮁"],
-    _M.CARRIAGE_RETURN: [":cr:", ":carriage_return:", "↵", "⏎"],
-    _M.BLACK_DIAMOND: [":diamond:", ":black_diamond:", "◆"],
-    _M.VOIDED_GREEK_CROSS: [":greek_cross:", "✙"],
+    _M.ARROWHEAD_SHAPED_POINTER: [":pointer:"],
+    _M.TITLE_BAR: [":title_bar:"],
+    _M.CARRIAGE_RETURN: [":cr:", ":carriage_return:"],
+    _M.BLACK_DIAMOND: [":diamond:", ":black_diamond:"],
+    _M.VOIDED_GREEK_CROSS: [":greek_cross:"],
 }
 
-MOUSETEXT_BLOCK_CODES: dict[MouseTextCharacter, list[str]] = {
+MOUSETEXT_SYMBOLS: dict[MouseTextCharacter, list[str]] = {
+    _M.ARROWHEAD_SHAPED_POINTER: ["🮰"],
+    _M.TITLE_BAR: ["🮁"],
+    _M.CARRIAGE_RETURN: ["↵", "⏎"],
+    _M.BLACK_DIAMOND: ["◆"],
+    _M.VOIDED_GREEK_CROSS: ["✙"],
+}
+
+MOUSETEXT_BLOCKS: dict[MouseTextCharacter, list[str]] = {
     _M.FULL_BLOCK: ["█"],
     _M.UPPER_ONE_EIGHT_BLOCK: ["▔"],
     _M.LEFT_AND_LOWER_ONE_EIGHT_BLOCK: ["▙"],
@@ -55,12 +79,17 @@ MOUSETEXT_BLOCK_CODES: dict[MouseTextCharacter, list[str]] = {
     _M.UPWARDS_ARROW_AND_RIGHT_ONE_EIGHT_BLOCK: ["🮸"],
 }
 
-# Populate the actual lookup
+# Populate the actual lookups
+for block in [MOUSETEXT_EMOJI_CODES, MOUSETEXT_SYMBOL_CODES]:
+    for char, codes in block.items():
+        for name in codes:
+            MOUSETEXT_CODE_LOOKUP[name] = [char]
+
 for block in [
-    MOUSETEXT_EMOJI_CODES,
-    MOUSETEXT_SMART_TEXT_CODES,
-    MOUSETEXT_SYMBOL_CODES,
-    MOUSETEXT_BLOCK_CODES,
+    MOUSETEXT_EMOJIS,
+    MOUSETEXT_SMART_TEXT,
+    MOUSETEXT_SYMBOLS,
+    MOUSETEXT_BLOCKS,
 ]:
     for char, codes in block.items():
         for name in codes:
@@ -72,7 +101,13 @@ def mousetext_lookup(name: str) -> list[MouseTextCharacter]:
     Look up a MouseText character.
     """
 
-    return MOUSETEXT_LOOKUP[name]
+    try:
+        return MOUSETEXT_LOOKUP[name]
+    except KeyError as exc:
+        try:
+            return MOUSETEXT_CODE_LOOKUP[name]
+        except Exception as code_exc:
+            raise code_exc from exc
 
 
 class EnableMouseTextMappingMode(Esc):

@@ -12,7 +12,11 @@ from imagewriter.encoding.character.language import (
     LANGUAGE_CHARACTERS,
     language_encoding,
 )
-from imagewriter.encoding.character.mousetext import mousetext_lookup, MOUSETEXT_LOOKUP
+from imagewriter.encoding.character.mousetext import (
+    MOUSETEXT_CODE_LOOKUP,
+    mousetext_lookup,
+    MOUSETEXT_LOOKUP,
+)
 
 #
 # Language encoded character
@@ -27,10 +31,12 @@ language_character: Parser = alt(
 #
 
 
-def mousetext_character(encode_emoji: bool = True) -> Parser:
-    return alt(*[string(name) for name in MOUSETEXT_LOOKUP.keys()]).map(
-        mousetext_lookup
-    )
+def mousetext_character(encode_emoji: bool) -> Parser:
+    parsers = [string(name) for name in MOUSETEXT_LOOKUP.keys()]
+
+    if encode_emoji:
+        parsers += [string(name) for name in MOUSETEXT_CODE_LOOKUP.keys()]
+    return alt(*parsers).map(mousetext_lookup)
 
 
 #
@@ -74,13 +80,19 @@ def collect(parsed: list[list[Character]]) -> list[Character]:
     return [character for chunk in parsed for character in chunk]
 
 
-def code_parser(emoji_codes: bool) -> Parser:
-    parser = language_character | mousetext_character(emoji_codes)
-    if emoji_codes:
-        parser = parser | custom_character | regex(r"[^:]")
-    parser = parser | any_char
+code_parser: Parser = (
+    alt(language_character, mousetext_character(True), custom_character, regex(r"[^:]"))
+    .many()
+    .map(collect)
+)
 
-    return parser.many().map(collect)
+non_code_parser: Parser = alt(
+    language_character, mousetext_character(False), any_char
+).many()
+
+
+def _get_parser(emoji_codes: bool) -> Parser:
+    return code_parser if emoji_codes else non_code_parser
 
 
 def parse_text(text: Text, emoji_codes: bool) -> list[Character]:
@@ -97,7 +109,7 @@ def parse_text(text: Text, emoji_codes: bool) -> list[Character]:
 
 
 def _parse_text(text: Character, emoji_codes: bool) -> list[Character]:
-    if isinstance(text, str) and emoji_codes:
-        return code_parser(emoji_codes).parse(text)
+    if isinstance(text, str):
+        return _get_parser(emoji_codes).parse(text)
 
     return [text]

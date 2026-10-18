@@ -340,6 +340,193 @@
     <MouseTextCharacter.DOWNWARDS_ARROW: 202>,
   ])
 # ---
+# name: test_mousetext_character_no_emoji[\U0001f34e]
+  list([
+    <MouseTextCharacter.DARK_APPLE: 192>,
+  ])
+# ---
+# name: test_mousetext_character_no_emoji[\U0001f34f]
+  list([
+    <MouseTextCharacter.LIGHT_APPLE: 193>,
+  ])
+# ---
+# name: test_mousetext_character_no_emoji[\U0001f4c1]
+  list([
+    <MouseTextCharacter.LEFT_HALF_FOLDER: 216>,
+    <MouseTextCharacter.RIGHT_HALF_FOLDER: 217>,
+  ])
+# ---
+# name: test_mousetext_character_no_emoji[\U0001fb81]
+  list([
+    <MouseTextCharacter.TITLE_BAR: 199>,
+  ])
+# ---
+# name: test_mousetext_character_no_emoji[\U0001fbb0]
+  list([
+    <MouseTextCharacter.ARROWHEAD_SHAPED_POINTER: 194>,
+  ])
+# ---
+# name: test_mousetext_character_no_emoji[\U0001fbb5]
+  list([
+    <MouseTextCharacter.LEFTWARDS_ARROW_AND_UPPER_AND_LOWER_ONE_EIGHT_BLOCK: 207>,
+  ])
+# ---
+# name: test_mousetext_character_no_emoji[\U0001fbb6]
+  list([
+    <MouseTextCharacter.RIGHTWARDS_ARROW_AND_UPPER_AND_LOWER_ONE_EIGHT_BLOCK: 208>,
+  ])
+# ---
+# name: test_mousetext_character_no_emoji[\U0001fbb7]
+  list([
+    <MouseTextCharacter.DOWNWARDS_ARROW_AND_RIGHT_ONE_EIGHT_BLOCK: 209>,
+  ])
+# ---
+# name: test_mousetext_character_no_emoji[\U0001fbb8]
+  list([
+    <MouseTextCharacter.UPWARDS_ARROW_AND_RIGHT_ONE_EIGHT_BLOCK: 210>,
+  ])
+# ---
+# name: test_mousetext_character_no_emoji[\U0001fbbc]
+  list([
+    <MouseTextCharacter.RIGHT_OPEN_SQUARED_DOT: 222>,
+  ])
+# ---
+# name: test_mousetext_character_no_emoji[\u2026]
+  list([
+    <MouseTextCharacter.ELLIPSIS: 201>,
+  ])
+# ---
+# name: test_mousetext_character_no_emoji[\u2190]
+  list([
+    <MouseTextCharacter.LEFTWARDS_ARROW: 200>,
+  ])
+# ---
+# name: test_mousetext_character_no_emoji[\u2191]
+  list([
+    <MouseTextCharacter.UPWARDS_ARROW: 203>,
+  ])
+# ---
+# name: test_mousetext_character_no_emoji[\u2192]
+  list([
+    <MouseTextCharacter.RIGHTWARDS_ARROW: 213>,
+  ])
+# ---
+# name: test_mousetext_character_no_emoji[\u2193]
+  list([
+    <MouseTextCharacter.DOWNWARDS_ARROW: 202>,
+  ])
+# ---
+# name: test_mousetext_character_no_emoji[\u21b5]
+  list([
+    <MouseTextCharacter.CARRIAGE_RETURN: 205>,
+  ])
+# ---
+# name: test_mousetext_character_no_emoji[\u22a1]
+  list([
+    <MouseTextCharacter.RIGHT_ONE_EIGHT_BLOCK: 218>,
+    <MouseTextCharacter.RIGHT_OPEN_SQUARED_DOT: 222>,
+  ])
+# ---
+# name: test_mousetext_character_no_emoji[\u231b]
+  list([
+    <MouseTextCharacter.HOURGLASS: 195>,
+  ])
+# ---
+# name: test_mousetext_character_no_emoji[\u23ce]
+  list([
+    <MouseTextCharacter.CARRIAGE_RETURN: 205>,
+  ])
+# ---
+# name: test_mousetext_character_no_emoji[\u23f3]
+  list([
+    <MouseTextCharacter.HOURGLASS: 195>,
+  ])
+# ---
+# name: test_mousetext_character_no_emoji[\u2581]
+  list([
+    <MouseTextCharacter.LOWER_ONE_EIGHT_BLOCK: 220>,
+  ])
+# ---
+# name: test_mousetext_character_no_emoji[\u2588]
+  list([
+    <MouseTextCharacter.FULL_BLOCK: 206>,
+  ])
+# ---
+# name: test_mousetext_character_no_emoji[\u258f]
+  list([
+    <MouseTextCharacter.LEFT_ONE_EIGHT_BLOCK: 223>,
+  ])
+# ---
+# name: test_mousetext_character_no_emoji[\u2592]
+  list([
+    <MouseTextCharacter.MEDIUM_SHADE: 214>,
+  ])
+# ---
+# name: test_mousetext_character_no_emoji[\u2593]
+  list([
+    <MouseTextCharacter.DARK_SHADE: 215>,
+  ])
+# ---
+# name: test_mousetext_character_no_emoji[\u2594]
+  list([
+    <MouseTextCharacter.UPPER_ONE_EIGHT_BLOCK: 211>,
+  ])
+# ---
+# name: test_mousetext_character_no_emoji[\u2595]
+  list([
+    <MouseTextCharacter.RIGHT_ONE_EIGHT_BLOCK: 218>,
+  ])
+# ---
+# name: test_mousetext_character_no_emoji[\u2599]
+  list([
+    <MouseTextCharacter.LEFT_AND_LOWER_ONE_EIGHT_BLOCK: 212>,
+  ])
+# ---
+# name: test_mousetext_character_no_emoji[\u25c6]
+  list([
+    <MouseTextCharacter.BLACK_DIAMOND: 219>,
+  ])
+# ---
+# name: test_mousetext_character_no_emoji[\u2611\ufe0f]
+  list([
+    <MouseTextCharacter.INVERSE_CHECK_MARK: 197>,
+  ])
+# ---
+# name: test_mousetext_character_no_emoji[\u2705]
+  list([
+    <MouseTextCharacter.CHECK_MARK: 196>,
+  ])
+# ---
+# name: test_mousetext_character_no_emoji[\u2714\ufe0f]
+  list([
+    <MouseTextCharacter.CHECK_MARK: 196>,
+  ])
+# ---
+# name: test_mousetext_character_no_emoji[\u2719]
+  list([
+    <MouseTextCharacter.VOIDED_GREEK_CROSS: 221>,
+  ])
+# ---
+# name: test_mousetext_character_no_emoji[\u27a1\ufe0f]
+  list([
+    <MouseTextCharacter.RIGHTWARDS_ARROW: 213>,
+  ])
+# ---
+# name: test_mousetext_character_no_emoji[\u2b05\ufe0f]
+  list([
+    <MouseTextCharacter.LEFTWARDS_ARROW: 200>,
+  ])
+# ---
+# name: test_mousetext_character_no_emoji[\u2b06\ufe0f]
+  list([
+    <MouseTextCharacter.UPWARDS_ARROW: 203>,
+  ])
+# ---
+# name: test_mousetext_character_no_emoji[\u2b07\ufe0f]
+  list([
+    <MouseTextCharacter.DOWNWARDS_ARROW: 202>,
+  ])
+# ---
 # name: test_repr_code_point[126]
   "126 ('~')"
 # ---
@@ -361,15 +548,105 @@
 # name: test_repr_code_point[97]
   "97 ('a')"
 # ---
+# name: test_text_parser[:custom_160:-False]
+  list([
+    ':',
+    'c',
+    'u',
+    's',
+    't',
+    'o',
+    'm',
+    '_',
+    '1',
+    '6',
+    '0',
+    ':',
+  ])
+# ---
 # name: test_text_parser[:custom_160:-True]
   list([
     CustomCharacter(160 ('\xa0')),
+  ])
+# ---
+# name: test_text_parser[:folder:-False]
+  list([
+    ':',
+    'f',
+    'o',
+    'l',
+    'd',
+    'e',
+    'r',
+    ':',
   ])
 # ---
 # name: test_text_parser[:folder:-True]
   list([
     <MouseTextCharacter.LEFT_HALF_FOLDER: 216>,
     <MouseTextCharacter.RIGHT_HALF_FOLDER: 217>,
+  ])
+# ---
+# name: test_text_parser[A quick brown fox jumped over the lazy dog :folder: \xa3-False]
+  list([
+    'A',
+    ' ',
+    'q',
+    'u',
+    'i',
+    'c',
+    'k',
+    ' ',
+    'b',
+    'r',
+    'o',
+    'w',
+    'n',
+    ' ',
+    'f',
+    'o',
+    'x',
+    ' ',
+    'j',
+    'u',
+    'm',
+    'p',
+    'e',
+    'd',
+    ' ',
+    'o',
+    'v',
+    'e',
+    'r',
+    ' ',
+    't',
+    'h',
+    'e',
+    ' ',
+    'l',
+    'a',
+    'z',
+    'y',
+    ' ',
+    'd',
+    'o',
+    'g',
+    ' ',
+    ':',
+    'f',
+    'o',
+    'l',
+    'd',
+    'e',
+    'r',
+    ':',
+    ' ',
+    list([
+      LanguageCharacter(
+        encoded='#',
+        language=<Language.BRITISH: 'British'>,
+      ),
+    ]),
   ])
 # ---
 # name: test_text_parser[A quick brown fox jumped over the lazy dog :folder: \xa3-True]
@@ -428,7 +705,48 @@
 # ---
 # name: test_text_parser[A quick brown fox jumped over the lazy dog-False]
   list([
-    'A quick brown fox jumped over the lazy dog',
+    'A',
+    ' ',
+    'q',
+    'u',
+    'i',
+    'c',
+    'k',
+    ' ',
+    'b',
+    'r',
+    'o',
+    'w',
+    'n',
+    ' ',
+    'f',
+    'o',
+    'x',
+    ' ',
+    'j',
+    'u',
+    'm',
+    'p',
+    'e',
+    'd',
+    ' ',
+    'o',
+    'v',
+    'e',
+    'r',
+    ' ',
+    't',
+    'h',
+    'e',
+    ' ',
+    'l',
+    'a',
+    'z',
+    'y',
+    ' ',
+    'd',
+    'o',
+    'g',
   ])
 # ---
 # name: test_text_parser[A quick brown fox jumped over the lazy dog-True]
@@ -482,11 +800,6 @@
     <MouseTextCharacter.FULL_BLOCK: 206>,
   ])
 # ---
-# name: test_text_parser[\xa3-False]
-  list([
-    '£',
-  ])
-# ---
 # name: test_text_parser[\xa3-True]
   list([
     LanguageCharacter(
@@ -495,7 +808,7 @@
     ),
   ])
 # ---
-# name: test_text_parser[text8-True]
+# name: test_text_parser[text10-True]
   list([
     'A',
     ' ',
@@ -547,6 +860,116 @@
       encoded='#',
       language=<Language.BRITISH: 'British'>,
     ),
+    <MouseTextCharacter.DARK_APPLE: 192>,
+    LanguageCharacter(
+      encoded='#',
+      language=<Language.BRITISH: 'British'>,
+    ),
+    CustomCharacter(97 ('a')),
+    'A',
+    ' ',
+    'q',
+    'u',
+    'i',
+    'c',
+    'k',
+    ' ',
+    'b',
+    'r',
+    'o',
+    'w',
+    'n',
+    ' ',
+    'f',
+    'o',
+    'x',
+    ' ',
+    'j',
+    'u',
+    'm',
+    'p',
+    'e',
+    'd',
+    ' ',
+    'o',
+    'v',
+    'e',
+    'r',
+    ' ',
+    't',
+    'h',
+    'e',
+    ' ',
+    'l',
+    'a',
+    'z',
+    'y',
+    ' ',
+    'd',
+    'o',
+    'g',
+  ])
+# ---
+# name: test_text_parser[text11-False]
+  list([
+    'A',
+    ' ',
+    'q',
+    'u',
+    'i',
+    'c',
+    'k',
+    ' ',
+    'b',
+    'r',
+    'o',
+    'w',
+    'n',
+    ' ',
+    'f',
+    'o',
+    'x',
+    ' ',
+    'j',
+    'u',
+    'm',
+    'p',
+    'e',
+    'd',
+    ' ',
+    'o',
+    'v',
+    'e',
+    'r',
+    ' ',
+    't',
+    'h',
+    'e',
+    ' ',
+    'l',
+    'a',
+    'z',
+    'y',
+    ' ',
+    'd',
+    'o',
+    'g',
+    ' ',
+    ':',
+    'f',
+    'o',
+    'l',
+    'd',
+    'e',
+    'r',
+    ':',
+    ' ',
+    list([
+      LanguageCharacter(
+        encoded='#',
+        language=<Language.BRITISH: 'British'>,
+      ),
+    ]),
     <MouseTextCharacter.DARK_APPLE: 192>,
     LanguageCharacter(
       encoded='#',

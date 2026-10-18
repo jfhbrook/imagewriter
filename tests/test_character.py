@@ -17,6 +17,7 @@ from imagewriter.encoding.character.language import (
     LANGUAGE_CHARACTERS,
 )
 from imagewriter.encoding.character.mousetext import (
+    MOUSETEXT_CODE_LOOKUP,
     MOUSETEXT_LOOKUP,
 )
 from imagewriter.encoding.character.parser import (
@@ -75,9 +76,21 @@ def test_code_point_assertions(
     assert str(exc_info.value) == snapshot
 
 
-@pytest.mark.parametrize("character", MOUSETEXT_LOOKUP.keys())
+@pytest.mark.parametrize(
+    "character", list(MOUSETEXT_LOOKUP.keys()) + list(MOUSETEXT_CODE_LOOKUP.keys())
+)
 def test_mousetext_character(character: str, snapshot) -> None:
     result = mousetext_character(True).parse(character)
+
+    assert isinstance(result, list)
+    for character in result:
+        assert isinstance(character, MouseTextCharacter)
+    assert result == snapshot
+
+
+@pytest.mark.parametrize("character", list(MOUSETEXT_LOOKUP.keys()))
+def test_mousetext_character_no_emoji(character: str, snapshot) -> None:
+    result = mousetext_character(False).parse(character)
 
     assert isinstance(result, list)
     for character in result:
@@ -114,19 +127,21 @@ def test_custom_character(character: str, snapshot) -> None:
     [
         # MouseText
         (":folder:", True),
-        # (":folder:", False),
+        (":folder:", False),
         ("█", True),
+        # ("█", False),
         # Language
         ("£", True),
-        ("£", False),
+        # ("£", False),
         # Custom
         (":custom_160:", True),
+        (":custom_160:", False),
         # Plain text
         (TEST_PHRASE, True),
         (TEST_PHRASE, False),
         # Mixed
         (f"{TEST_PHRASE} :folder: £", True),
-        # (f"{TEST_PHRASE} :folder: £", False),
+        (f"{TEST_PHRASE} :folder: £", False),
         # Structured
         (
             [
@@ -137,6 +152,16 @@ def test_custom_character(character: str, snapshot) -> None:
                 TEST_PHRASE,
             ],
             True,
+        ),
+        (
+            [
+                f"{TEST_PHRASE} :folder: £",
+                MouseTextCharacter.DARK_APPLE,
+                LanguageCharacter(language=Language.BRITISH, encoded="#"),
+                CustomCharacter("a"),
+                TEST_PHRASE,
+            ],
+            False,
         ),
     ],
 )
