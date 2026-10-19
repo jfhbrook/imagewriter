@@ -1,475 +1,480 @@
 # serializer version: 1
-# name: test_bytes_command[command0]
-  b'\x08'
+# name: test_bytes_command[backspace-command0]
+  '\x08'
 # ---
-# name: test_bytes_command[command10]
-  b'\x1b&'
+# name: test_bytes_command[cancel current line-command2]
+  '\x18'
 # ---
-# name: test_bytes_command[command11]
-  b'\x1b*'
+# name: test_bytes_command[carriage return-command6]
+  '''
+  
+  '''
 # ---
-# name: test_bytes_command[command12]
-  b"\x1b'"
+# name: test_bytes_command[clear all tabs-command3]
+  '\x1b0'
 # ---
-# name: test_bytes_command[command13]
-  b'\x1bx'
+# name: test_bytes_command[close many tabs-command4]
+  '\x1b)00400801.'
 # ---
-# name: test_bytes_command[command14]
-  b'\x0c'
+# name: test_bytes_command[close software switches-command5]
+  b'\x1bD\xc0\x00'
 # ---
-# name: test_bytes_command[command15]
-  b'\x1b2'
+# name: test_bytes_command[control character-command7]
+  '\x11'
 # ---
-# name: test_bytes_command[command16]
-  b'\n'
+# name: test_bytes_command[deselect-command8]
+  '\x13'
 # ---
-# name: test_bytes_command[command17]
-  b'\x1bf'
+# name: test_bytes_command[disable auto line feed after carriage return-command31]
+  '\x1bZ\x01\x00'
 # ---
-# name: test_bytes_command[command18]
-  b'\x1br'
+# name: test_bytes_command[disable carriage return insertion-command34]
+  '\x1bl0'
 # ---
-# name: test_bytes_command[command19]
-  b'\x1f2'
+# name: test_bytes_command[disable line feed when line full-command41]
+  '\x1bZ\x04\x00'
 # ---
-# name: test_bytes_command[command1]
-  b'hello'
+# name: test_bytes_command[disable mode-command9]
+  '\x1b$'
 # ---
-# name: test_bytes_command[command20]
-  b'\x1bIaD1234\x04'
+# name: test_bytes_command[disable paper out sensor-command51]
+  '\x1bo'
 # ---
-# name: test_bytes_command[command21]
+# name: test_bytes_command[disable perforation skip-command53]
+  '\x1bD\x00 '
+# ---
+# name: test_bytes_command[disable software select response-command59]
+  '\x1bD\x08\x00'
+# ---
+# name: test_bytes_command[disable unidirectional printing-command64]
+  '\x1b<'
+# ---
+# name: test_bytes_command[enable MouseText mapping mode-command10]
+  '\x1b&'
+# ---
+# name: test_bytes_command[enable auto line feed after carriage return-command30]
+  '\x1bD\x01\x00'
+# ---
+# name: test_bytes_command[enable carriage return insertion-command33]
+  '\x1bl1'
+# ---
+# name: test_bytes_command[enable custom character mode with mapping-command12]
+  "\x1b'"
+# ---
+# name: test_bytes_command[enable custom character mode-command11]
+  '\x1b*'
+# ---
+# name: test_bytes_command[enable line feed when line full-command40]
+  '\x1bD\x04\x00'
+# ---
+# name: test_bytes_command[enable paper out sensor-command50]
+  '\x1bO'
+# ---
+# name: test_bytes_command[enable perforation skip-command52]
+  '\x1bZ\x00 '
+# ---
+# name: test_bytes_command[enable software select response-command58]
+  '\x1bZ\x08\x00'
+# ---
+# name: test_bytes_command[enable unidirectional printing-command63]
+  '\x1b>'
+# ---
+# name: test_bytes_command[escape code-command13]
+  '\x1bx'
+# ---
+# name: test_bytes_command[form feed-command14]
+  '\x0c'
+# ---
+# name: test_bytes_command[insert spaces-command15]
+  '\x1b2'
+# ---
+# name: test_bytes_command[line feed 2 lines-command19]
+  '\x1f2'
+# ---
+# name: test_bytes_command[line feed forward-command17]
+  '\x1bf'
+# ---
+# name: test_bytes_command[line feed reverse-command18]
+  '\x1br'
+# ---
+# name: test_bytes_command[line feed-command16]
+  '''
+  
+  
+  '''
+# ---
+# name: test_bytes_command[load custom character data-command20]
+  '\x1bIaD1234\x04'
+# ---
+# name: test_bytes_command[open software switches-command21]
   b'\x1bZ\xc0\x00'
 # ---
-# name: test_bytes_command[command22]
-  b'hello'
+# name: test_bytes_command[print graphics data-command25]
+  '\x1bG00041234'
 # ---
-# name: test_bytes_command[command23]
+# name: test_bytes_command[print hello-command22]
+  'hello'
+# ---
+# name: test_bytes_command[print slashed zero-command23]
   b'\x1bD\x00\x80'
 # ---
-# name: test_bytes_command[command24]
+# name: test_bytes_command[print unslashed zero-command24]
   b'\x1bZ\x00\x80'
 # ---
-# name: test_bytes_command[command25]
-  b'\x1bG00041234'
+# name: test_bytes_command[raw bytes-command1]
+  'hello'
 # ---
-# name: test_bytes_command[command26]
-  b'\x1b?'
+# name: test_bytes_command[request self-identify-command26]
+  '\x1b?'
 # ---
-# name: test_bytes_command[command27]
-  b'\x1bc'
+# name: test_bytes_command[reset-command27]
+  '\x1bc'
 # ---
-# name: test_bytes_command[command28]
-  b'\x11'
+# name: test_bytes_command[select-command28]
+  '\x11'
 # ---
-# name: test_bytes_command[command29]
-  b'\x1bv'
+# name: test_bytes_command[set 6 lines per inch-command42]
+  '\x1bA'
 # ---
-# name: test_bytes_command[command2]
-  b'\x18'
+# name: test_bytes_command[set 8 lines per inch-command43]
+  '\x1bB'
 # ---
-# name: test_bytes_command[command30]
-  b'\x1bD\x01\x00'
-# ---
-# name: test_bytes_command[command31]
-  b'\x1bZ\x01\x00'
-# ---
-# name: test_bytes_command[command32]
-  b'\x1bK0'
-# ---
-# name: test_bytes_command[command33]
-  b'\x1bl1'
-# ---
-# name: test_bytes_command[command34]
-  b'\x1bl0'
-# ---
-# name: test_bytes_command[command35]
-  b'\x1bT06'
-# ---
-# name: test_bytes_command[command36]
-  b'\x1bL012'
-# ---
-# name: test_bytes_command[command37]
-  b'\x1bL012'
-# ---
-# name: test_bytes_command[command38]
-  b'\x1bZ \x00'
-# ---
-# name: test_bytes_command[command39]
+# name: test_bytes_command[set closed software switches-command60]
   b'\x1bD\xc0\x00'
 # ---
-# name: test_bytes_command[command3]
-  b'\x1b0'
+# name: test_bytes_command[set color-command32]
+  '\x1bK0'
 # ---
-# name: test_bytes_command[command40]
-  b'\x1bD\x04\x00'
+# name: test_bytes_command[set custom character width to 16-command46]
+  '\x1b+'
 # ---
-# name: test_bytes_command[command41]
-  b'\x1bZ\x04\x00'
+# name: test_bytes_command[set custom character width to 8-command45]
+  '\x1b-'
 # ---
-# name: test_bytes_command[command42]
-  b'\x1bA'
+# name: test_bytes_command[set distance between lines-command35]
+  '\x1bT06'
 # ---
-# name: test_bytes_command[command43]
-  b'\x1bB'
+# name: test_bytes_command[set language 0-command38]
+  '\x1bZ \x00'
 # ---
-# name: test_bytes_command[command44]
-  b'\x1b(00400801.'
-# ---
-# name: test_bytes_command[command45]
-  b'\x1b-'
-# ---
-# name: test_bytes_command[command46]
-  b'\x1b+'
-# ---
-# name: test_bytes_command[command47]
-  b'\x1bU016'
-# ---
-# name: test_bytes_command[command48]
-  b'\x1bH0012'
-# ---
-# name: test_bytes_command[command49]
-  b'\x1bH1584'
-# ---
-# name: test_bytes_command[command4]
-  b'\x1b)00400801.'
-# ---
-# name: test_bytes_command[command50]
-  b'\x1bO'
-# ---
-# name: test_bytes_command[command51]
-  b'\x1bo'
-# ---
-# name: test_bytes_command[command52]
-  b'\x1bZ\x00 '
-# ---
-# name: test_bytes_command[command53]
-  b'\x1bD\x00 '
-# ---
-# name: test_bytes_command[command54]
-  b'\x1bE'
-# ---
-# name: test_bytes_command[command55]
-  b'\x1bD\x02\x00'
-# ---
-# name: test_bytes_command[command56]
-  b'\x1bZ\x02\x00'
-# ---
-# name: test_bytes_command[command57]
-  b'\x1ba2'
-# ---
-# name: test_bytes_command[command58]
-  b'\x1bZ\x08\x00'
-# ---
-# name: test_bytes_command[command59]
-  b'\x1bD\x08\x00'
-# ---
-# name: test_bytes_command[command5]
+# name: test_bytes_command[set language 1-command39]
   b'\x1bD\xc0\x00'
 # ---
-# name: test_bytes_command[command60]
-  b'\x1bD\xc0\x00'
+# name: test_bytes_command[set left margin with inch-command37]
+  '\x1bL012'
 # ---
-# name: test_bytes_command[command61]
+# name: test_bytes_command[set left margin with int-command36]
+  '\x1bL012'
+# ---
+# name: test_bytes_command[set many tabs-command44]
+  '\x1b(00400801.'
+# ---
+# name: test_bytes_command[set one tab-command47]
+  '\x1bU016'
+# ---
+# name: test_bytes_command[set open software switches-command61]
   b'\x1bZ\xc0\x00'
 # ---
-# name: test_bytes_command[command62]
-  b'\x1bm2'
+# name: test_bytes_command[set page length to 11-command49]
+  '\x1bH1584'
 # ---
-# name: test_bytes_command[command63]
-  b'\x1b>'
+# name: test_bytes_command[set page length to 12-command48]
+  '\x1bH0012'
 # ---
-# name: test_bytes_command[command64]
-  b'\x1b<'
+# name: test_bytes_command[set pitch-command54]
+  '\x1bE'
 # ---
-# name: test_bytes_command[command65]
-  b' '
+# name: test_bytes_command[set print commands to CR only-command56]
+  '\x1bZ\x02\x00'
 # ---
-# name: test_bytes_command[command66]
-  b'\x1b!'
+# name: test_bytes_command[set print commands to CR, LF and FF-command55]
+  '\x1bD\x02\x00'
 # ---
-# name: test_bytes_command[command67]
-  b'\x0e'
+# name: test_bytes_command[set quality-command57]
+  '\x1ba2'
 # ---
-# name: test_bytes_command[command68]
-  b'\x1bw'
+# name: test_bytes_command[set spacing-command62]
+  '\x1bm2'
 # ---
-# name: test_bytes_command[command69]
-  b'\x1by'
+# name: test_bytes_command[set top of form-command29]
+  '\x1bv'
 # ---
-# name: test_bytes_command[command6]
-  b'\r'
+# name: test_bytes_command[space-command65]
+  ' '
 # ---
-# name: test_bytes_command[command70]
-  b'\x1bx'
+# name: test_bytes_command[start boldface-command66]
+  '\x1b!'
 # ---
-# name: test_bytes_command[command71]
-  b'\x1bX'
+# name: test_bytes_command[start double width-command67]
+  '\x0e'
 # ---
-# name: test_bytes_command[command72]
-  b'\x1b"'
+# name: test_bytes_command[start half height-command68]
+  '\x1bw'
 # ---
-# name: test_bytes_command[command73]
-  b'\x0f'
+# name: test_bytes_command[start subscript-command69]
+  '\x1by'
 # ---
-# name: test_bytes_command[command74]
-  b'\x1bW'
+# name: test_bytes_command[start superscript-command70]
+  '\x1bx'
 # ---
-# name: test_bytes_command[command75]
-  b'\x1bz'
+# name: test_bytes_command[start underline-command71]
+  '\x1bX'
 # ---
-# name: test_bytes_command[command76]
-  b'\x1bz'
+# name: test_bytes_command[stop boldface-command72]
+  '\x1b"'
 # ---
-# name: test_bytes_command[command77]
-  b'\x1bY'
+# name: test_bytes_command[stop double width-command73]
+  '\x0f'
 # ---
-# name: test_bytes_command[command78]
-  b'\t'
+# name: test_bytes_command[stop half height-command74]
+  '\x1bW'
 # ---
-# name: test_bytes_command[command7]
-  b'\x11'
+# name: test_bytes_command[stop subscript-command75]
+  '\x1bz'
 # ---
-# name: test_bytes_command[command8]
-  b'\x13'
+# name: test_bytes_command[stop superscript-command76]
+  '\x1bz'
 # ---
-# name: test_bytes_command[command9]
-  b'\x1b$'
+# name: test_bytes_command[stop underline-command77]
+  '\x1bY'
 # ---
-# name: test_repr_command[command0]
+# name: test_bytes_command[tab-command78]
+  '\t'
+# ---
+# name: test_repr_command[backspace-command0]
   'Backspace()'
 # ---
-# name: test_repr_command[command10]
-  'EnableMouseTextMappingMode()'
-# ---
-# name: test_repr_command[command11]
-  'EnableCustomCharacterMode(high_ascii=True)'
-# ---
-# name: test_repr_command[command12]
-  'EnableCustomCharacterMode(high_ascii=False)'
-# ---
-# name: test_repr_command[command13]
-  'Esc(x)'
-# ---
-# name: test_repr_command[command14]
-  'FormFeed()'
-# ---
-# name: test_repr_command[command15]
-  'Esc(2)'
-# ---
-# name: test_repr_command[command16]
-  '<LF>'
-# ---
-# name: test_repr_command[command17]
-  'LineFeedForward()'
-# ---
-# name: test_repr_command[command18]
-  'LineFeedReverse()'
-# ---
-# name: test_repr_command[command19]
-  'LineFeed(2)'
-# ---
-# name: test_repr_command[command1]
-  "Bytes(b'hello')"
-# ---
-# name: test_repr_command[command20]
-  "LoadCustomCharacters([CustomCharacterData(character=CustomCharacter(97 ('a')), data=b'1234', wires=<Wires.TOP: 'top'>)])"
-# ---
-# name: test_repr_command[command21]
-  'OpenSoftwareSwitches([0b11000000, 0b00000000])'
-# ---
-# name: test_repr_command[command22]
-  "b'hello'"
-# ---
-# name: test_repr_command[command23]
-  'PrintSlashedZero(CLOSE, [0b00000000, 0b10000000])'
-# ---
-# name: test_repr_command[command24]
-  'PrintUnslashedZero(OPEN, [0b00000000, 0b10000000])'
-# ---
-# name: test_repr_command[command25]
-  'PrintGraphicsData(0b110001 0b110010 0b110011 0b110100)'
-# ---
-# name: test_repr_command[command26]
-  'RequestSelfIdentify()'
-# ---
-# name: test_repr_command[command27]
-  'Reset()'
-# ---
-# name: test_repr_command[command28]
-  'Select()'
-# ---
-# name: test_repr_command[command29]
-  'SetTopOfForm()'
-# ---
-# name: test_repr_command[command2]
+# name: test_repr_command[cancel current line-command2]
   'CancelCurrentLine()'
 # ---
-# name: test_repr_command[command30]
-  'SetAutoLFAfterCR(True, CLOSE, [0b00000001, 0b00000000])'
-# ---
-# name: test_repr_command[command31]
-  'SetAutoLFAfterCR(False, OPEN, [0b00000001, 0b00000000])'
-# ---
-# name: test_repr_command[command32]
-  'SetColor(Color.BLACK)'
-# ---
-# name: test_repr_command[command33]
-  'SetCRInsertion(True)'
-# ---
-# name: test_repr_command[command34]
-  'SetCRInsertion(False)'
-# ---
-# name: test_repr_command[command35]
-  'SetDistanceBetweenLines(6)'
-# ---
-# name: test_repr_command[command36]
-  'SetLeftMargin(12)'
-# ---
-# name: test_repr_command[command37]
-  'SetLeftMargin(12)'
-# ---
-# name: test_repr_command[command38]
-  'OpenLanguageSwitches(Language.BRITISH, OPEN, [0b00100000, 0b00000000])'
-# ---
-# name: test_repr_command[command39]
-  'CloseLanguageSwitches(Language.BRITISH, CLOSE, [0b11000000, 0b00000000])'
-# ---
-# name: test_repr_command[command3]
-  'ClearAllTabs()'
-# ---
-# name: test_repr_command[command40]
-  'SetLFWhenLineFull(True, CLOSE, [0b00000100, 0b00000000])'
-# ---
-# name: test_repr_command[command41]
-  'SetLFWhenLineFull(False, OPEN, [0b00000100, 0b00000000])'
-# ---
-# name: test_repr_command[command42]
-  'SetLinesPerInch(6)'
-# ---
-# name: test_repr_command[command43]
-  'SetLinesPerInch(8)'
-# ---
-# name: test_repr_command[command44]
-  'SetManyTabs([4, 8, 12])'
-# ---
-# name: test_repr_command[command45]
-  'SetMaxCustomCharacterWidth(8)'
-# ---
-# name: test_repr_command[command46]
-  'SetMaxCustomCharacterWidth(16)'
-# ---
-# name: test_repr_command[command47]
-  'SetOneTab(16)'
-# ---
-# name: test_repr_command[command48]
-  'SetPageLength(12)'
-# ---
-# name: test_repr_command[command49]
-  'SetPageLength(1584)'
-# ---
-# name: test_repr_command[command4]
-  'ClearManyTabs([4, 8, 12])'
-# ---
-# name: test_repr_command[command50]
-  'SetPaperOutSensor(True)'
-# ---
-# name: test_repr_command[command51]
-  'SetPaperOutSensor(False)'
-# ---
-# name: test_repr_command[command52]
-  'SetPerforationSkip(True, OPEN, [0b00000000, 0b00100000])'
-# ---
-# name: test_repr_command[command53]
-  'SetPerforationSkip(False, CLOSE, [0b00000000, 0b00100000])'
-# ---
-# name: test_repr_command[command54]
-  'SetPitch(Pitch.ELITE)'
-# ---
-# name: test_repr_command[command55]
-  'SetPrintCommands(PrintCommands.CR_LF_AND_FF, CLOSE, [0b00000010, 0b00000000])'
-# ---
-# name: test_repr_command[command56]
-  'SetPrintCommands(PrintCommands.CR_ONLY, OPEN, [0b00000010, 0b00000000])'
-# ---
-# name: test_repr_command[command57]
-  'SetQuality(Quality.NEAR_LETTER_QUALITY, scribe_mode=False)'
-# ---
-# name: test_repr_command[command58]
-  'SetSoftwareSelectResponse(True, OPEN, [0b00001000, 0b00000000])'
-# ---
-# name: test_repr_command[command59]
-  'SetSoftwareSelectResponse(False, CLOSE, [0b00001000, 0b00000000])'
-# ---
-# name: test_repr_command[command5]
-  'CloseSoftwareSwitches([0b11000000, 0b00000000])'
-# ---
-# name: test_repr_command[command60]
-  'SetSoftwareSwitches(True, [0b11000000, 0b00000000])'
-# ---
-# name: test_repr_command[command61]
-  'SetSoftwareSwitches(False, [0b11000000, 0b00000000])'
-# ---
-# name: test_repr_command[command62]
-  'SetSpacing(Pitch.ELITE_PROPORTIONAL, 2)'
-# ---
-# name: test_repr_command[command63]
-  'SetUnidirectionalPrinting(is_unidirectional=True)'
-# ---
-# name: test_repr_command[command64]
-  'SetUnidirectionalPrinting(is_unidirectional=False)'
-# ---
-# name: test_repr_command[command65]
-  "b' '"
-# ---
-# name: test_repr_command[command66]
-  'StartBoldface()'
-# ---
-# name: test_repr_command[command67]
-  'StartDoubleWidth()'
-# ---
-# name: test_repr_command[command68]
-  'StartHalfHeight()'
-# ---
-# name: test_repr_command[command69]
-  'StartSubscript()'
-# ---
-# name: test_repr_command[command6]
+# name: test_repr_command[carriage return-command6]
   '<CR>'
 # ---
-# name: test_repr_command[command70]
-  'StartSuperscript()'
+# name: test_repr_command[clear all tabs-command3]
+  'ClearAllTabs()'
 # ---
-# name: test_repr_command[command71]
-  'StartUnderline()'
+# name: test_repr_command[close many tabs-command4]
+  'ClearManyTabs([4, 8, 12])'
 # ---
-# name: test_repr_command[command72]
-  'StopBoldface()'
+# name: test_repr_command[close software switches-command5]
+  'CloseSoftwareSwitches([0b11000000, 0b00000000])'
 # ---
-# name: test_repr_command[command73]
-  'StopDoubleWidth()'
-# ---
-# name: test_repr_command[command74]
-  'StopHalfHeight()'
-# ---
-# name: test_repr_command[command75]
-  'StopSuperscriptOrSubscript()'
-# ---
-# name: test_repr_command[command76]
-  'StopSuperscriptOrSubscript()'
-# ---
-# name: test_repr_command[command77]
-  'StopUnderline()'
-# ---
-# name: test_repr_command[command78]
-  '<TAB>'
-# ---
-# name: test_repr_command[command7]
+# name: test_repr_command[control character-command7]
   "Ctrl(b'\\x11')"
 # ---
-# name: test_repr_command[command8]
+# name: test_repr_command[deselect-command8]
   'Deselect()'
 # ---
-# name: test_repr_command[command9]
+# name: test_repr_command[disable auto line feed after carriage return-command31]
+  'SetAutoLFAfterCR(False, OPEN, [0b00000001, 0b00000000])'
+# ---
+# name: test_repr_command[disable carriage return insertion-command34]
+  'SetCRInsertion(False)'
+# ---
+# name: test_repr_command[disable line feed when line full-command41]
+  'SetLFWhenLineFull(False, OPEN, [0b00000100, 0b00000000])'
+# ---
+# name: test_repr_command[disable mode-command9]
   'DisableMode()'
+# ---
+# name: test_repr_command[disable paper out sensor-command51]
+  'SetPaperOutSensor(False)'
+# ---
+# name: test_repr_command[disable perforation skip-command53]
+  'SetPerforationSkip(False, CLOSE, [0b00000000, 0b00100000])'
+# ---
+# name: test_repr_command[disable software select response-command59]
+  'SetSoftwareSelectResponse(False, CLOSE, [0b00001000, 0b00000000])'
+# ---
+# name: test_repr_command[disable unidirectional printing-command64]
+  'SetUnidirectionalPrinting(is_unidirectional=False)'
+# ---
+# name: test_repr_command[enable MouseText mapping mode-command10]
+  'EnableMouseTextMappingMode()'
+# ---
+# name: test_repr_command[enable auto line feed after carriage return-command30]
+  'SetAutoLFAfterCR(True, CLOSE, [0b00000001, 0b00000000])'
+# ---
+# name: test_repr_command[enable carriage return insertion-command33]
+  'SetCRInsertion(True)'
+# ---
+# name: test_repr_command[enable custom character mode with mapping-command12]
+  'EnableCustomCharacterMode(high_ascii=False)'
+# ---
+# name: test_repr_command[enable custom character mode-command11]
+  'EnableCustomCharacterMode(high_ascii=True)'
+# ---
+# name: test_repr_command[enable line feed when line full-command40]
+  'SetLFWhenLineFull(True, CLOSE, [0b00000100, 0b00000000])'
+# ---
+# name: test_repr_command[enable paper out sensor-command50]
+  'SetPaperOutSensor(True)'
+# ---
+# name: test_repr_command[enable perforation skip-command52]
+  'SetPerforationSkip(True, OPEN, [0b00000000, 0b00100000])'
+# ---
+# name: test_repr_command[enable software select response-command58]
+  'SetSoftwareSelectResponse(True, OPEN, [0b00001000, 0b00000000])'
+# ---
+# name: test_repr_command[enable unidirectional printing-command63]
+  'SetUnidirectionalPrinting(is_unidirectional=True)'
+# ---
+# name: test_repr_command[escape code-command13]
+  'Esc(x)'
+# ---
+# name: test_repr_command[form feed-command14]
+  'FormFeed()'
+# ---
+# name: test_repr_command[insert spaces-command15]
+  'Esc(2)'
+# ---
+# name: test_repr_command[line feed 2 lines-command19]
+  'LineFeed(2)'
+# ---
+# name: test_repr_command[line feed forward-command17]
+  'LineFeedForward()'
+# ---
+# name: test_repr_command[line feed reverse-command18]
+  'LineFeedReverse()'
+# ---
+# name: test_repr_command[line feed-command16]
+  '<LF>'
+# ---
+# name: test_repr_command[load custom character data-command20]
+  "LoadCustomCharacters([CustomCharacterData(character=CustomCharacter(97 ('a')), data=b'1234', wires=<Wires.TOP: 'top'>)])"
+# ---
+# name: test_repr_command[open software switches-command21]
+  'OpenSoftwareSwitches([0b11000000, 0b00000000])'
+# ---
+# name: test_repr_command[print graphics data-command25]
+  'PrintGraphicsData(0b110001 0b110010 0b110011 0b110100)'
+# ---
+# name: test_repr_command[print hello-command22]
+  "b'hello'"
+# ---
+# name: test_repr_command[print slashed zero-command23]
+  'PrintSlashedZero(CLOSE, [0b00000000, 0b10000000])'
+# ---
+# name: test_repr_command[print unslashed zero-command24]
+  'PrintUnslashedZero(OPEN, [0b00000000, 0b10000000])'
+# ---
+# name: test_repr_command[raw bytes-command1]
+  "Bytes(b'hello')"
+# ---
+# name: test_repr_command[request self-identify-command26]
+  'RequestSelfIdentify()'
+# ---
+# name: test_repr_command[reset-command27]
+  'Reset()'
+# ---
+# name: test_repr_command[select-command28]
+  'Select()'
+# ---
+# name: test_repr_command[set 6 lines per inch-command42]
+  'SetLinesPerInch(6)'
+# ---
+# name: test_repr_command[set 8 lines per inch-command43]
+  'SetLinesPerInch(8)'
+# ---
+# name: test_repr_command[set closed software switches-command60]
+  'SetSoftwareSwitches(True, [0b11000000, 0b00000000])'
+# ---
+# name: test_repr_command[set color-command32]
+  'SetColor(Color.BLACK)'
+# ---
+# name: test_repr_command[set custom character width to 16-command46]
+  'SetMaxCustomCharacterWidth(16)'
+# ---
+# name: test_repr_command[set custom character width to 8-command45]
+  'SetMaxCustomCharacterWidth(8)'
+# ---
+# name: test_repr_command[set distance between lines-command35]
+  'SetDistanceBetweenLines(6)'
+# ---
+# name: test_repr_command[set language 0-command38]
+  'OpenLanguageSwitches(Language.BRITISH, OPEN, [0b00100000, 0b00000000])'
+# ---
+# name: test_repr_command[set language 1-command39]
+  'CloseLanguageSwitches(Language.BRITISH, CLOSE, [0b11000000, 0b00000000])'
+# ---
+# name: test_repr_command[set left margin with inch-command37]
+  'SetLeftMargin(12)'
+# ---
+# name: test_repr_command[set left margin with int-command36]
+  'SetLeftMargin(12)'
+# ---
+# name: test_repr_command[set many tabs-command44]
+  'SetManyTabs([4, 8, 12])'
+# ---
+# name: test_repr_command[set one tab-command47]
+  'SetOneTab(16)'
+# ---
+# name: test_repr_command[set open software switches-command61]
+  'SetSoftwareSwitches(False, [0b11000000, 0b00000000])'
+# ---
+# name: test_repr_command[set page length to 11-command49]
+  'SetPageLength(1584)'
+# ---
+# name: test_repr_command[set page length to 12-command48]
+  'SetPageLength(12)'
+# ---
+# name: test_repr_command[set pitch-command54]
+  'SetPitch(Pitch.ELITE)'
+# ---
+# name: test_repr_command[set print commands to CR only-command56]
+  'SetPrintCommands(PrintCommands.CR_ONLY, OPEN, [0b00000010, 0b00000000])'
+# ---
+# name: test_repr_command[set print commands to CR, LF and FF-command55]
+  'SetPrintCommands(PrintCommands.CR_LF_AND_FF, CLOSE, [0b00000010, 0b00000000])'
+# ---
+# name: test_repr_command[set quality-command57]
+  'SetQuality(Quality.NEAR_LETTER_QUALITY, scribe_mode=False)'
+# ---
+# name: test_repr_command[set spacing-command62]
+  'SetSpacing(Pitch.ELITE_PROPORTIONAL, 2)'
+# ---
+# name: test_repr_command[set top of form-command29]
+  'SetTopOfForm()'
+# ---
+# name: test_repr_command[space-command65]
+  "b' '"
+# ---
+# name: test_repr_command[start boldface-command66]
+  'StartBoldface()'
+# ---
+# name: test_repr_command[start double width-command67]
+  'StartDoubleWidth()'
+# ---
+# name: test_repr_command[start half height-command68]
+  'StartHalfHeight()'
+# ---
+# name: test_repr_command[start subscript-command69]
+  'StartSubscript()'
+# ---
+# name: test_repr_command[start superscript-command70]
+  'StartSuperscript()'
+# ---
+# name: test_repr_command[start underline-command71]
+  'StartUnderline()'
+# ---
+# name: test_repr_command[stop boldface-command72]
+  'StopBoldface()'
+# ---
+# name: test_repr_command[stop double width-command73]
+  'StopDoubleWidth()'
+# ---
+# name: test_repr_command[stop half height-command74]
+  'StopHalfHeight()'
+# ---
+# name: test_repr_command[stop subscript-command75]
+  'StopSuperscriptOrSubscript()'
+# ---
+# name: test_repr_command[stop superscript-command76]
+  'StopSuperscriptOrSubscript()'
+# ---
+# name: test_repr_command[stop underline-command77]
+  'StopUnderline()'
+# ---
+# name: test_repr_command[tab-command78]
+  '<TAB>'
 # ---

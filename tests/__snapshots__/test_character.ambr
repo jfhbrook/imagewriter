@@ -795,9 +795,26 @@
     'g',
   ])
 # ---
+# name: test_text_parser[\u2588-False]
+  list([
+    list([
+      <MouseTextCharacter.FULL_BLOCK: 206>,
+    ]),
+  ])
+# ---
 # name: test_text_parser[\u2588-True]
   list([
     <MouseTextCharacter.FULL_BLOCK: 206>,
+  ])
+# ---
+# name: test_text_parser[\xa3-False]
+  list([
+    list([
+      LanguageCharacter(
+        encoded='#',
+        language=<Language.BRITISH: 'British'>,
+      ),
+    ]),
   ])
 # ---
 # name: test_text_parser[\xa3-True]
@@ -824,7 +841,7 @@
     ':',
   ])
 # ---
-# name: test_text_parser[text10-True]
+# name: test_text_parser[text12-True]
   list([
     'A',
     ' ',
@@ -926,7 +943,7 @@
     'g',
   ])
 # ---
-# name: test_text_parser[text11-False]
+# name: test_text_parser[text13-False]
   list([
     'A',
     ' ',

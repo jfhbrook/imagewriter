@@ -13,14 +13,9 @@ from imagewriter.encoding.base import Command, Print
 from imagewriter.encoding.character.base import Mode
 from imagewriter.encoding.character.custom import CustomCharacterMode
 from imagewriter.encoding.character.language import LANGUAGE_MODES, LanguageMode
-from imagewriter.encoding.character.mousetext import MOUSETEXT_LOOKUP, MouseTextMode
+from imagewriter.encoding.character.mousetext import MouseTextMode
 from imagewriter.encoding.character.parser import parse_text
 from imagewriter.encoding.motion import CR, LF, TAB
-
-# TODO: Deprecate and remove
-MOUSETEXT_CHARACTERS: dict[str, MouseTextCharacter] = {
-    name: char[0] for name, char in MOUSETEXT_LOOKUP.items()
-}
 
 
 def extract_characters(

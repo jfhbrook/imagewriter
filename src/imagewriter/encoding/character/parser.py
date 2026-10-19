@@ -12,6 +12,7 @@ from parsy import (  # type: ignore
 
 from imagewriter.base.character import (
     Character,
+    CharacterError,
     CodePoint,
     CustomCharacter,
     Text,
@@ -27,7 +28,7 @@ from imagewriter.encoding.character.mousetext import (
 )
 
 
-class CharacterParseError(Exception):
+class CharacterParseError(CharacterError):
     """
     An error when parsing characters.
     """

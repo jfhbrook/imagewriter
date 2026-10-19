@@ -12,8 +12,10 @@ from imagewriter.base.units import Distance, Inch, Length, Pica, Point
 @dataclasses.dataclass
 class Settings:
     """
-    ImageWriter II global settings. These settings are controlled by a combination of
-    physical DIP switches and in-memory software switches.
+    ImageWriter II global settings.
+
+    Most of these settings are controlled on the printer by a combination of physical
+    DIP switches and in-memory software switches.
     """
 
     # boundaries
@@ -38,7 +40,9 @@ class Settings:
     quality: Quality
     # select
     software_select_response: bool
+    # protocol
     include_eighth_data_bit: bool
+    # driver settings
     emoji_codes: bool
 
     @classmethod

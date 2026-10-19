@@ -13,9 +13,9 @@ CodePoint = str | bytes | int
 CharacterMaxWidth = Literal[8] | Literal[16]
 
 
-class CodePointError(Exception):
+class CharacterError(Exception):
     """
-    An error related to code point operations.
+    An error related to character operations.
     """
 
     @classmethod
@@ -24,7 +24,13 @@ class CodePointError(Exception):
         try:
             yield
         except Exception as exc:
-            raise CodePointError(str(exc)) from exc
+            raise cls(str(exc)) from exc
+
+
+class CodePointError(CharacterError):
+    """
+    An error related to code point operations.
+    """
 
 
 def repr_code_point(point: int) -> str:
@@ -270,21 +276,3 @@ class CustomCharacterData:
 
 Character = str | LanguageCharacter | MouseTextCharacter | CustomCharacter
 Text = Character | list[Character]
-
-__all__: list[str] = [
-    "CodePoint",
-    "Character",
-    "Text",
-    "is_low_ascii",
-    "is_high_ascii",
-    "assert_low_ascii",
-    "assert_high_ascii",
-    "map_to_low_ascii",
-    "map_to_high_ascii",
-    "from_code_point",
-    "MouseTextCharacter",
-    "CustomCharacter",
-    "CustomCharacterData",
-    "Wires",
-    "is_valid_max_width",
-]

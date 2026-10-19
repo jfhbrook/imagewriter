@@ -7,6 +7,7 @@ For more information, see page 92 of the ImageWriter II Technical Reference Manu
 from typing import Any, Self, Sequence
 
 from imagewriter.base.character import (
+    CharacterError,
     CharacterMaxWidth,
     CustomCharacterData,
     is_valid_max_width,
@@ -79,13 +80,14 @@ class SetMaxCustomCharacterWidth(Esc):
     """
 
     def __init__(self: Self, width: CharacterMaxWidth) -> None:
-        assert is_valid_max_width(
-            width
-        ), "Character width must be either 8 or 16 dots wide"
+        with CharacterError.capture():
+            assert is_valid_max_width(
+                width
+            ), "Character width must be either 8 or 16 dots wide"
 
-        self.width: CharacterMaxWidth = width
+            self.width: CharacterMaxWidth = width
 
-        super().__init__(SET_WIDTH_ESCAPE_CODE[width])
+            super().__init__(SET_WIDTH_ESCAPE_CODE[width])
 
     def __repr__(self: Self) -> str:
         return f"SetMaxCustomCharacterWidth({self.width})"

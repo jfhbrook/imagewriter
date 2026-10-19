@@ -129,10 +129,10 @@ def test_custom_character(character: str, snapshot) -> None:
         (":folder:", True),
         (":folder:", False),
         ("█", True),
-        # ("█", False),
+        ("█", False),
         # Language
         ("£", True),
-        # ("£", False),
+        ("£", False),
         # Custom
         (":custom_160:", True),
         (":custom_160:", False),
