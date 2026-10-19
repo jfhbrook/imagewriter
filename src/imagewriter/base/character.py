@@ -2,36 +2,183 @@
 Classes and utilities for working with MouseText and custom characters.
 """
 
+from contextlib import contextmanager
 from dataclasses import dataclass
 from enum import Enum
-from typing import List, Self
+from typing import Generator, Literal, Self, Type, TypeGuard
+
+from imagewriter.base.language import Language
+
+CodePoint = str | bytes | int
+CharacterMaxWidth = Literal[8] | Literal[16]
+
+
+class CharacterError(Exception):
+    """
+    An error related to character operations.
+    """
+
+    @classmethod
+    @contextmanager
+    def capture(cls: Type[Self]) -> Generator[None, None, None]:
+        try:
+            yield
+        except Exception as exc:
+            raise cls(str(exc)) from exc
+
+
+class CodePointError(CharacterError):
+    """
+    An error related to code point operations.
+    """
+
+
+def repr_code_point(point: int) -> str:
+    """
+    A representation of a code point.
+    """
+
+    character = ""
+
+    try:
+        character = chr(point)
+    except ValueError:
+        return f"{point}"
+    else:
+        return f"{point} ({character!r})"
+
+
+def is_low_ascii(point: int) -> bool:
+    """
+    Whether or not a code point is valid low ASCII.
+    """
+
+    return 32 <= point <= 126
+
+
+def is_high_ascii(point: int) -> bool:
+    """
+    Whether or not a code point is valid high ASCII.
+    """
+
+    return 160 <= point <= 239
+
+
+def is_ascii(point: int) -> bool:
+    """
+    Whether or not a code point is valid ASCII.
+    """
+
+    return is_low_ascii(point) or is_high_ascii(point)
+
+
+def assert_low_ascii(point: int) -> None:
+    """
+    Assert that a code point is low ASCII.
+    """
+    with CodePointError.capture():
+        assert is_low_ascii(
+            point
+        ), f"Code point {repr_code_point(point)} is not valid low ASCII"
+
+
+def assert_high_ascii(point: int) -> None:
+    """
+    Assert that a code point is high ASCII.
+    """
+
+    with CodePointError.capture():
+        assert is_high_ascii(
+            point
+        ), f"Code point {repr_code_point(point)} is not valid high ASCII"
+
+
+def assert_ascii(point: int) -> None:
+    """
+    Assert that a code point is valid ASCII.
+    """
+
+    with CodePointError.capture():
+        assert is_ascii(
+            point
+        ), f"Code point {repr_code_point(point)} is not valid ASCII"
 
 
 def map_to_low_ascii(point: int) -> int:
     """
-    Map a code point (either MouseText or a custom character) to low ASCII, as
-    per page 40 (MouseText) and page 45 (custom characters) of the ImageWriter
-    II Technical Reference Manual.
+    Map a code point (either MouseText or a custom character) to low ASCII. This is
+    necessary if the eighth data bit is ignored.
 
-    This is necessary if the eighth data bit is ignored.
+    For more information, see pages 40 and 45 - for MouseText and custom characters
+    respectively - of the ImageWriter II Technical Reference Manual.
     """
 
-    assert 160 <= point <= 239, "Code point is not valid upper ASCII"
+    assert_high_ascii(point)
     return point - 128
 
 
 def map_to_high_ascii(point: int) -> int:
     """
-    Map a code point to high ascii.
+    Map a code point to high ASCII. This is necessary in character modes which map low
+    ASCII to high ASCII. These modes allow for accessing high ASCII without the 8th
+    data bit.
+
+    For more information, see pages 40 and 45 - for MouseText and custom characters
+    respectively - of the ImageWriter II Technical Reference Manual.
     """
 
-    assert point < 160, "Code point is already upper ASCII"
+    assert_low_ascii(point)
     return point + 128
+
+
+def is_single_byte(point: bytes) -> bool:
+    """
+    Check that a code point is a single byte.
+    """
+
+    return len(point) == 1
+
+
+def from_code_point(point: CodePoint) -> int:
+    """
+    Convert a code point to an integer value.
+    """
+
+    buffer: bytes = b""
+    result: int = -1
+
+    if isinstance(point, str):
+        buffer = point.encode(encoding="ascii")
+    elif isinstance(point, bytes):
+        buffer = point
+    else:
+        result = point
+
+    if buffer:
+        assert is_single_byte(buffer)
+        result = buffer[0]
+
+    assert_ascii(result)
+
+    return result
+
+
+@dataclass
+class LanguageCharacter:
+    """
+    A character encoded in a language. Certain non-ASCII characters are
+    encoded as corresponding ASCII characters in a particular language.
+
+    For more information, see page 42 of the ImageWriter II Technical Reference manual.
+    """
+
+    language: Language
+    encoded: str
 
 
 class MouseTextCharacter(Enum):
     """
-    MouseText characters.
+    A MouseText character.
 
     Many of these characters are included in the Symbols for Legacy Computing
     Unicode block:
@@ -50,58 +197,63 @@ class MouseTextCharacter(Enum):
     CHECK_MARK = 196
     INVERSE_CHECK_MARK = 197
     DOWNWARDS_ARROW_WITH_TIP_LEFTWARDS = 198
-    TITLE_BAR = 199  # Referred to as HORIZONTAL ONE EIGHTH BLOCK in Unicode
+    # As in the UI element on a classic Mac - Referred to as HORIZONTAL ONE EIGHTH
+    # BLOCK in Unicode
+    TITLE_BAR = 199
     LEFTWARDS_ARROW = 200
     ELLIPSIS = 201
     DOWNWARDS_ARROW = 202
     UPWARDS_ARROW = 203
-    UPPER_ONE_EIGHTS_BLOCK = 204  # TODO: incorrect
+    UPPER_RIGHT_ONE_EIGHT_BLOCK = 204
     CARRIAGE_RETURN = 205
     FULL_BLOCK = 206  # In "block characters" unicode block
-    LEFTWARDS_ARROW_AND_UPPER_AND_LOWER_ONE_EIGHTH_BLOCK = 207
-    RIGHTWARDS_ARROW_AND_UPPER_AND_LOWER_ONE_EIGHTH_BLOCK = 208
-    DOWNWARDS_ARROW_AND_RIGHT_ONE_EIGHTH_BLOCK = 209
-    UPWARDS_ARROW_AND_RIGHT_ONE_EIGHTH_BLOCK = 210
-    ALSO_UPPER_ONE_EIGHTS_BLOCK = 211  # TODO: incorrect
-    LEFT_AND_LOWER_ONE_EIGHTH_BLOCK = 212
+    LEFTWARDS_ARROW_AND_UPPER_AND_LOWER_ONE_EIGHT_BLOCK = 207
+    RIGHTWARDS_ARROW_AND_UPPER_AND_LOWER_ONE_EIGHT_BLOCK = 208
+    DOWNWARDS_ARROW_AND_RIGHT_ONE_EIGHT_BLOCK = 209
+    UPWARDS_ARROW_AND_RIGHT_ONE_EIGHT_BLOCK = 210
+    UPPER_ONE_EIGHT_BLOCK = 211
+    LEFT_AND_LOWER_ONE_EIGHT_BLOCK = 212
     RIGHTWARDS_ARROW = 213
-    BLOCK_2 = 214  # TODO: incorrect
-    BLOCK_3 = 215  # TODO: incorrect
+    MEDIUM_SHADE = 214
+    DARK_SHADE = 215
     LEFT_HALF_FOLDER = 216  # Paired with RIGHT_HALF_FOLDER
     RIGHT_HALF_FOLDER = 217  # Paired with LEFT_HALF_FOLDER
-    RIGHT_ONE_EIGHTH_BLOCK = 218
+    RIGHT_ONE_EIGHT_BLOCK = 218
     BLACK_DIAMOND = 219
-    UPPER_AND_LOWER_ONE_EIGHTH_BLOCK = 220
+    LOWER_ONE_EIGHT_BLOCK = 220
     VOIDED_GREEK_CROSS = 221
     RIGHT_OPEN_SQUARED_DOT = 222
-    LEFT_ONE_EIGHTH_BLOCK = 223
+    LEFT_ONE_EIGHT_BLOCK = 223
+
+
+class Wires(Enum):
+    """
+    The print head has 9 wires (the part of the print head that strikes the paper).
+    Only 8 of which can be used for a given custom character.
+
+    The "top wires" are wires 1-8, and the "bottom wires" are wires 2-9.
+
+    For more information, see page 93 of the ImageWriter II Technical Reference Manual.
+    """
+
+    TOP = "top"
+    BOTTOM = "bottom"
+
+
+def is_valid_max_width(width: int) -> TypeGuard[CharacterMaxWidth]:
+    return width == 8 or width == 16
 
 
 class CustomCharacter:
     """
-    A custom character.
+    A custom character, as specified by an ASCII code point.
     """
 
-    def __init__(self: Self, point: str | bytes | int) -> None:
-        if isinstance(point, str):
-            buffer: bytes = b""
-            buffer = point.encode(encoding="ascii")
-            assert len(buffer) == 1, f"Invalid character {point}"
-            self.point = buffer[0]
-        elif isinstance(point, bytes):
-            self.point = point[0]
-        elif isinstance(point, int):
-            self.point = point
-        else:
-            assert False, f"Unknown type {type(point)}"
-
-        if self.point < 160:
-            self.point = map_to_high_ascii(self.point)
-
-        assert 160 <= self.point <= 239, "Point must be valid ASCII"
+    def __init__(self: Self, point: CodePoint) -> None:
+        self.point: int = from_code_point(point)
 
     def __repr__(self: Self) -> str:
-        return f"CustomCharacter({self.point})"
+        return f"CustomCharacter({repr_code_point(self.point)})"
 
 
 @dataclass
@@ -119,8 +271,8 @@ class CustomCharacterData:
 
     character: CustomCharacter
     data: bytes
-    top_wires: bool = True
+    wires: Wires = Wires.TOP
 
 
-Character = str | MouseTextCharacter | CustomCharacter
-Text = Character | List[Character]
+Character = str | LanguageCharacter | MouseTextCharacter | CustomCharacter
+Text = Character | list[Character]
