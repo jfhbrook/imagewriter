@@ -59,8 +59,8 @@ class RichTextBuilder:
         self._settings: Settings = settings
         self._character_encoder = CharacterEncoder(
             settings.language,
-            map_mousetext=not settings.include_eighth_data_bit,
-            low_ascii=not settings.include_eighth_data_bit,
+            include_eighth_data_bit=settings.include_eighth_data_bit,
+            emoji_codes=settings.emoji_codes,
         )
 
         self._commands: list[Command] = list()
@@ -97,8 +97,8 @@ class RichTextBuilder:
         self._settings = settings
         self._character_encoder = CharacterEncoder(
             settings.language,
-            map_mousetext=not settings.include_eighth_data_bit,
-            low_ascii=not settings.include_eighth_data_bit,
+            include_eighth_data_bit=settings.include_eighth_data_bit,
+            emoji_codes=settings.emoji_codes,
         )
 
     def _apply_settings(self: Self) -> None:

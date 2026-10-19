@@ -40,28 +40,36 @@ class CharacterEncoder:
     def __init__(
         self: Self,
         language: Language = Language.AMERICAN,
-        map_mousetext: bool = True,
-        low_ascii: bool = True,
+        include_eighth_data_bit: bool = True,
         emoji_codes: bool = True,
     ) -> None:
         default_mode: LanguageMode = LanguageMode(language)
 
         self.default_mode: LanguageMode = default_mode
-        self.map_mousetext: bool = map_mousetext
-        self.low_ascii: bool = low_ascii
+        self.include_eighth_data_bit = include_eighth_data_bit
         self.emoji_codes: bool = emoji_codes
 
         self.language_mode: LanguageMode = default_mode
         self.mode: Mode = default_mode
 
+    @property
+    def map_ascii(self: Self) -> bool:
+        """
+        Whether or not to map low ASCII to high ASCII.
+
+        Mapping to high ASCII is only necessary if the eighth data bit is not included.
+        """
+
+        return not self.include_eighth_data_bit
+
     def _next_mode(self: Self, character: Character) -> Mode:
         if isinstance(character, LanguageCharacter):
             return LanguageMode(character.language)
         if isinstance(character, MouseTextCharacter):
-            return MouseTextMode(map_ascii=self.map_mousetext)
+            return MouseTextMode(map_ascii=self.map_ascii)
 
         if isinstance(character, CustomCharacter):
-            return CustomCharacterMode(high_ascii=self.low_ascii)
+            return CustomCharacterMode(map_ascii=self.map_ascii)
 
         supported: list[LanguageMode] = LANGUAGE_MODES.get(
             character, [self.language_mode]
@@ -124,12 +132,12 @@ class CharacterEncoder:
                 # Recall that we already extracted MouseText characters
                 buffer += bytes(ch, encoding="ascii")
             elif isinstance(ch, MouseTextCharacter):
-                if self.map_mousetext:
+                if self.map_ascii:
                     buffer += bytes([map_to_low_ascii(ch.value)])
                 else:
                     buffer += bytes([ch.value])
             else:
-                if self.low_ascii:
+                if self.map_ascii:
                     buffer += bytes([map_to_low_ascii(ch.point)])
                 else:
                     buffer += bytes([ch.point])

@@ -39,6 +39,7 @@ class Settings:
     # select
     software_select_response: bool
     include_eighth_data_bit: bool
+    emoji_codes: bool
 
     @classmethod
     def defaults(cls: Type[Self], dip_switches: Optional[DIPSwitches]) -> Self:
@@ -61,6 +62,7 @@ class Settings:
             quality=Quality.DRAFT,
             software_select_response=not software_sw.software_select_response_disabled,
             include_eighth_data_bit=not software_sw.ignore_eighth_data_bit,
+            emoji_codes=True,
         )
 
     @classmethod

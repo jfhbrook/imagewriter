@@ -71,7 +71,9 @@ class TestPage:
         self.pandoc = pandoc_renderer
 
         settings = dataclasses.replace(
-            self.builder.settings, quality=Quality.NEAR_LETTER_QUALITY
+            self.builder.settings,
+            quality=Quality.NEAR_LETTER_QUALITY,
+            emoji_codes=False,
         )
         self.builder.settings = settings
         self.pandoc.settings = settings

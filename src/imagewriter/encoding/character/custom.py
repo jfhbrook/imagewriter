@@ -163,12 +163,12 @@ class EnableCustomCharacterMode(Esc):
     Reference Manual.
     """
 
-    def __init__(self: Self, high_ascii: bool = False) -> None:
-        self.high_ascii: bool = high_ascii
-        super().__init__(HIGH_ASCII_MODE if high_ascii else STANDARD_MODE)
+    def __init__(self: Self, map_ascii: bool = False) -> None:
+        self.map_ascii: bool = map_ascii
+        super().__init__(HIGH_ASCII_MODE if map_ascii else STANDARD_MODE)
 
     def __repr__(self: Self) -> str:
-        return f"EnableCustomCharacterMode(high_ascii={self.high_ascii})"
+        return f"EnableCustomCharacterMode(high_ascii={self.map_ascii})"
 
 
 class CustomCharacterMode(Mode):
@@ -176,17 +176,16 @@ class CustomCharacterMode(Mode):
     A custom character mode.
     """
 
-    def __init__(self: Self, high_ascii: bool = False) -> None:
-        self.high_ascii: bool = high_ascii
+    def __init__(self: Self, map_ascii: bool = False) -> None:
+        self.map_ascii: bool = map_ascii
 
     def enable(self: Self) -> list[Command]:
-        return [EnableCustomCharacterMode(self.high_ascii)]
+        return [EnableCustomCharacterMode(self.map_ascii)]
 
     def disable(self: Self) -> list[Command]:
         return [DISABLE_MODE]
 
     def __eq__(self: Self, other: Any) -> bool:
         return (
-            isinstance(other, CustomCharacterMode)
-            and self.high_ascii == other.high_ascii
+            isinstance(other, CustomCharacterMode) and self.map_ascii == other.map_ascii
         )
