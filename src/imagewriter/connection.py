@@ -48,7 +48,7 @@ class Connection:
 
     def write(self: Self, commands: Sequence[Command]) -> None:
         """
-        Write to the serial portl.
+        Write to the serial port.
 
         Commands are buffered, respecting the ImageWriter II's CTS signal.
         """
