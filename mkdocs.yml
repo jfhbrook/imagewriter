@@ -1,0 +1,8 @@
+site_name: ImageWriter II
+
+theme:
+  name: terminal
+
+plugins:
+  - include-markdown
+  - mkdocstrings
