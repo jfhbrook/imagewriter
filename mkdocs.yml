@@ -1,7 +1,7 @@
 site_name: ImageWriter II
 
 theme:
-  name: terminal
+  name: readthedocs
 
 plugins:
   - include-markdown

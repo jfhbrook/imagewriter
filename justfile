@@ -44,10 +44,6 @@ _clean-test:
   rm -f pytest_runner-*.egg
   rm -rf tests/__pycache__
 
-# Serve docs
-docs:
-  uv run mkdocs serve
-
 #
 # Shell and console
 #
