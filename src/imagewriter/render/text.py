@@ -2,9 +2,8 @@ from collections.abc import Callable
 from contextlib import AbstractContextManager, contextmanager
 from typing import Generator, Self, Sequence
 
-from imagewriter.base.character import Text
+from imagewriter.base.character import Language, Text
 from imagewriter.base.color import Color
-from imagewriter.base.language import Language
 from imagewriter.base.pitch import Pitch
 from imagewriter.base.quality import Quality
 from imagewriter.base.settings import Settings

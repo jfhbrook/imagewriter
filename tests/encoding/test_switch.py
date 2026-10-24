@@ -1,6 +1,6 @@
 import pytest
 
-from imagewriter.base.language import Language
+from imagewriter.base.character import Language
 from imagewriter.base.print import PrintCommands
 from imagewriter.base.switch import SoftwareSwitch, SoftwareSwitches
 from imagewriter.encoding.attributes import PRINT_SLASHED_ZERO, PRINT_UNSLASHED_ZERO
