@@ -1,5 +1,6 @@
 """
-Classes and utilities for working with MouseText and custom characters.
+Classes and utilities for working with non-ASCII characters. This includes localized
+language fonts, the MouseText special character set, and custom characters.
 """
 
 from imagewriter.base.character.ascii import (
