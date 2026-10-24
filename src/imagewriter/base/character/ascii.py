@@ -1,3 +1,13 @@
+"""
+The ImageWriter II uses an ASCII encoding. However, in addition to standard 7-bit
+ASCII where the 8th bit is 0 ("low ASCII") it also supports ranges in the upper half of
+the full 8 bits ("high ASCII").
+
+The ImageWriter II is designed to allow for ignoring the 8th bit (aligning with the
+behavior of Applesoft BASIC), and so includes a number of tricks to "map" from low
+ASCII to high ASCII.
+"""
+
 from imagewriter.base.character.error import CodePointError
 from imagewriter.base.character.repr import repr_code_point
 
