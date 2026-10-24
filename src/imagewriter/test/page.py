@@ -5,8 +5,7 @@ from enum import Enum
 import importlib.resources
 from typing import Any, Generator, Self, Type
 
-from imagewriter.base.character import MouseTextCharacter
-from imagewriter.base.language import Language
+from imagewriter.base.character import Language, MouseTextCharacter
 from imagewriter.base.pitch import Pitch
 from imagewriter.base.quality import Quality
 from imagewriter.encoding import Command

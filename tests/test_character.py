@@ -8,11 +8,11 @@ from imagewriter.base.character import (
     assert_low_ascii,
     CodePointError,
     CustomCharacter,
+    Language,
     LanguageCharacter,
     MouseTextCharacter,
     repr_code_point,
 )
-from imagewriter.base.language import Language
 from imagewriter.encoding.character.language import (
     LANGUAGE_CHARACTERS,
 )
