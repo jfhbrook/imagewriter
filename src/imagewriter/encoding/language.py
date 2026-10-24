@@ -1,6 +1,6 @@
 from typing import List, Self
 
-from imagewriter.base.language import Language
+from imagewriter.base.character import Language
 from imagewriter.base.switch import SoftwareSwitch
 from imagewriter.encoding.base import Command
 from imagewriter.encoding.switch import (
