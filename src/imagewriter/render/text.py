@@ -283,19 +283,23 @@ class RichTextBuilder:
         self._write_header()
 
         for _ in range(0, count):
-            cr = self._commands[-2]
-            lf = self._commands[-1]
-
-            try:
-                assert isinstance(cr, CarriageReturn)
-                assert isinstance(lf, LineFeed)
-                assert lf.lines == 1
-            except AssertionError:
-                return self
-
-            self.trim(2)
-
+            self._trim_cr_lf()
         return self
+
+    def _trim_cr_lf(self: Self) -> None:
+        if len(self._commands) < 1:
+            return
+        cr = self._commands[-2]
+        lf = self._commands[-1]
+
+        try:
+            assert isinstance(cr, CarriageReturn)
+            assert isinstance(lf, LineFeed)
+            assert lf.lines == 1
+        except AssertionError:
+            return
+
+        self.trim(2)
 
     def space(self: Self) -> Self:
         """
