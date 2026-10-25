@@ -48,9 +48,7 @@ _clean-test:
 # Shell and console
 #
 
-shell:
-  uv run bash
-
+# Open JupyterLab
 console:
   uv run jupyter lab
 

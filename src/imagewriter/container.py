@@ -1,6 +1,8 @@
 from concurrent.futures import Executor, ThreadPoolExecutor
 from contextlib import contextmanager
-from typing import cast, Generator
+import logging
+from pprint import pformat
+from typing import Generator
 
 from dependency_injector import containers, providers
 from serial.tools.list_ports import comports
@@ -14,28 +16,45 @@ from imagewriter.render import DocumentRenderer, PandocRenderer, RichTextBuilder
 from imagewriter.serial import BaudRate, Serial, SerialProtocol
 from imagewriter.test import TestPage
 
+logger = logging.getLogger(__name__)
+
 DIP_SWITCHES = DIPSwitches.defaults()
 
 
 def provide_port() -> str:
-    return comports()[-1].device
+    port = comports()[-1].device
+
+    logger.debug(f"Providing port {port}")
+
+    return port
 
 
 def provide_baud_rate(dip_switches: DIPSwitches) -> BaudRate:
+    logger.debug(f"Baud rate: {dip_switches.baud_rate}")
+
     return dip_switches.baud_rate
 
 
 def provide_protocol(dip_switches: DIPSwitches) -> SerialProtocol:
+    logger.debug(f"Protocol: {dip_switches.protocol.value}")
     return dip_switches.protocol
 
 
 def provide_settings(dip_switches: DIPSwitches) -> Settings:
-    return Settings.replace(
+    settings = Settings.replace(
         Settings.defaults(dip_switches),
         lf_when_line_full=True,
         perforation_skip=True,
         include_eighth_data_bit=True,
     )
+
+    logger.debug(f"""Settings:
+
+    {pformat(settings)}
+
+    """)
+
+    return settings
 
 
 def provide_language(settings: Settings) -> Language:
@@ -46,7 +65,11 @@ def provide_language(settings: Settings) -> Language:
 def provide_executor() -> Generator[Executor, None, None]:
     executor = ThreadPoolExecutor(max_workers=1)
 
+    logger.debug("Executor created")
+
     yield executor
+
+    logger.debug("Shutting down executor")
 
     executor.shutdown(wait=False, cancel_futures=True)
 
@@ -72,14 +95,11 @@ class Container(containers.DeclarativeContainer):
     settings = providers.Callable(provide_settings, dip_switches=dip_switches)
     language = providers.Callable(provide_language, settings=settings)
 
-    executor = cast(providers.Resource[Executor], providers.Resource(provide_executor))
+    executor = providers.Resource(provide_executor)
 
-    serial = providers.Factory(
-        Serial, port=port, baud_rate=baud_rate, protocol=protocol
-    )
-    connection = cast(
-        providers.Resource[Connection],
-        providers.Resource(provide_connection, serial=serial, executor=executor),
+    serial = providers.Factory(Serial, port=port, baudrate=baud_rate, protocol=protocol)
+    connection = providers.Resource(
+        provide_connection, serial=serial, executor=executor
     )
 
     map_mousetext = providers.Object(False)

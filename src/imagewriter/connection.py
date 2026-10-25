@@ -37,6 +37,7 @@ class Connection:
 
         self._running: bool = True
         self._executor.submit(self._worker)
+        logger.debug("Connection established")
 
     def shutdown(self: Self) -> None:
         """

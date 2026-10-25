@@ -1,6 +1,5 @@
-from typing import Optional, Self, Type
+from typing import Self
 
-from dependency_injector import providers
 import ipywidgets as widgets  # type: ignore
 
 from imagewriter.base.settings import Settings
@@ -21,13 +20,9 @@ class ControlPanel(widgets.Tab):
     A control panel widget for the ImageWriter II.
     """
 
-    def __init__(self: Self, container_cls: Type[Container] = Container) -> None:
-        # We need to hook some custom behavior onto the creation of the
-        # serial port. We do that by subclassing the container here.
-
-        self._serial: Optional[Serial] = None
-        cls = self._bind_cls(container_cls)
-        self.container: Container = cls()
+    def __init__(self: Self) -> None:
+        self._connection: Connection | None = None
+        self.container: Container = Container()
 
         # Grab needed dependencies
         port = self.container.port()
@@ -68,58 +63,50 @@ class ControlPanel(widgets.Tab):
         self._test_widget.on_print(self._print_test_page)
         self._test_widget.on_memory_test(self._run_memory_test)
 
-    def _bind_cls(self: Self, cls: Type[Container]) -> Type[Container]:
-        class Container(cls):  # type: ignore
-            serial = providers.Callable(self._provide_serial)
-
-            connection = providers.Singleton(Connection, serial=serial)
-
-        return Container
-
-    def _provide_serial(self: Self) -> Serial:
-        if not self._serial:
-            try:
-                self._serial = Serial(
-                    port=self.container.port(),
-                    baudrate=self.container.baud_rate(),
-                    protocol=self.container.protocol(),
-                )
-            except Exception as exc:
-                self._serial_widget.error(exc)
-                raise exc
-
-            self._activity_widget.instrument(self._serial)
-            if self._serial.is_open:
-                self._serial_widget.connect()
-
-        return self._serial
-
     @property
     def settings(self: Self) -> Settings:
         return self.container.settings()
 
-    @property
-    def serial(self: Self) -> Serial:
-        return self.container.serial()
-
-    @property
     def connection(self: Self) -> Connection:
-        return self.container.connection()
+        try:
+            connection = self.container.connection()
+        except Exception as exc:
+            self._serial_widget.error(exc)
+            raise exc
+
+        serial = connection.serial
+
+        self._activity_widget.instrument(serial)
+
+        if serial.is_open:
+            self._serial_widget.connect()
+
+        return connection
+
+    # Reload the connection whenever underlying container settings change
+    def _reload_connection(self: Self) -> None:
+        if self._connection:
+            self._connection.shutdown()
+        self._connection = self.connection()
+
+    def _connect(self: Self) -> Connection:
+        if not self._connection:
+            self._reload_connection()
+
+        assert self._connection, "Connection was not established"
+
+        return self._connection
 
     # Triggered when we reload the port, typically from clicking "connect".
     def _reload_port(self: Self) -> None:
         self.container.port.override(self._serial_widget.port)
 
-        try:
-            if self._serial:
-                self._serial.port = self._serial_widget.port
-        except Exception as exc:
-            self._serial_widget.error(exc)
-            raise
+        self._reload_connection()
 
     # Triggered when we reload the settings, typically from clicking "apply".
     def _reload_settings(self: Self) -> None:
         self.container.settings.override(self._settings_widget.settings)
+        self._reload_connection()
 
     # Triggered when the "connect/disconnect" button is clicked
     def _toggle_serial(self: Self, widget: SerialWidget) -> None:
@@ -131,7 +118,10 @@ class ControlPanel(widgets.Tab):
     # Open the serial port
     def open_serial(self: Self) -> None:
         self._reload_port()
-        serial: Serial = self.container.serial()
+
+        assert self._connection, "Connection was not established"
+
+        serial = self._connection.serial
 
         if not serial.is_open:
             try:
@@ -144,13 +134,16 @@ class ControlPanel(widgets.Tab):
 
     # Close the serial port
     def close_serial(self: Self) -> None:
-        serial: Serial = self.container.serial()
+        if self._connection:
+            serial: Serial = self._connection.serial
 
-        try:
-            if serial.is_open:
-                serial.close()
-        except Exception as exc:
-            self._serial_widget.error(exc)
+            try:
+                if serial.is_open:
+                    serial.close()
+            except Exception as exc:
+                self._serial_widget.error(exc)
+            else:
+                self._serial_widget.disconnect()
         else:
             self._serial_widget.disconnect()
 
@@ -160,18 +153,24 @@ class ControlPanel(widgets.Tab):
     def _click_apply(self: Self, widget: SettingsWidget) -> None:
         self._reload_settings()
 
-        widget.apply(self.container.connection())
+        connection = self._connect()
+
+        widget.apply(connection)
 
     def _set_top_of_form(self: Self, widget: TopOfFormWidget) -> None:
-        widget.set_top_of_form(self.container.connection())
+        connection = self._connect()
+
+        widget.set_top_of_form(connection)
 
     def _print_test_page(self: Self, widget: TestWidget) -> None:
         test_page = self.container.test_page()
+        connection = self._connect()
 
-        widget.print_test_page(self.container.connection(), test_page)
+        widget.print_test_page(connection, test_page)
 
     def _run_memory_test(self: Self, widget: TestWidget) -> None:
-        widget.run_memory_test(self.container.serial(), self.container.connection())
+        connection = self._connect()
+        widget.run_memory_test(connection.serial, connection)
 
     def shutdown(self: Self) -> None:
         self._activity_widget.shutdown()
