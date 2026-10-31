@@ -62,6 +62,14 @@ def provide_language(settings: Settings) -> Language:
     return settings.language
 
 
+def provide_include_eighth_data_bit(settings: Settings) -> bool:
+    return settings.include_eighth_data_bit
+
+
+def provide_emoji_codes(settings: Settings) -> bool:
+    return settings.emoji_codes
+
+
 @contextmanager
 def provide_executor() -> Generator[Executor, None, None]:
     executor = ThreadPoolExecutor(max_workers=1)
@@ -87,14 +95,40 @@ def provide_connection(
 
 
 class Container(containers.DeclarativeContainer):
+    """
+    A dependency injection container for various ImageWriter II entities.
+
+    Attributes:
+        dip_switches: The default DIP switches for an ImageWriter II printer sold in
+                      America
+        settings: Sensible settings for an ImageWriter II printer sold in America
+        executor: A shared `concurrent.futures.Executor` instance
+        serial: A serial connection
+        observer: A serial state observer
+        connection: A managed ImageWriter II connection
+        character_encoder: A character encoder for non-ASCII characters
+        rich_text_builder: A builder for rich text
+        document_renderer: A class for rendering Documents
+        pandoc_renderer: A class for rendering text documents with `pandoc`
+        test_page: A class for rendering test pages
+    """
+
     port = providers.Callable(provide_port)
 
     dip_switches = providers.Object(DIP_SWITCHES)
+
+    # Individual configuration from DIP switches
     baud_rate = providers.Callable(provide_baud_rate, dip_switches=dip_switches)
     protocol = providers.Callable(provide_protocol, dip_switches=dip_switches)
 
     settings = providers.Callable(provide_settings, dip_switches=dip_switches)
+
+    # Individual configuration from settings
     language = providers.Callable(provide_language, settings=settings)
+    include_eighth_data_bit = providers.Callable(
+        provide_include_eighth_data_bit, settings=Settings
+    )
+    emoji_codes = providers.Callable(provide_emoji_codes, settings=settings)
 
     executor = providers.Resource(provide_executor)
 
@@ -104,13 +138,11 @@ class Container(containers.DeclarativeContainer):
         provide_connection, serial=serial, executor=executor
     )
 
-    map_mousetext = providers.Object(False)
-    map_custom = providers.Object(False)
     character_encoder = providers.Factory(
         CharacterEncoder,
         language=language,
-        map_mousetext=map_mousetext,
-        map_custom=map_custom,
+        include_eighth_data_bit=include_eighth_data_bit,
+        emoji_codes=emoji_codes,
     )
     rich_text_builder = providers.Factory(RichTextBuilder, settings=settings)
     document_renderer = providers.Factory(DocumentRenderer, settings=settings)
