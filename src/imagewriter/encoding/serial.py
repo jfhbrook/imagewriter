@@ -2,9 +2,9 @@ from typing import Self
 
 from imagewriter.base.switch import SoftwareSwitch
 from imagewriter.encoding.switch import (
+    SetSoftwareSwitches,
     fmt_switch_banks,
     fmt_switch_position,
-    SetSoftwareSwitches,
 )
 
 

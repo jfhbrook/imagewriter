@@ -4,16 +4,17 @@ Custom character encoding.
 For more information, see page 92 of the ImageWriter II Technical Reference Manual.
 """
 
-from typing import Any, Self, Sequence
+from collections.abc import Sequence
+from typing import Self
 
 from imagewriter.base.character import (
     CharacterError,
     CharacterMaxWidth,
     CustomCharacterData,
-    is_valid_max_width,
     Wires,
+    is_valid_max_width,
 )
-from imagewriter.encoding.base import Bytes, Command, ctrl, esc, Esc
+from imagewriter.encoding.base import Bytes, Command, Esc, ctrl, esc
 from imagewriter.encoding.character.base import DISABLE_MODE, Mode
 
 CUSTOM_CHARACTER_WIDTH_CODES: dict[Wires, dict[int, bytes]] = {
@@ -81,9 +82,9 @@ class SetMaxCustomCharacterWidth(Esc):
 
     def __init__(self: Self, width: CharacterMaxWidth) -> None:
         with CharacterError.capture():
-            assert is_valid_max_width(
-                width
-            ), "Character width must be either 8 or 16 dots wide"
+            assert is_valid_max_width(width), (
+                "Character width must be either 8 or 16 dots wide"
+            )
 
             self.width: CharacterMaxWidth = width
 
@@ -187,7 +188,7 @@ class CustomCharacterMode(Mode):
     def disable(self: Self) -> list[Command]:
         return [DISABLE_MODE]
 
-    def __eq__(self: Self, other: Any) -> bool:
+    def __eq__(self: Self, other: object) -> bool:
         return (
             isinstance(other, CustomCharacterMode) and self.map_ascii == other.map_ascii
         )

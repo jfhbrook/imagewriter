@@ -3,7 +3,7 @@ Support for the ImageWriter II's response when commanded to identify itself.
 """
 
 from dataclasses import dataclass
-from typing import Self, Set
+from typing import Self
 
 Feature = str
 FEAT_COLOR_RIBBON: Feature = "C"
@@ -18,7 +18,7 @@ class Identification:
 
     model: str
     carriage_width: int
-    features: Set[Feature]
+    features: set[Feature]
 
     @property
     def color_ribbon(self: Self) -> bool:
@@ -50,7 +50,7 @@ def parse_id_response(res: bytes) -> Identification:
 
     model: str = res[0:2].decode(encoding="ascii")
     carriage_width: int = int(res[2:4].decode(encoding="ascii"))
-    features: Set[Feature] = set(res[4:].decode(encoding="ascii").split(""))
+    features: set[Feature] = set(res[4:].decode(encoding="ascii").split(""))
 
     return Identification(
         model=model,

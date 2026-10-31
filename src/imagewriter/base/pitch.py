@@ -8,7 +8,7 @@ monospace fonts.
 """
 
 from enum import Enum
-from typing import Optional, Self
+from typing import Self
 
 LINE_WIDTH = 8  # inches
 VERTICAL_RESOLUTION = 72  # dots per inch
@@ -43,7 +43,7 @@ class Pitch(Enum):
         }
 
     @property
-    def cpi(self: Self) -> Optional[int | float]:
+    def cpi(self: Self) -> int | float | None:
         """
         The pitch's characters per inch. Note that proportional fonts do not
         have a set characters per inch, and are specified in dots per inch
@@ -60,7 +60,7 @@ class Pitch(Enum):
         }.get(self, None)
 
     @property
-    def dpi(self: Self) -> Optional[int]:
+    def dpi(self: Self) -> int | None:
         """
         The pitch's dots per inch. Note that only proportional fonts have a
         set dots per inch; all other fonts are specified in characters per

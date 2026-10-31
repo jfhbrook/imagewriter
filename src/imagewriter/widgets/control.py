@@ -73,7 +73,7 @@ class ControlPanel(widgets.Tab):
             connection = self.container.connection()
         except Exception as exc:
             self._serial_widget.error(exc)
-            raise exc
+            raise
 
         serial = connection.serial
 
@@ -129,7 +129,7 @@ class ControlPanel(widgets.Tab):
                 serial.open()
             except Exception as exc:
                 self._serial_widget.error(exc)
-                raise exc
+                raise
 
         self._serial_widget.connect()
 
@@ -141,7 +141,7 @@ class ControlPanel(widgets.Tab):
             try:
                 if serial.is_open:
                     serial.close()
-            except Exception as exc:
+            except Exception as exc:  # noqa
                 self._serial_widget.error(exc)
             else:
                 self._serial_widget.disconnect()

@@ -18,12 +18,13 @@ generate:
 
 # Format with black and isort
 format:
-  uv run black ./src ./tests
-  uv run isort ./src ./tests
+  uv run ruff format
+  uv run ruff check --fix-only
 
 # Lint with flake8
 lint:
-  uv run flake8 ./src ./tests
+  uv run ruff format --check
+  uv run ruff check
   uv run validate-pyproject ./pyproject.toml
 
 # Check type annotations

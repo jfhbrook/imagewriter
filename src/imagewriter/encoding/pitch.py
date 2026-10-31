@@ -48,7 +48,7 @@ class InsertSpaces(Esc):
         self._pitch = pitch
         self._spaces = spaces
 
-        return super().__init__(str(spaces))
+        super().__init__(str(spaces))
 
 
 class SetSpacing(Esc):
@@ -69,7 +69,7 @@ class SetSpacing(Esc):
         self._pitch = pitch
         self._spaces = spaces
 
-        return super().__init__("m" + str(spaces))
+        super().__init__("m" + str(spaces))
 
     def __repr__(self: Self) -> str:
         return f"SetSpacing({self._pitch}, {self._spaces})"

@@ -1,8 +1,8 @@
+import logging
+from collections.abc import Generator
 from concurrent.futures import Executor, ThreadPoolExecutor
 from contextlib import contextmanager
-import logging
 from pprint import pformat
-from typing import Generator
 
 from dependency_injector import containers, providers
 from serial.tools.list_ports import comports
@@ -71,7 +71,7 @@ def provide_emoji_codes(settings: Settings) -> bool:
 
 
 @contextmanager
-def provide_executor() -> Generator[Executor, None, None]:
+def provide_executor() -> Generator[Executor]:
     executor = ThreadPoolExecutor(max_workers=1)
 
     logger.debug("Executor created")
@@ -84,9 +84,7 @@ def provide_executor() -> Generator[Executor, None, None]:
 
 
 @contextmanager
-def provide_connection(
-    serial: Serial, executor: Executor
-) -> Generator[Connection, None, None]:
+def provide_connection(serial: Serial, executor: Executor) -> Generator[Connection]:
     connection = Connection(serial=serial, executor=executor)
 
     yield connection

@@ -1,14 +1,13 @@
-from typing import Callable, cast, Dict, Literal, Self, Type
+from collections.abc import Callable
+from typing import Literal, Self, cast
 
 import ipywidgets as widgets  # type: ignore
 
 from imagewriter.base.units import Centimeter, Distance, Inch, Millimeter, Pica, Point
 
-UnitName = (
-    Literal["in"] | Literal["cm"] | Literal["mm"] | Literal["pt"] | Literal["pica"]
-)
+UnitName = Literal["in", "cm", "mm", "pt", "pica"]
 
-UNIT_NAMES: Dict[Type[Distance], UnitName] = {
+UNIT_NAMES: dict[type[Distance], UnitName] = {
     Inch: "in",
     Centimeter: "cm",
     Millimeter: "mm",
@@ -16,7 +15,7 @@ UNIT_NAMES: Dict[Type[Distance], UnitName] = {
     Pica: "pica",
 }
 
-UNIT_CLASSES: Dict[str, Type[Distance]] = {
+UNIT_CLASSES: dict[str, type[Distance]] = {
     name: cls for cls, name in UNIT_NAMES.items()
 }
 
@@ -40,15 +39,15 @@ class UnitClassWidget(widgets.Dropdown):
         self.value = unit
 
     @property
-    def cls(self: Self) -> Type[Distance]:
+    def cls(self: Self) -> type[Distance]:
         return UNIT_CLASSES[self.units]
 
     @cls.setter
-    def cls(self: Self, cls: Type[Distance]) -> None:
+    def cls(self: Self, cls: type[Distance]) -> None:
         self.value = UNIT_NAMES[cls]
 
 
-UNIT_VALUES: Dict[Type[Distance], Callable[[Distance], float]] = {
+UNIT_VALUES: dict[type[Distance], Callable[[Distance], float]] = {
     Inch: lambda distance: distance.inches,
     Centimeter: lambda distance: distance.centimeters,
     Millimeter: lambda distance: distance.millimeters,
@@ -76,10 +75,10 @@ class UnitValueWidget(widgets.BoundedFloatText):
     def _start_value(self: Self, distance: Distance) -> float:
         return UNIT_VALUES[distance.__class__](distance)
 
-    def _max_value(self: Self, cls: Type[Distance]) -> float:
+    def _max_value(self: Self, cls: type[Distance]) -> float:
         return UNIT_VALUES[cls](self._max)
 
-    def _step_value(self: Self, cls: Type[Distance]) -> float:
+    def _step_value(self: Self, cls: type[Distance]) -> float:
         return UNIT_VALUES[cls](self._step)
 
     @property

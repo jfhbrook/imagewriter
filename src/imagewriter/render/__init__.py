@@ -8,13 +8,11 @@ Abstractions for rendering documents to the ImageWriter II's coded format:
   `DocumentRenderer`
 """
 
-from typing import List
-
 from imagewriter.render.document import DocumentRenderer
 from imagewriter.render.pandoc import PandocRenderer
 from imagewriter.render.text import RichTextBuilder
 
-__all__: List[str] = [
+__all__: list[str] = [
     "DocumentRenderer",
     "PandocRenderer",
     "RichTextBuilder",

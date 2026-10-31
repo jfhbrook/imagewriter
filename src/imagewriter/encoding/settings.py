@@ -1,12 +1,10 @@
-from typing import List
-
 from imagewriter.base.settings import Settings
 from imagewriter.encoding.base import Command
 from imagewriter.encoding.boundaries import SetLeftMargin, SetPageLength
 from imagewriter.encoding.motion import (
-    reset_tabs,
     SetCRInsertion,
     SetDistanceBetweenLines,
+    reset_tabs,
     to_tab_stops,
 )
 from imagewriter.encoding.paper import SetPaperOutSensor
@@ -15,7 +13,7 @@ from imagewriter.encoding.quality import SetQuality
 from imagewriter.encoding.switch import apply_software_switches
 
 
-def apply_settings(settings: Settings) -> List[Command]:
+def apply_settings(settings: Settings) -> list[Command]:
     return [
         *apply_software_switches(settings.switches()),
         SetCRInsertion(settings.cr_insertion),

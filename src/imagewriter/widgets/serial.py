@@ -1,4 +1,4 @@
-from typing import List, Protocol, Self
+from typing import Protocol, Self
 
 import ipywidgets as widgets  # type: ignore
 from serial.tools.list_ports import comports
@@ -8,7 +8,7 @@ from imagewriter.base.switch import DIPSwitches
 
 class SerialPortWidget(widgets.Dropdown):
     def __init__(self: Self, port: str) -> None:
-        ports: List[str] = [port.device for port in comports()]
+        ports: list[str] = [port.device for port in comports()]
 
         super().__init__(
             options=ports, value=port, description="Serial Port:", disabled=False
@@ -70,7 +70,7 @@ class SerialStatusWidget(widgets.Label):
 
 
 class SerialCallback(Protocol):
-    def __call__(self: Self, widget: "SerialWidget") -> None: ...
+    def __call__(self: Self, widget: SerialWidget) -> None: ...
 
 
 class SerialWidget(widgets.VBox):

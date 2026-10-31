@@ -1,10 +1,10 @@
-from typing import Dict, Self
+from typing import Self
 
 import ipywidgets as widgets  # type: ignore
 
 from imagewriter.base.character import Language
 
-LANGUAGES: Dict[str, Language] = {language.value: language for language in Language}
+LANGUAGES: dict[str, Language] = {language.value: language for language in Language}
 
 
 class LanguageWidget(widgets.Dropdown):

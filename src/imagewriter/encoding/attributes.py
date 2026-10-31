@@ -1,12 +1,12 @@
-from typing import List, Self
+from typing import Self
 
 from imagewriter.base.switch import SoftwareSwitch
 from imagewriter.encoding.base import Command, Ctrl, Esc
 from imagewriter.encoding.switch import (
     CloseSoftwareSwitches,
+    OpenSoftwareSwitches,
     fmt_switch_banks,
     fmt_switch_position,
-    OpenSoftwareSwitches,
 )
 
 
@@ -30,7 +30,7 @@ START_DOUBLE_WIDTH = StartDoubleWidth()
 STOP_DOUBLE_WIDTH = StopDoubleWidth()
 
 
-def double_width(commands: List[Command]) -> List[Command]:
+def double_width(commands: list[Command]) -> list[Command]:
     return [
         START_DOUBLE_WIDTH,
         *commands,
@@ -58,7 +58,7 @@ START_UNDERLINE = StartUnderline()
 STOP_UNDERLINE = StopUnderline()
 
 
-def underline(commands: List[Command]) -> List[Command]:
+def underline(commands: list[Command]) -> list[Command]:
     return [START_UNDERLINE, *commands, STOP_UNDERLINE]
 
 
@@ -82,7 +82,7 @@ START_BOLDFACE = StartBoldface()
 STOP_BOLDFACE = StopBoldface()
 
 
-def boldface(commands: List[Command]) -> List[Command]:
+def boldface(commands: list[Command]) -> list[Command]:
     return [START_BOLDFACE, *commands, STOP_BOLDFACE]
 
 
@@ -106,7 +106,7 @@ START_HALF_HEIGHT = StartHalfHeight()
 STOP_HALF_HEIGHT = StopHalfHeight()
 
 
-def half_height(commands: List[Command]) -> List[Command]:
+def half_height(commands: list[Command]) -> list[Command]:
     return [START_HALF_HEIGHT, *commands, STOP_HALF_HEIGHT]
 
 

@@ -41,9 +41,9 @@ def assert_low_ascii(point: int) -> None:
     Assert that a code point is low ASCII.
     """
     with CodePointError.capture():
-        assert is_low_ascii(
-            point
-        ), f"Code point {repr_code_point(point)} is not valid low ASCII"
+        assert is_low_ascii(point), (
+            f"Code point {repr_code_point(point)} is not valid low ASCII"
+        )
 
 
 def assert_high_ascii(point: int) -> None:
@@ -52,9 +52,9 @@ def assert_high_ascii(point: int) -> None:
     """
 
     with CodePointError.capture():
-        assert is_high_ascii(
-            point
-        ), f"Code point {repr_code_point(point)} is not valid high ASCII"
+        assert is_high_ascii(point), (
+            f"Code point {repr_code_point(point)} is not valid high ASCII"
+        )
 
 
 def assert_ascii(point: int) -> None:
@@ -63,9 +63,9 @@ def assert_ascii(point: int) -> None:
     """
 
     with CodePointError.capture():
-        assert is_ascii(
-            point
-        ), f"Code point {repr_code_point(point)} is not valid ASCII"
+        assert is_ascii(point), (
+            f"Code point {repr_code_point(point)} is not valid ASCII"
+        )
 
 
 def map_to_low_ascii(point: int) -> int:

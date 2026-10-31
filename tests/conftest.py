@@ -1,6 +1,6 @@
-from collections.abc import Callable
 import importlib.resources
-from typing import Any, cast, Generator, List, Optional, Self
+from collections.abc import Callable, Generator
+from typing import Any, Self, cast
 from unittest.mock import Mock
 
 import pytest
@@ -9,10 +9,10 @@ from imagewriter.base.settings import Settings
 from imagewriter.connection import Connection
 from imagewriter.container import Container
 from imagewriter.encoding import (
-    CharacterEncoder,
-    Command,
     CR,
     LF,
+    CharacterEncoder,
+    Command,
     Print,
 )
 from imagewriter.serial import BaudRate, Serial, SerialProtocol
@@ -20,7 +20,7 @@ from imagewriter.test import TestPage as _TestPage
 
 CHARACTER_ENCODER = CharacterEncoder()
 
-HELLO_WORLD: List[Command] = CHARACTER_ENCODER.encode("Hello world!") + [CR, LF]
+HELLO_WORLD: list[Command] = CHARACTER_ENCODER.encode("Hello world!") + [CR, LF]
 
 PANDOC_MARKDOWN: str = importlib.resources.read_text(
     __name__, "documents/test_pandoc.md"
@@ -28,8 +28,8 @@ PANDOC_MARKDOWN: str = importlib.resources.read_text(
 
 
 @pytest.fixture
-def encoded_text() -> Callable[[str | bytes], List[Command]]:
-    def encoded_text(text: str | bytes) -> List[Command]:
+def encoded_text() -> Callable[[str | bytes], list[Command]]:
+    def encoded_text(text: str | bytes) -> list[Command]:
         buffer: bytes = (
             text if isinstance(text, bytes) else text.encode(encoding="ascii")
         )
@@ -46,13 +46,13 @@ def port() -> str:
 class MockSerial(Serial):
     def __init__(
         self: Self,
-        port: Optional[str] = None,
+        port: str | None = None,
         baudrate: BaudRate = 9600,
-        timeout: Optional[float] = None,
+        timeout: float | None = None,
         protocol: SerialProtocol = SerialProtocol.HARDWARE_HANDSHAKE,
-        write_timeout: Optional[float] = None,
-        inter_byte_timeout: Optional[float] = None,
-        exclusive: Optional[bool] = None,
+        write_timeout: float | None = None,
+        inter_byte_timeout: float | None = None,
+        exclusive: bool | None = None,
     ) -> None:
         super().__init__(
             port,
@@ -110,16 +110,15 @@ def serial(port: str) -> Serial:
 
 
 @pytest.fixture
-def container(port, serial) -> Generator[Container, None, None]:
+def container(port, serial) -> Generator[Container]:
     container = Container()
 
-    with container.port.override(port):
-        with container.serial.override(serial):
-            yield container
+    with container.port.override(port), container.serial.override(serial):
+        yield container
 
 
 @pytest.fixture
-def connection(container: Container) -> Generator[Connection, None, None]:
+def connection(container: Container) -> Generator[Connection]:
     connection = container.connection()
 
     yield connection
@@ -133,7 +132,7 @@ def settings(container: Container) -> Settings:
 
 
 @pytest.fixture
-def hello_world() -> List[Command]:
+def hello_world() -> list[Command]:
     return HELLO_WORLD
 
 

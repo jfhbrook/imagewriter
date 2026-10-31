@@ -2,10 +2,10 @@
 Printer debugging utilities.
 """
 
-from concurrent.futures import Executor
 import datetime
 import time
-from typing import Optional, Self
+from concurrent.futures import Executor
+from typing import Self
 
 from serial import Serial
 
@@ -42,10 +42,10 @@ class SerialStateObserver:
         print("|-------------------")
 
     def _loop(self: Self) -> None:
-        dtr: Optional[bool] = None
-        dsr: Optional[bool] = None
-        rts: Optional[bool] = None
-        cts: Optional[bool] = None
+        dtr: bool | None = None
+        dsr: bool | None = None
+        rts: bool | None = None
+        cts: bool | None = None
 
         while self.running:
             if any(

@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Self
+from typing import Self
 
 ESC = bytes([27])
 
@@ -17,8 +17,6 @@ class LengthError(ValueError):
     """
     An error raised when a character has no meaningful length.
     """
-
-    pass
 
 
 def ctrl(character: str) -> bytes:
@@ -54,7 +52,7 @@ class Command(ABC):
     def __bytes__(self: Self) -> bytes:
         pass
 
-    def __eq__(self: Self, other: Any) -> bool:
+    def __eq__(self: Self, other: object) -> bool:
         if not isinstance(other, Command):
             return False
         return bytes(self) == bytes(other)
@@ -63,7 +61,7 @@ class Command(ABC):
         return bytes(self).decode(encoding="ascii")
 
     def __repr__(self: Self) -> str:
-        return f"Command({str(self)})"
+        return f"Command({self!s})"
 
     def __len__(self: Self) -> int:
         """

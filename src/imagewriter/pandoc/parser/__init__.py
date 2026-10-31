@@ -1,4 +1,5 @@
-from typing import Any, Callable, Dict, List, Optional, Self
+from collections.abc import Callable
+from typing import Any, Self
 
 from imagewriter.document import (
     Alignment,
@@ -165,7 +166,7 @@ def parse_span(contents: Any) -> Inline:
     return Span(attr=parse_attr(contents[0]), contents=parse_inline_list(contents[1]))
 
 
-INLINE_PARSERS: Dict[str, InlineParser] = {
+INLINE_PARSERS: dict[str, InlineParser] = {
     "Cite": parse_cite,
     "Code": parse_code,
     "Emph": parse_emph,
@@ -193,7 +194,7 @@ def parse_inline(contents: Any) -> Inline:
     return INLINE_PARSERS[contents["t"]](contents.get("c", None))
 
 
-def parse_inline_list(contents: List[Any]) -> List[Inline]:
+def parse_inline_list(contents: list[Any]) -> list[Inline]:
     return [parse_inline(inline) for inline in contents]
 
 
@@ -281,7 +282,7 @@ class TableParser:
     def alignment(self: Self, contents: Any) -> Alignment:
         return contents["t"]
 
-    def col_width(self: Self, contents: Any) -> Optional[float]:
+    def col_width(self: Self, contents: Any) -> float | None:
         if contents["t"] == "ColWidth":
             return contents["c"]
         return None
@@ -340,7 +341,7 @@ def parse_div(contents: Any) -> Block:
     return Div(attr=parse_attr(contents[0]), contents=parse_block_list(contents[1]))
 
 
-BLOCK_PARSERS: Dict[str, BlockParser] = {
+BLOCK_PARSERS: dict[str, BlockParser] = {
     "Plain": parse_plain,
     "Para": parse_para,
     "LineBlock": parse_line_block,
@@ -362,7 +363,7 @@ def parse_block(contents: Any) -> Block:
     return BLOCK_PARSERS[contents["t"]](contents.get("c", None))
 
 
-def parse_block_list(contents: List[Any]) -> List[Block]:
+def parse_block_list(contents: list[Any]) -> list[Block]:
     return [parse_block(block) for block in contents]
 
 

@@ -6,7 +6,7 @@ from imagewriter.base.memory import print_buffer_size
 from imagewriter.connection import Connection
 from imagewriter.encoding import Command
 from imagewriter.serial import Serial
-from imagewriter.test import test_memory, TestPage
+from imagewriter.test import TestPage, test_memory
 
 FULL_MONTY = "Full Monty!"
 
@@ -94,7 +94,7 @@ class MemoryTestButtonWidget(widgets.Button):
 
 
 class TestCallback(Protocol):
-    def __call__(self: Self, widget: "TestWidget") -> None: ...
+    def __call__(self: Self, widget: TestWidget) -> None: ...
 
 
 class TestWidget(widgets.VBox):
@@ -138,7 +138,7 @@ class TestWidget(widgets.VBox):
             connection.flush()
         except Exception as exc:
             self._test_page_status_widget.error(exc)
-            raise exc
+            raise
         self._test_page_status_widget.clear()
 
     def run_memory_test(self: Self, serial: Serial, connection: Connection) -> None:
@@ -147,7 +147,7 @@ class TestWidget(widgets.VBox):
             memory = test_memory(serial, connection, print_buffer_size(True))
         except Exception as exc:
             self._memory_test_status_widget.error(exc)
-            raise exc
+            raise
         self._memory_test_status_widget.result(memory)
 
     def on_print(self: Self, callback: TestCallback) -> None:

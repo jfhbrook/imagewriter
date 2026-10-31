@@ -1,5 +1,6 @@
+from collections.abc import Generator
 from contextlib import contextmanager
-from typing import Generator, Self, Type
+from typing import Self
 
 
 class CharacterError(Exception):
@@ -9,7 +10,7 @@ class CharacterError(Exception):
 
     @classmethod
     @contextmanager
-    def capture(cls: Type[Self]) -> Generator[None, None, None]:
+    def capture(cls: type[Self]) -> Generator[None]:
         try:
             yield
         except Exception as exc:

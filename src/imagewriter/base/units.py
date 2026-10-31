@@ -4,7 +4,8 @@ between them.
 """
 
 from abc import ABC, abstractmethod
-from typing import Callable, Self, Type, TypeVar
+from collections.abc import Callable
+from typing import Self, TypeVar
 
 from imagewriter.base.pitch import Pitch
 
@@ -18,7 +19,7 @@ class Distance(ABC):
     A base class for distances - a value in some unit.
     """
 
-    def __init__(self: Self, value: int | float) -> None:
+    def __init__(self: Self, value: float) -> None:
         self.value: float = float(value)
 
     @property
@@ -63,7 +64,7 @@ class Distance(ABC):
         return int(self.inches * VERTICAL_RESOLUTION)
 
     @classmethod
-    def from_vertical(cls: Type[Self], vertical: int) -> "Distance":
+    def from_vertical(cls: type[Self], vertical: int) -> Distance:
         return Inch(vertical / VERTICAL_RESOLUTION)
 
     def horizontal_dpi(self: Self, pitch: Pitch) -> int:
@@ -81,14 +82,14 @@ class Distance(ABC):
         return int(self.inches * pitch.characters_per_inch)
 
     @classmethod
-    def from_characters(cls: Type[Self], cpi: int, pitch: Pitch) -> "Distance":
+    def from_characters(cls: type[Self], cpi: int, pitch: Pitch) -> Distance:
         return Inch(cpi / pitch.characters_per_inch)
 
     @classmethod
-    def from_(cls: Type[Self], from_: "Distance") -> Self:
+    def from_(cls: type[Self], from_: Distance) -> Self:
         raise NotImplementedError("Distance.from")
 
-    def into(self: Self, cls: Type[D]) -> D:
+    def into(self: Self, cls: type[D]) -> D:
         return cls.from_(self)
 
 
@@ -102,7 +103,7 @@ class Inch(Distance):
         return self.value
 
     @classmethod
-    def from_(cls: Type[Self], from_: Distance) -> Self:
+    def from_(cls: type[Self], from_: Distance) -> Self:
         return cls(from_.inches)
 
 
@@ -120,7 +121,7 @@ class Centimeter(Distance):
         return self.value
 
     @classmethod
-    def from_(cls: Type[Self], from_: Distance) -> Self:
+    def from_(cls: type[Self], from_: Distance) -> Self:
         return cls(from_.centimeters)
 
 
@@ -142,7 +143,7 @@ class Millimeter(Distance):
         return self.value
 
     @classmethod
-    def from_(cls: Type[Self], from_: Distance) -> Self:
+    def from_(cls: type[Self], from_: Distance) -> Self:
         return cls(from_.millimeters)
 
 
@@ -161,7 +162,7 @@ class Point(Distance):
         return self.value
 
     @classmethod
-    def from_(cls: Type[Self], from_: Distance) -> Self:
+    def from_(cls: type[Self], from_: Distance) -> Self:
         return cls(from_.points)
 
 
@@ -180,7 +181,7 @@ class Pica(Distance):
         return self.value
 
     @classmethod
-    def from_(cls: Type[Self], from_: Distance) -> Self:
+    def from_(cls: type[Self], from_: Distance) -> Self:
         return cls(from_.picas)
 
 

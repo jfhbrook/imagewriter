@@ -18,13 +18,13 @@ with physical DIP switches on the printer itself.
 # on the `BaudRate` type, leading to circular import issues. Unless you are willing to
 # place the `BaudRate` type in a lone module, do not attempt this.
 
-from enum import Enum
 import time
-from typing import Literal, Optional, Self
+from enum import Enum
+from typing import Literal, Self
 
 import serial
 
-BaudRate = Literal[300] | Literal[1200] | Literal[2400] | Literal[9600]
+BaudRate = Literal[300, 1200, 2400, 9600]
 AVAILABLE_WHEN_CTS_LOW = 27
 AVAILABLE_WHEN_CTS_HIGH = 100
 
@@ -33,8 +33,6 @@ class SerialError(Exception):
     """
     A serial port related error.
     """
-
-    pass
 
 
 class SerialProtocol(Enum):
@@ -90,13 +88,13 @@ class Serial(serial.Serial):
 
     def __init__(
         self: Self,
-        port: Optional[str] = None,
+        port: str | None = None,
         baudrate: BaudRate = 9600,
-        timeout: Optional[float] = None,
+        timeout: float | None = None,
         protocol: SerialProtocol = SerialProtocol.HARDWARE_HANDSHAKE,
-        write_timeout: Optional[float] = None,
-        inter_byte_timeout: Optional[float] = None,
-        exclusive: Optional[bool] = None,
+        write_timeout: float | None = None,
+        inter_byte_timeout: float | None = None,
+        exclusive: bool | None = None,
     ) -> None:
         super().__init__(
             port=port,

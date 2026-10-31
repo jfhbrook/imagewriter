@@ -1,16 +1,16 @@
-from typing import Dict, Self
+from typing import Self
 
 import ipywidgets as widgets  # type: ignore
 
 from imagewriter.base.quality import Quality
 
-QUALITIES: Dict[str, Quality] = {
+QUALITIES: dict[str, Quality] = {
     "Correspondence": Quality.CORRESPONDENCE,
     "Draft": Quality.DRAFT,
     "NLQ": Quality.NEAR_LETTER_QUALITY,
 }
 
-QUALITY_NAMES: Dict[Quality, str] = {
+QUALITY_NAMES: dict[Quality, str] = {
     quality: name for name, quality in QUALITIES.items()
 }
 

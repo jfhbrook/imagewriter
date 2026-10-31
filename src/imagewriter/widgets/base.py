@@ -5,7 +5,7 @@ import ipywidgets as widgets  # type: ignore
 
 class Label(widgets.Label):
     def __init__(self: Self, value: str, **kwargs: Any) -> None:
-        kwargs["style"] = kwargs.get("style", dict())
+        kwargs["style"] = kwargs.get("style", {})
         kwargs["style"]["font_weight"] = kwargs["style"].get("font_weight", "bold")
 
         super().__init__(value, **kwargs)

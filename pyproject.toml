@@ -32,10 +32,7 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-  "black[jupyter]",
-  "flake8",
-  "flake8-black",
-  "isort",
+  "ruff",
   "mypy",
   "pytest",
   "pytest-asyncio",
@@ -44,7 +41,6 @@ dev = [
   "mkdocs",
   "mkdocs-include-markdown-plugin",
   "mkdocstrings[python]",
-  "mkdocs-terminal",
   "syrupy",
   "types-pyserial",
   "validate-pyproject[all]",

@@ -1,12 +1,7 @@
 from dataclasses import dataclass
-from typing import Literal, Optional
+from typing import Literal
 
-Alignment = (
-    Literal["AlignLeft"]
-    | Literal["AlignRight"]
-    | Literal["AlignCenter"]
-    | Literal["AlignDefault"]
-)
+Alignment = Literal["AlignLeft", "AlignRight", "AlignCenter", "AlignDefault"]
 
 
 @dataclass
@@ -16,4 +11,4 @@ class ColSpec:
     """
 
     alignment: Alignment
-    width: Optional[float]
+    width: float | None

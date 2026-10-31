@@ -90,9 +90,9 @@ class DocumentRenderer(BlockVisitor[None], InlineVisitor[None]):
         for block in reversed(blocks):
             if isinstance(block, Space):
                 self.builder.trim_space()
-            elif isinstance(block, LineBreak) or isinstance(block, SoftBreak):
+            elif isinstance(block, (LineBreak, SoftBreak)):
                 self.builder.trim_cr_lf()
-            elif isinstance(block, Para) or isinstance(block, HorizontalRule):
+            elif isinstance(block, (Para, HorizontalRule)):
                 self.builder.trim_cr_lf(2)
             else:
                 break
@@ -111,10 +111,9 @@ class DocumentRenderer(BlockVisitor[None], InlineVisitor[None]):
                 el.accept(self)
 
     def visit_strong(self: Self, element: Strong) -> None:
-        with self.builder.double_width():
-            with self.builder.boldface():
-                for el in element.contents:
-                    el.accept(self)
+        with self.builder.double_width(), self.builder.boldface():
+            for el in element.contents:
+                el.accept(self)
 
     def visit_strikeout(self: Self, element: Strikeout) -> None:
         with self.builder.strikeout():

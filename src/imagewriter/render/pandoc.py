@@ -1,4 +1,4 @@
-from typing import List, Self
+from typing import Self
 
 from imagewriter.base.settings import Settings
 from imagewriter.document import PandocFormat
@@ -33,6 +33,6 @@ class PandocRenderer:
         document: str,
         format: PandocFormat = "markdown",
         standalone: bool = False,
-    ) -> List[Command]:
+    ) -> list[Command]:
         doc = parse_document(document, format)
         return self._renderer.render(doc, standalone=standalone)

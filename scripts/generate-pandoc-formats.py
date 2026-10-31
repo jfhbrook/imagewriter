@@ -1,5 +1,5 @@
 import subprocess
-from typing import IO, List
+from typing import IO
 
 #
 # Formats not supported by Pandoc, but supported by imagewriter.
@@ -10,7 +10,7 @@ NATIVE_FORMATS = ["imagewriter"]
 FORMAT_FILE = "./src/imagewriter/document/format.py"
 
 
-def pandoc_formats() -> List[str]:
+def pandoc_formats() -> list[str]:
     process = subprocess.run(
         ["pandoc", "--list-input-formats"],
         check=True,
@@ -19,8 +19,6 @@ def pandoc_formats() -> List[str]:
     )
 
     return [format for format in process.stdout.split("\n") if format]
-
-
 
 
 HEAD = """from typing import Literal, Set
@@ -61,7 +59,7 @@ COMBINED_SET = """FORMATS: Set[Format] = NATIVE_FORMATS | PANDOC_FORMATS
 """
 
 
-def write_type_elements(f: IO, formats: List[str]) -> None:
+def write_type_elements(f: IO, formats: list[str]) -> None:
     f.write(f'    Literal["{formats[0]}"]\n')
 
     for format in formats[1:]:
@@ -74,13 +72,13 @@ def write_native_type(f: IO) -> None:
     f.write(END_TYPE)
 
 
-def write_pandoc_type(f: IO, formats: List[str]) -> None:
+def write_pandoc_type(f: IO, formats: list[str]) -> None:
     f.write(BEGIN_PANDOC_TYPE)
     write_type_elements(f, formats)
     f.write(END_TYPE)
 
 
-def write_set_elements(f: IO, formats: List[str]) -> None:
+def write_set_elements(f: IO, formats: list[str]) -> None:
     for format in formats:
         f.write(f'    "{format}",\n')
 
@@ -91,7 +89,7 @@ def write_native_set(f: IO) -> None:
     f.write(END_SET)
 
 
-def write_pandoc_set(f: IO, formats: List[str]) -> None:
+def write_pandoc_set(f: IO, formats: list[str]) -> None:
     f.write(BEGIN_PANDOC_SET)
     write_set_elements(f, formats)
     f.write(END_SET)
@@ -108,7 +106,6 @@ def main() -> None:
         write_native_set(f)
         write_pandoc_set(f, formats)
         f.write(COMBINED_SET)
-
 
 
 if __name__ == "__main__":

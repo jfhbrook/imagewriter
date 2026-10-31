@@ -5,7 +5,7 @@ in-memory software switches.
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Dict, Optional, Self, Set, Type
+from typing import Self
 
 from imagewriter.base.character import Language
 from imagewriter.base.motion import FormLength
@@ -49,7 +49,7 @@ class DIPSwitches:
     protocol: SerialProtocol
 
     @classmethod
-    def language_from_switches(cls: Type[Self], switches: Set[DIPSwitch]) -> Language:
+    def language_from_switches(cls: type[Self], switches: set[DIPSwitch]) -> Language:
         key: int = 0b000
         if DIPSwitch.LANGUAGE_1 in switches:
             key |= 0b100
@@ -70,7 +70,7 @@ class DIPSwitches:
         }[key]
 
     @classmethod
-    def pitch_from_switches(cls: Type[Self], switches: Set[DIPSwitch]) -> Pitch:
+    def pitch_from_switches(cls: type[Self], switches: set[DIPSwitch]) -> Pitch:
         key: int = 0b00
         if DIPSwitch.PITCH_1 in switches:
             key |= 0b10
@@ -85,14 +85,14 @@ class DIPSwitches:
         }[key]
 
     @classmethod
-    def baud_rate_from_switches(cls: Type[Self], switches: Set[DIPSwitch]) -> BaudRate:
+    def baud_rate_from_switches(cls: type[Self], switches: set[DIPSwitch]) -> BaudRate:
         key: int = 0b00
         if DIPSwitch.BAUD_RATE_1 in switches:
             key |= 0b10
         if DIPSwitch.BAUD_RATE_2 in switches:
             key |= 0b01
 
-        baud_rates: Dict[int, BaudRate] = {
+        baud_rates: dict[int, BaudRate] = {
             0b00: 300,
             0b10: 1200,
             0b01: 2400,
@@ -102,7 +102,7 @@ class DIPSwitches:
         return baud_rates[key]
 
     @classmethod
-    def from_switches(cls: Type[Self], switches: Set[DIPSwitch]) -> Self:
+    def from_switches(cls: type[Self], switches: set[DIPSwitch]) -> Self:
         """
         Get the DIP switch settings based on which switches are closed, as per
         Chapter 2 of the ImageWriter II Technical Reference Manual.
@@ -123,7 +123,7 @@ class DIPSwitches:
         )
 
     @classmethod
-    def defaults(cls: Type[Self]) -> Self:
+    def defaults(cls: type[Self]) -> Self:
         """
         Get the factory default DIP switch settings for printers sold in
         North America, as per Chapter 2 of the ImageWriter II Technical
@@ -162,8 +162,8 @@ class SoftwareSwitch(Enum):
 
     @classmethod
     def difference(
-        cls: Type[Self], switches: "Set[SoftwareSwitch]"
-    ) -> "Set[SoftwareSwitch]":
+        cls: type[Self], switches: set[SoftwareSwitch]
+    ) -> set[SoftwareSwitch]:
         """
         Returns the software switches **not** provided.
         """
@@ -171,8 +171,8 @@ class SoftwareSwitch(Enum):
 
     @classmethod
     def defaults(
-        cls: Type[Self], dip_switches: Optional[DIPSwitches] = None
-    ) -> "Set[SoftwareSwitch]":
+        cls: type[Self], dip_switches: DIPSwitches | None = None
+    ) -> set[SoftwareSwitch]:
         """
         Returns software switches which are closed by default, as per page 32
         of the ImageWriter II Technical Reference Manual.
@@ -185,7 +185,7 @@ class SoftwareSwitch(Enum):
 
         settings: DIPSwitches = dip_switches if dip_switches else DIPSwitches.defaults()
 
-        defaults: "Set[SoftwareSwitch]" = {
+        defaults: set[SoftwareSwitch] = {
             SoftwareSwitch.SOFTWARE_SELECT_RESPONSE_DISABLED,
             SoftwareSwitch.PRINT_COMMANDS_INCLUDE_LF_FF,
             SoftwareSwitch.IGNORE_EIGHTH_DATA_BIT,
@@ -202,7 +202,7 @@ class SoftwareSwitch(Enum):
         return defaults
 
     @classmethod
-    def language_switches(cls: Type[Self], language: Language) -> "Set[SoftwareSwitch]":
+    def language_switches(cls: type[Self], language: Language) -> set[SoftwareSwitch]:
         """
         Language switches which should be closed, as per page 32 of the
         ImageWriter II Technical Reference Manual.
@@ -221,8 +221,8 @@ class SoftwareSwitch(Enum):
 
     @classmethod
     def open_language_switches(
-        cls: Type[Self], language: Language
-    ) -> "Set[SoftwareSwitch]":
+        cls: type[Self], language: Language
+    ) -> set[SoftwareSwitch]:
         return {
             cls.LANGUAGE_1,
             cls.LANGUAGE_2,
@@ -242,12 +242,12 @@ class SoftwareSwitches:
     ignore_eighth_data_bit: bool
 
     @classmethod
-    def defaults(cls: Type[Self], dip_switches: Optional[DIPSwitches] = None) -> Self:
+    def defaults(cls: type[Self], dip_switches: DIPSwitches | None = None) -> Self:
         return cls.from_switches(SoftwareSwitch.defaults(dip_switches))
 
     @classmethod
     def language_from_switches(
-        cls: Type[Self], switches: Set[SoftwareSwitch]
+        cls: type[Self], switches: set[SoftwareSwitch]
     ) -> Language:
         key: int = 0b000
         if SoftwareSwitch.LANGUAGE_1 in switches:
@@ -269,7 +269,7 @@ class SoftwareSwitches:
         }[key]
 
     @classmethod
-    def from_switches(cls: Type[Self], switches: Set[SoftwareSwitch]) -> Self:
+    def from_switches(cls: type[Self], switches: set[SoftwareSwitch]) -> Self:
         """
         Get the software switch settings based on which switches are closed.
         """
@@ -293,8 +293,8 @@ class SoftwareSwitches:
             ignore_eighth_data_bit=SoftwareSwitch.IGNORE_EIGHTH_DATA_BIT in switches,
         )
 
-    def switches(self: Self) -> Set[SoftwareSwitch]:
-        switches: Set[SoftwareSwitch] = SoftwareSwitch.language_switches(self.language)
+    def switches(self: Self) -> set[SoftwareSwitch]:
+        switches: set[SoftwareSwitch] = SoftwareSwitch.language_switches(self.language)
 
         if self.software_select_response_disabled:
             switches.add(SoftwareSwitch.SOFTWARE_SELECT_RESPONSE_DISABLED)

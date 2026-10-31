@@ -1,9 +1,9 @@
-from collections.abc import Callable
-from contextlib import AbstractContextManager, contextmanager
 import dataclasses
-from enum import Enum
 import importlib.resources
-from typing import Any, Generator, Self, Type
+from collections.abc import Callable, Generator
+from contextlib import AbstractContextManager, contextmanager
+from enum import Enum
+from typing import Any, Self
 
 from imagewriter.base.character import Language, MouseTextCharacter
 from imagewriter.base.pitch import Pitch
@@ -54,7 +54,7 @@ MOUSETEXT_CHARS: list[MouseTextCharacter] = [
 ]
 
 
-def enum_value_length(enum_cls: Type[Enum]) -> int:
+def enum_value_length(enum_cls: type[Enum]) -> int:
     return max([len(e.value) for e in enum_cls])
 
 
@@ -170,11 +170,10 @@ class TestPage:
                 ("correspondence", Quality.CORRESPONDENCE),
                 ("near letter quality", Quality.NEAR_LETTER_QUALITY),
             ]:
-                with self.builder.line():
-                    with self.builder.quality(quality):
-                        with self.builder.boldface():
-                            self.builder.text(f"{name:>{length}}:")
-                        self.builder.text(f" {TEST_PHRASE}")
+                with self.builder.line(), self.builder.quality(quality):
+                    with self.builder.boldface():
+                        self.builder.text(f"{name:>{length}}:")
+                    self.builder.text(f" {TEST_PHRASE}")
 
     def _attributes(self: Self, standalone: bool = True) -> None:
         attrs = [
@@ -188,22 +187,18 @@ class TestPage:
             ("Slashed 0", self.builder.slashed_zero),
         ]
 
-        with self._report("Attributes", standalone=standalone):
+        with self._report("Attributes", standalone=standalone), self.builder.graf():
+            with self.builder.line():
+                self.builder.text("Plain")
 
-            with self.builder.graf():
-                with self.builder.line():
-                    self.builder.text("Plain")
-
-                for name, ctx in attrs:
-                    with self.builder.line():
-                        with ctx():
-                            self.builder.text(name)
+            for name, ctx in attrs:
+                with self.builder.line(), ctx():
+                    self.builder.text(name)
 
     def _mousetext(self: Self, standalone: bool = True) -> None:
-        with self._report("MouseText", standalone=standalone):
-            with self.builder.graf():
-                for char in MOUSETEXT_CHARS:
-                    self.builder.text(char)
+        with self._report("MouseText", standalone=standalone), self.builder.graf():
+            for char in MOUSETEXT_CHARS:
+                self.builder.text(char)
 
     def _markdown(self: Self, standalone: bool = True) -> None:
         commands = self.pandoc.render(
@@ -217,9 +212,7 @@ class TestPage:
     #
 
     @contextmanager
-    def _report(
-        self: Self, name: str, standalone: bool = True
-    ) -> Generator[None, None, None]:
+    def _report(self: Self, name: str, standalone: bool = True) -> Generator[None]:
 
         def title() -> None:
             level = 1 if standalone else 2
@@ -239,15 +232,14 @@ class TestPage:
 
     def _enum_test(
         self: Self,
-        enum_cls: Type[Enum],
+        enum_cls: type[Enum],
         value: str,
         ctx: Callable[[Any], AbstractContextManager[None]],
     ) -> None:
         length = enum_value_length(enum_cls)
 
         for enum in enum_cls:
-            with self.builder.line():
-                with self.builder.boldface():
-                    self.builder.text(f"{enum.value:>{length}}:")
-                    with ctx(enum):
-                        self.builder.text(f" {value}")
+            with self.builder.line(), self.builder.boldface():
+                self.builder.text(f"{enum.value:>{length}}:")
+                with ctx(enum):
+                    self.builder.text(f" {value}")

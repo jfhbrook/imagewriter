@@ -1,5 +1,5 @@
 from abc import ABC
-from typing import List, Self, Set
+from typing import Self
 
 from imagewriter.base.switch import SoftwareSwitch, SoftwareSwitches
 from imagewriter.encoding.base import Command, esc
@@ -14,9 +14,9 @@ def fmt_switch_banks(banks: bytes) -> str:
 
 
 class SetSoftwareSwitches(Command, ABC):
-    def __init__(self: Self, closed: bool, switches: Set[SoftwareSwitch]) -> None:
+    def __init__(self: Self, closed: bool, switches: set[SoftwareSwitch]) -> None:
         self._closed: bool = closed
-        self.switches: Set[SoftwareSwitch] = switches
+        self.switches: set[SoftwareSwitch] = switches
 
     @property
     def open(self: Self) -> bool:
@@ -37,7 +37,7 @@ class SetSoftwareSwitches(Command, ABC):
             short |= sw.value
 
         # Store data in two little endian bytes
-        for i in range(0, 16):
+        for i in range(16):
             if short & (1 << i):
                 if i < 8:
                     bank_a |= 0x80 >> i
@@ -58,8 +58,8 @@ class SetSoftwareSwitches(Command, ABC):
 
 
 class OpenSoftwareSwitches(SetSoftwareSwitches):
-    def __init__(self: Self, switches: Set[SoftwareSwitch]) -> None:
-        return super().__init__(False, switches)
+    def __init__(self: Self, switches: set[SoftwareSwitch]) -> None:
+        super().__init__(False, switches)
 
     def __repr__(self: Self) -> str:
         packed = self.pack()
@@ -68,8 +68,8 @@ class OpenSoftwareSwitches(SetSoftwareSwitches):
 
 
 class CloseSoftwareSwitches(SetSoftwareSwitches):
-    def __init__(self: Self, switches: Set[SoftwareSwitch]) -> None:
-        return super().__init__(True, switches)
+    def __init__(self: Self, switches: set[SoftwareSwitch]) -> None:
+        super().__init__(True, switches)
 
     def __repr__(self: Self) -> str:
         packed = self.pack()
@@ -77,12 +77,12 @@ class CloseSoftwareSwitches(SetSoftwareSwitches):
         return f"CloseSoftwareSwitches({fmt_switch_banks(packed)})"
 
 
-def apply_software_switches(switches: SoftwareSwitches) -> List[Command]:
+def apply_software_switches(switches: SoftwareSwitches) -> list[Command]:
     """
     Apply current software switches, resolving any drift.
     """
 
-    commands: List[Command] = list()
+    commands: list[Command] = []
     to_close = switches.switches()
     to_open = SoftwareSwitch.difference(to_close)
 

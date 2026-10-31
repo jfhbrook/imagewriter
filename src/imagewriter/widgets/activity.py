@@ -1,9 +1,9 @@
 from concurrent.futures import Executor
-from typing import Any, cast, Optional, Self
+from typing import Any, Self, cast
 
 import ipywidgets as widgets  # type: ignore
 
-import imagewriter.debug as debug
+from imagewriter import debug
 from imagewriter.serial import Serial
 from imagewriter.widgets.base import Label
 
@@ -44,7 +44,7 @@ class WriteStatsWidget(widgets.HBox):
 
 class SerialStateObserver(debug.SerialStateObserver):
     def __init__(
-        self: Self, serial: Serial, widget: "ActivityWidget", executor: Executor
+        self: Self, serial: Serial, widget: ActivityWidget, executor: Executor
     ) -> None:
         self._widget = widget
 
@@ -58,7 +58,7 @@ class SerialStateObserver(debug.SerialStateObserver):
     def _write_hook(self: Self, serial: Serial) -> None:
         _write = serial.write
 
-        def write(data: Any) -> Optional[int]:
+        def write(data: Any) -> int | None:
             self._on_write(data)
             return _write(data)
 
@@ -91,7 +91,7 @@ class ActivityWidget(widgets.VBox):
             ]
         )
 
-        self._observer: Optional[SerialStateObserver] = None
+        self._observer: SerialStateObserver | None = None
 
     def instrument(self: Self, serial: Serial, executor: Executor) -> None:
         self._reset()

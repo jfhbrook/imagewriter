@@ -1,13 +1,14 @@
-from typing import Generator, Self
+from collections.abc import Generator
+from typing import Self
 
 from imagewriter.base.character import (
     Character,
     CustomCharacter,
     Language,
     LanguageCharacter,
-    map_to_low_ascii,
     MouseTextCharacter,
     Text,
+    map_to_low_ascii,
 )
 from imagewriter.encoding.base import Command, Print
 from imagewriter.encoding.character.base import Mode
@@ -18,12 +19,9 @@ from imagewriter.encoding.character.parser import parse_text
 from imagewriter.encoding.motion import CR, LF, TAB
 
 
-def extract_characters(
-    *text: Text, emoji_codes: bool
-) -> Generator[Character, None, None]:
+def extract_characters(*text: Text, emoji_codes: bool) -> Generator[Character]:
     for tx in text:
-        for ch in parse_text(tx, emoji_codes=emoji_codes):
-            yield ch
+        yield from parse_text(tx, emoji_codes=emoji_codes)
 
 
 class CharacterEncoder:
@@ -104,7 +102,7 @@ class CharacterEncoder:
         return [_to_command(byte) for byte in buffer]
 
     def encode(self: Self, *text: Text) -> list[Command]:
-        encoded: list[Command] = list()
+        encoded: list[Command] = []
         mode: Mode = self.language_mode
         buffer: bytes = b""
 

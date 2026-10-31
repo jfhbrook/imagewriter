@@ -15,8 +15,8 @@ from imagewriter.encoding.print import SetPrintCommands
 from imagewriter.encoding.select import SetSoftwareSelectResponse
 from imagewriter.encoding.serial import IGNORE_EIGHTH_DATA_BIT, INCLUDE_EIGHTH_DATA_BIT
 from imagewriter.encoding.switch import (
-    apply_software_switches,
     SetSoftwareSwitches,
+    apply_software_switches,
 )
 
 
@@ -87,13 +87,14 @@ SET_LANGUAGE_DANISH = set_language(Language.DANISH)
         ),
         (
             SetPrintCommands(PrintCommands.CR_LF_AND_FF),
-            "SetPrintCommands(PrintCommands.CR_LF_AND_FF, "
-            "CLOSE, [0b00000010, 0b00000000])",
+            (
+                "SetPrintCommands(PrintCommands.CR_LF_AND_FF, "
+                "CLOSE, [0b00000010, 0b00000000])"
+            ),
         ),
         (
             SetPrintCommands(PrintCommands.CR_ONLY),
-            "SetPrintCommands(PrintCommands.CR_ONLY, "
-            "OPEN, [0b00000010, 0b00000000])",
+            "SetPrintCommands(PrintCommands.CR_ONLY, OPEN, [0b00000010, 0b00000000])",
         ),
         (
             SetSoftwareSelectResponse(True),

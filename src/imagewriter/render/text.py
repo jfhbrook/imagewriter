@@ -1,6 +1,6 @@
-from collections.abc import Callable
+from collections.abc import Callable, Generator, Sequence
 from contextlib import AbstractContextManager, contextmanager
-from typing import Generator, Self, Sequence
+from typing import Self
 
 from imagewriter.base.character import Language, Text
 from imagewriter.base.color import Color
@@ -9,28 +9,12 @@ from imagewriter.base.quality import Quality
 from imagewriter.base.settings import Settings
 from imagewriter.base.units import Length
 from imagewriter.encoding import (
-    apply_settings,
     BACKSPACE,
-    BackspaceLengthError,
-    CarriageReturn,
-    CarriageReturnLengthError,
-    CharacterEncoder,
     CLEAR_ALL_TABS,
-    Command,
     CR,
-    cr_lf,
     FF,
-    LineFeed,
-    LineFeedLengthError,
-    Print,
     PRINT_SLASHED_ZERO,
     PRINT_UNSLASHED_ZERO,
-    reset_tabs,
-    set_language,
-    SetColor,
-    SetPitch,
-    SetQuality,
-    Space,
     START_BOLDFACE,
     START_DOUBLE_WIDTH,
     START_HALF_HEIGHT,
@@ -44,7 +28,23 @@ from imagewriter.encoding import (
     STOP_SUPERSCRIPT,
     STOP_UNDERLINE,
     TAB,
+    BackspaceLengthError,
+    CarriageReturn,
+    CarriageReturnLengthError,
+    CharacterEncoder,
+    Command,
+    LineFeed,
+    LineFeedLengthError,
+    Print,
+    SetColor,
+    SetPitch,
+    SetQuality,
+    Space,
     TabLengthError,
+    apply_settings,
+    cr_lf,
+    reset_tabs,
+    set_language,
     to_tab_stops,
 )
 
@@ -62,7 +62,7 @@ class RichTextBuilder:
             emoji_codes=settings.emoji_codes,
         )
 
-        self._commands: list[Command] = list()
+        self._commands: list[Command] = []
 
         # A header is a series of commands at the top of the document that
         # configures all settings. In cases where the header is already set,
@@ -197,7 +197,7 @@ class RichTextBuilder:
         commands = self._commands
 
         # Reset the commands, allowing the renderer to be reused.
-        self._commands = list()
+        self._commands = []
 
         return commands
 
@@ -206,7 +206,7 @@ class RichTextBuilder:
     #
 
     @contextmanager
-    def language(self: Self, language: Language) -> Generator[None, None, None]:
+    def language(self: Self, language: Language) -> Generator[None]:
         """
         Use a given language.
         """
@@ -218,7 +218,7 @@ class RichTextBuilder:
         self.write(set_language(self.settings.language))
 
     @contextmanager
-    def pitch(self: Self, pitch: Pitch) -> Generator[None, None, None]:
+    def pitch(self: Self, pitch: Pitch) -> Generator[None]:
         """
         Use a given pitch.
         """
@@ -232,7 +232,7 @@ class RichTextBuilder:
         self.tab_size(self._tab_size)
 
     @contextmanager
-    def quality(self: Self, quality: Quality) -> Generator[None, None, None]:
+    def quality(self: Self, quality: Quality) -> Generator[None]:
         """
         Print at a given quality.
         """
@@ -281,7 +281,7 @@ class RichTextBuilder:
 
         self._write_header()
 
-        for _ in range(0, count):
+        for _ in range(count):
             self._trim_cr_lf()
         return self
 
@@ -328,7 +328,7 @@ class RichTextBuilder:
         return self
 
     @contextmanager
-    def color(self: Self, color: Color) -> Generator[None, None, None]:
+    def color(self: Self, color: Color) -> Generator[None]:
         """
         Write colored text.
         """
@@ -340,7 +340,7 @@ class RichTextBuilder:
         self.write(SetColor(Color.BLACK))
 
     @contextmanager
-    def monospace(self: Self) -> Generator[None, None, None]:
+    def monospace(self: Self) -> Generator[None]:
         """
         Temporarily use a monospace (non-proportional) pitch.
         """
@@ -361,7 +361,7 @@ class RichTextBuilder:
             self.pitch(pitch)
 
     @contextmanager
-    def double_width(self: Self) -> Generator[None, None, None]:
+    def double_width(self: Self) -> Generator[None]:
         """
         Write double width text.
         """
@@ -373,7 +373,7 @@ class RichTextBuilder:
         self.write(STOP_DOUBLE_WIDTH)
 
     @contextmanager
-    def underline(self: Self) -> Generator[None, None, None]:
+    def underline(self: Self) -> Generator[None]:
         """
         Write underlined text.
         """
@@ -385,7 +385,7 @@ class RichTextBuilder:
         self.write(STOP_UNDERLINE)
 
     @contextmanager
-    def boldface(self: Self) -> Generator[None, None, None]:
+    def boldface(self: Self) -> Generator[None]:
         """
         Write boldfaced text.
         """
@@ -397,7 +397,7 @@ class RichTextBuilder:
         self.write(STOP_BOLDFACE)
 
     @contextmanager
-    def half_height(self: Self) -> Generator[None, None, None]:
+    def half_height(self: Self) -> Generator[None]:
         """
         Write half-height text.
         """
@@ -409,7 +409,7 @@ class RichTextBuilder:
         self.write(STOP_HALF_HEIGHT)
 
     @contextmanager
-    def strikeout(self: Self) -> Generator[None, None, None]:
+    def strikeout(self: Self) -> Generator[None]:
         """
         Strike out text.
         """
@@ -439,7 +439,7 @@ class RichTextBuilder:
                     "Strikeout is not implement across lines"
                 ) from exc
 
-        self._commands += [BACKSPACE for _ in range(0, backspace_ct)]
+        self._commands += [BACKSPACE for _ in range(backspace_ct)]
 
         for cmd in self._commands[start:]:
             try:
@@ -450,7 +450,7 @@ class RichTextBuilder:
                 self.write(TAB)
 
     @contextmanager
-    def superscript(self: Self) -> Generator[None, None, None]:
+    def superscript(self: Self) -> Generator[None]:
         """
         Write superscript text.
         """
@@ -465,7 +465,7 @@ class RichTextBuilder:
         self.write(STOP_SUPERSCRIPT)
 
     @contextmanager
-    def subscript(self: Self) -> Generator[None, None, None]:
+    def subscript(self: Self) -> Generator[None]:
         """
         Write subscript text.
         """
@@ -480,7 +480,7 @@ class RichTextBuilder:
         self.write(STOP_SUBSCRIPT)
 
     @contextmanager
-    def slashed_zero(self: Self) -> Generator[None, None, None]:
+    def slashed_zero(self: Self) -> Generator[None]:
         """
         Print slashed zeroes.
         """
@@ -496,7 +496,7 @@ class RichTextBuilder:
             self._commands.append(PRINT_UNSLASHED_ZERO)
 
     @contextmanager
-    def unslashed_zero(self: Self) -> Generator[None, None, None]:
+    def unslashed_zero(self: Self) -> Generator[None]:
         """
         Print unslashed zeroes.
         """
@@ -516,24 +516,22 @@ class RichTextBuilder:
         Write inline code.
         """
 
-        with self.monospace():
-            with self.color(Color.GREEN):
-                self.text(*text)
+        with self.monospace(), self.color(Color.GREEN):
+            self.text(*text)
 
         return self
 
     @contextmanager
-    def code_block(self: Self) -> Generator[None, None, None]:
+    def code_block(self: Self) -> Generator[None]:
         """
         Write a code block.
         """
 
-        with self.monospace():
-            with self.color(Color.GREEN):
-                yield
+        with self.monospace(), self.color(Color.GREEN):
+            yield
 
     @contextmanager
-    def hed(self: Self, level: int) -> Generator[None, None, None]:
+    def hed(self: Self, level: int) -> Generator[None]:
         """
         Write a headline.
         """
@@ -552,7 +550,7 @@ class RichTextBuilder:
     ) -> Callable[[], AbstractContextManager[None]]:
         # A default header, if no specific header style is specified.
         @contextmanager
-        def _default() -> Generator[None, None, None]:
+        def _default() -> Generator[None]:
             self.text("#" * level)
             self.space()
 
@@ -563,19 +561,18 @@ class RichTextBuilder:
         return _default
 
     @contextmanager
-    def _hed_1(self: Self) -> Generator[None, None, None]:
+    def _hed_1(self: Self) -> Generator[None]:
         # A level 1 header. Printed in boldface and double width.
-        with self.boldface():
-            with self.double_width():
-                self.text("#")
-                self.space()
+        with self.boldface(), self.double_width():
+            self.text("#")
+            self.space()
 
-                yield
+            yield
 
         self.cr_lf(2)
 
     @contextmanager
-    def _hed_2(self: Self) -> Generator[None, None, None]:
+    def _hed_2(self: Self) -> Generator[None]:
         # A level 2 header. Printed in boldface.
         with self.boldface():
             self.text("##")
@@ -586,7 +583,7 @@ class RichTextBuilder:
         self.cr_lf(2)
 
     @contextmanager
-    def line(self: Self) -> Generator[None, None, None]:
+    def line(self: Self) -> Generator[None]:
         """
         Terminate commands with a new line.
         """
@@ -597,7 +594,7 @@ class RichTextBuilder:
         self.cr_lf(1)
 
     @contextmanager
-    def graf(self: Self) -> Generator[None, None, None]:
+    def graf(self: Self) -> Generator[None]:
         """
         Create a paragraph.
         """

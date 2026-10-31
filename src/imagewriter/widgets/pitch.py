@@ -1,10 +1,10 @@
-from typing import Dict, Self
+from typing import Self
 
 import ipywidgets as widgets  # type: ignore
 
 from imagewriter.base.pitch import Pitch
 
-PITCHES: Dict[str, Pitch] = {pitch.value: pitch for pitch in Pitch}
+PITCHES: dict[str, Pitch] = {pitch.value: pitch for pitch in Pitch}
 
 
 class PitchWidget(widgets.Dropdown):

@@ -18,8 +18,8 @@ from imagewriter.base.character.custom import (
     CharacterMaxWidth,
     CustomCharacter,
     CustomCharacterData,
-    is_valid_max_width,
     Wires,
+    is_valid_max_width,
 )
 from imagewriter.base.character.error import CharacterError, CodePointError
 from imagewriter.base.character.language import Language, LanguageCharacter

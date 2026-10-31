@@ -4,10 +4,10 @@ from imagewriter.base.motion import LinesPerInch
 from imagewriter.base.units import Length, length_to_int
 from imagewriter.encoding.base import (
     Bytes,
-    ctrl,
-    esc,
     Esc,
     LengthError,
+    ctrl,
+    esc,
     number,
 )
 
@@ -24,8 +24,6 @@ class LineFeedLengthError(LengthError):
     An error raised when a line feed has no meaningful length.
     """
 
-    pass
-
 
 class LineFeed(Bytes):
     """
@@ -41,7 +39,6 @@ class LineFeed(Bytes):
         if lines == 1:
             super().__init__(b"\n")
         else:
-
             super().__init__(ctrl("_") + _encode_line_feed_count(lines))
 
     def __repr__(self: Self) -> str:

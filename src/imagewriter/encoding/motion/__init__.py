@@ -1,4 +1,4 @@
-from typing import List, Self
+from typing import Self
 
 from imagewriter.base.pitch import Pitch
 from imagewriter.base.units import Distance, Length, length_to_int
@@ -6,9 +6,9 @@ from imagewriter.encoding.base import (
     Bytes,
     Command,
     Ctrl,
-    esc,
     Esc,
     LengthError,
+    esc,
     number,
 )
 from imagewriter.encoding.motion.form_feed import (
@@ -35,13 +35,13 @@ from imagewriter.encoding.motion.line_feed import (
 )
 from imagewriter.encoding.motion.tab import (
     CLEAR_ALL_TABS,
+    TAB,
     ClearAllTabs,
     ClearManyTabs,
-    reset_tabs,
     SetManyTabs,
     SetOneTab,
-    TAB,
     TabLengthError,
+    reset_tabs,
     to_tab_stops,
 )
 
@@ -50,8 +50,6 @@ class CarriageReturnLengthError(LengthError):
     """
     An error raised when a carriage return has no meaningful length.
     """
-
-    pass
 
 
 class CarriageReturn(Bytes):
@@ -92,10 +90,10 @@ class Backspace(Ctrl):
 
 CR = CarriageReturn()
 BACKSPACE = Backspace()
-CRLF: List[Command] = [CR, LF]
+CRLF: list[Command] = [CR, LF]
 
 
-def cr_lf(count: int = 1) -> List[Command]:
+def cr_lf(count: int = 1) -> list[Command]:
     return CRLF * count
 
 
@@ -140,40 +138,40 @@ class PlaceExactPrintHeadPosition(Command):
         return f"PlaceExactPrintHeadPosition({self.position})"
 
 
-__all__: List[str] = [
-    "CarriageReturn",
-    "CarriageReturnLengthError",
+__all__: list[str] = [
+    "BACKSPACE",
+    "CLEAR_ALL_TABS",
     "CR",
     "CRLF",
-    "cr_lf",
-    "Backspace",
-    "BACKSPACE",
-    "BackspaceLengthError",
-    "SetUnidirectionalPrinting",
-    "PlaceExactPrintHeadPosition",
     "FF",
-    "SetTopOfForm",
-    "SET_TOP_OF_FORM",
-    "SetPerforationSkip",
-    "SetAutoLFAfterCR",
-    "SetCRInsertion",
-    "SetLFWhenLineFull",
     "LF",
+    "LINE_FEED_FORWARD",
+    "LINE_FEED_REVERSE",
+    "SET_TOP_OF_FORM",
+    "TAB",
+    "Backspace",
+    "BackspaceLengthError",
+    "CarriageReturn",
+    "CarriageReturnLengthError",
+    "ClearAllTabs",
+    "ClearManyTabs",
     "LineFeed",
     "LineFeedForward",
-    "LINE_FEED_FORWARD",
     "LineFeedLengthError",
     "LineFeedReverse",
-    "LINE_FEED_REVERSE",
+    "PlaceExactPrintHeadPosition",
+    "SetAutoLFAfterCR",
+    "SetCRInsertion",
     "SetDistanceBetweenLines",
+    "SetLFWhenLineFull",
     "SetLinesPerInch",
-    "ClearAllTabs",
-    "CLEAR_ALL_TABS",
-    "ClearManyTabs",
-    "reset_tabs",
     "SetManyTabs",
     "SetOneTab",
-    "TAB",
+    "SetPerforationSkip",
+    "SetTopOfForm",
+    "SetUnidirectionalPrinting",
     "TabLengthError",
+    "cr_lf",
+    "reset_tabs",
     "to_tab_stops",
 ]

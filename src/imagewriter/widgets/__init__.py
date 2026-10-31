@@ -6,12 +6,10 @@ The most useful widget for everyday use is `ControlPanel` as exported by this mo
 This widget is built from the other widgets contained in submodules.
 """
 
-from typing import List
-
 from imagewriter.widgets.control import ControlPanel
 
 # from imagewriter.widgets.connection import ActivityWidget, ConnectionWidget
 
-__all__: List[str] = [
+__all__: list[str] = [
     "ControlPanel",
 ]

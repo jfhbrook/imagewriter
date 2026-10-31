@@ -6,8 +6,8 @@ be rendered into commands). This enables printing Markdown-like documents as ric
 import json
 import subprocess
 
-from imagewriter.document import Document, PANDOC_FORMATS, PandocFormat
-import imagewriter.pandoc.parser as parser
+from imagewriter.document import PANDOC_FORMATS, Document, PandocFormat
+from imagewriter.pandoc import parser
 
 
 def parse_document(document: str, format: PandocFormat = "markdown") -> Document:

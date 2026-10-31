@@ -1,4 +1,4 @@
-from typing import Any, Self
+from typing import Self
 
 from imagewriter.base.character import Language, LanguageCharacter
 from imagewriter.encoding.base import Command
@@ -9,14 +9,14 @@ from imagewriter.encoding.language import set_language
 # the alternate characters are, and complete this table.
 
 LANGUAGE_ENCODINGS: dict[Language, dict[str, str]] = {
-    Language.AMERICAN: dict(),
+    Language.AMERICAN: {},
     Language.BRITISH: {"£": "#"},
-    Language.GERMAN: dict(),
-    Language.FRENCH: dict(),
-    Language.SWEDISH: dict(),
-    Language.ITALIAN: dict(),
-    Language.SPANISH: dict(),
-    Language.DANISH: dict(),
+    Language.GERMAN: {},
+    Language.FRENCH: {},
+    Language.SWEDISH: {},
+    Language.ITALIAN: {},
+    Language.SPANISH: {},
+    Language.DANISH: {},
 }
 
 # Multiple languages can support the same character. In practice, we just choose one.
@@ -50,7 +50,7 @@ class LanguageMode(Mode):
         # Language modes can not be disabled
         return []
 
-    def __eq__(self: Self, other: Any) -> bool:
+    def __eq__(self: Self, other: object) -> bool:
         return isinstance(other, LanguageMode) and self.language == other.language
 
 

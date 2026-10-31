@@ -9,15 +9,15 @@ Pandoc.
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Literal, Optional, Protocol, Self
+from typing import Any, Literal, Protocol, Self
 
 from imagewriter.document.attr import Attr
 from imagewriter.document.format import (
-    Format,
     FORMATS,
     NATIVE_FORMATS,
-    NativeFormat,
     PANDOC_FORMATS,
+    Format,
+    NativeFormat,
     PandocFormat,
 )
 from imagewriter.document.link import Target
@@ -41,12 +41,10 @@ class Inline(ABC):
     """
 
     @abstractmethod
-    def accept[T](self: Self, visitor: "InlineVisitor[T]") -> T:
+    def accept[T](self: Self, visitor: InlineVisitor[T]) -> T:
         """
         Accept an inline element visitor.
         """
-
-        pass
 
 
 class InlineVisitor[T](Protocol):
@@ -54,26 +52,26 @@ class InlineVisitor[T](Protocol):
     A visitor for inline elements.
     """
 
-    def visit_str(self: Self, element: "Str") -> T: ...
-    def visit_emph(self: Self, element: "Emph") -> T: ...
-    def visit_underline(self: Self, element: "Underline") -> T: ...
-    def visit_strong(self: Self, element: "Strong") -> T: ...
-    def visit_strikeout(self: Self, element: "Strikeout") -> T: ...
-    def visit_subscript(self: Self, element: "Subscript") -> T: ...
-    def visit_superscript(self: Self, element: "Superscript") -> T: ...
-    def visit_small_caps(self: Self, element: "SmallCaps") -> T: ...
-    def visit_quoted(self: Self, element: "Quoted") -> T: ...
-    def visit_cite(self: Self, element: "Cite") -> T: ...
-    def visit_code(self: Self, element: "Code") -> T: ...
-    def visit_space(self: Self, element: "Space") -> T: ...
-    def visit_soft_break(self: Self, element: "SoftBreak") -> T: ...
-    def visit_line_break(self: Self, element: "LineBreak") -> T: ...
-    def visit_math(self: Self, element: "Math") -> T: ...
-    def visit_raw_inline(self: Self, element: "RawInline") -> T: ...
-    def visit_link(self: Self, element: "Link") -> T: ...
-    def visit_image(self: Self, element: "Image") -> T: ...
-    def visit_note(self: Self, element: "Note") -> T: ...
-    def visit_span(self: Self, element: "Span") -> T: ...
+    def visit_str(self: Self, element: Str) -> T: ...
+    def visit_emph(self: Self, element: Emph) -> T: ...
+    def visit_underline(self: Self, element: Underline) -> T: ...
+    def visit_strong(self: Self, element: Strong) -> T: ...
+    def visit_strikeout(self: Self, element: Strikeout) -> T: ...
+    def visit_subscript(self: Self, element: Subscript) -> T: ...
+    def visit_superscript(self: Self, element: Superscript) -> T: ...
+    def visit_small_caps(self: Self, element: SmallCaps) -> T: ...
+    def visit_quoted(self: Self, element: Quoted) -> T: ...
+    def visit_cite(self: Self, element: Cite) -> T: ...
+    def visit_code(self: Self, element: Code) -> T: ...
+    def visit_space(self: Self, element: Space) -> T: ...
+    def visit_soft_break(self: Self, element: SoftBreak) -> T: ...
+    def visit_line_break(self: Self, element: LineBreak) -> T: ...
+    def visit_math(self: Self, element: Math) -> T: ...
+    def visit_raw_inline(self: Self, element: RawInline) -> T: ...
+    def visit_link(self: Self, element: Link) -> T: ...
+    def visit_image(self: Self, element: Image) -> T: ...
+    def visit_note(self: Self, element: Note) -> T: ...
+    def visit_span(self: Self, element: Span) -> T: ...
 
 
 class Block(ABC):
@@ -82,12 +80,10 @@ class Block(ABC):
     """
 
     @abstractmethod
-    def accept[T](self: Self, visitor: "BlockVisitor[T]") -> T:
+    def accept[T](self: Self, visitor: BlockVisitor[T]) -> T:
         """
         Accept a block element visitor.
         """
-
-        pass
 
 
 class BlockVisitor[T](Protocol):
@@ -95,20 +91,20 @@ class BlockVisitor[T](Protocol):
     A visitor for block elements.
     """
 
-    def visit_plain(self: Self, element: "Plain") -> T: ...
-    def visit_para(self: Self, element: "Para") -> T: ...
-    def visit_line_block(self: Self, element: "LineBlock") -> T: ...
-    def visit_code_block(self: Self, element: "CodeBlock") -> T: ...
-    def visit_raw_block(self: Self, element: "RawBlock") -> T: ...
-    def visit_block_quote(self: Self, element: "BlockQuote") -> T: ...
-    def visit_ordered_list(self: Self, element: "OrderedList") -> T: ...
-    def visit_bullet_list(self: Self, element: "BulletList") -> T: ...
-    def visit_definition_list(self: Self, element: "DefinitionList") -> T: ...
-    def visit_header(self: Self, element: "Header") -> T: ...
-    def visit_horizontal_rule(self: Self, element: "HorizontalRule") -> T: ...
-    def visit_table(self: Self, element: "Table") -> T: ...
-    def visit_figure(self: Self, element: "Figure") -> T: ...
-    def visit_div(self: Self, element: "Div") -> T: ...
+    def visit_plain(self: Self, element: Plain) -> T: ...
+    def visit_para(self: Self, element: Para) -> T: ...
+    def visit_line_block(self: Self, element: LineBlock) -> T: ...
+    def visit_code_block(self: Self, element: CodeBlock) -> T: ...
+    def visit_raw_block(self: Self, element: RawBlock) -> T: ...
+    def visit_block_quote(self: Self, element: BlockQuote) -> T: ...
+    def visit_ordered_list(self: Self, element: OrderedList) -> T: ...
+    def visit_bullet_list(self: Self, element: BulletList) -> T: ...
+    def visit_definition_list(self: Self, element: DefinitionList) -> T: ...
+    def visit_header(self: Self, element: Header) -> T: ...
+    def visit_horizontal_rule(self: Self, element: HorizontalRule) -> T: ...
+    def visit_table(self: Self, element: Table) -> T: ...
+    def visit_figure(self: Self, element: Figure) -> T: ...
+    def visit_div(self: Self, element: Div) -> T: ...
 
 
 #
@@ -122,8 +118,8 @@ class Caption:
     The caption of a table or figure.
     """
 
-    short: Optional[List[Inline]]
-    contents: List[Block]
+    short: list[Inline] | None
+    contents: list[Block]
 
 
 #
@@ -142,17 +138,15 @@ class CitationId(Citation):
 
 @dataclass
 class CitationPrefix(Citation):
-    prefix: List[Inline]
+    prefix: list[Inline]
 
 
 @dataclass
 class CitationSuffix(Citation):
-    suffix: List[Inline]
+    suffix: list[Inline]
 
 
-CitationModeType = (
-    Literal["AuthorInText"] | Literal["SuppressAuthor"] | Literal["NormalCitation"]
-)
+CitationModeType = Literal["AuthorInText", "SuppressAuthor", "NormalCitation"]
 
 AUTHOR_IN_TEXT: CitationModeType = "AuthorInText"
 SUPPRESS_AUTHOR: CitationModeType = "SuppressAuthor"
@@ -188,7 +182,7 @@ class Cell:
     alignment: Alignment
     row_span: int
     column_span: int
-    contents: List[Block]
+    contents: list[Block]
     attr: Attr = field(default_factory=Attr)
 
 
@@ -198,7 +192,7 @@ class Row:
     A table row.
     """
 
-    contents: List[Cell]
+    contents: list[Cell]
     attr: Attr = field(default_factory=Attr)
 
 
@@ -208,7 +202,7 @@ class TableHead:
     The head of a table.
     """
 
-    rows: List[Row]
+    rows: list[Row]
     attr: Attr = field(default_factory=Attr)
 
 
@@ -219,8 +213,8 @@ class TableBody:
     """
 
     row_header_columns: int
-    row_header: List[Row]
-    body: List[Row]
+    row_header: list[Row]
+    body: list[Row]
     attr: Attr = field(default_factory=Attr)
 
 
@@ -230,7 +224,7 @@ class TableFoot:
     The foot of a table.
     """
 
-    rows: List[Row]
+    rows: list[Row]
     attr: Attr = field(default_factory=Attr)
 
 
@@ -257,7 +251,7 @@ class Emph(Inline):
     Emphasized text.
     """
 
-    contents: List[Inline]
+    contents: list[Inline]
 
     def accept(self: Self, visitor: Any) -> Any:
         return visitor.visit_emph(self)
@@ -269,7 +263,7 @@ class Underline(Inline):
     Underlined text.
     """
 
-    contents: List[Inline]
+    contents: list[Inline]
 
     def accept(self: Self, visitor: Any) -> Any:
         return visitor.visit_underline(self)
@@ -281,7 +275,7 @@ class Strong(Inline):
     Strongly emphasized text.
     """
 
-    contents: List[Inline]
+    contents: list[Inline]
 
     def accept(self: Self, visitor: Any) -> Any:
         return visitor.visit_strong(self)
@@ -293,7 +287,7 @@ class Strikeout(Inline):
     Strikeout text.
     """
 
-    contents: List[Inline]
+    contents: list[Inline]
 
     def accept(self: Self, visitor: Any) -> Any:
         return visitor.visit_strikeout(self)
@@ -305,7 +299,7 @@ class Subscript(Inline):
     Subscripted text.
     """
 
-    contents: List[Inline]
+    contents: list[Inline]
 
     def accept(self: Self, visitor: Any) -> Any:
         return visitor.visit_subscript(self)
@@ -317,7 +311,7 @@ class Superscript(Inline):
     Superscripted text.
     """
 
-    contents: List[Inline]
+    contents: list[Inline]
 
     def accept(self: Self, visitor: Any) -> Any:
         return visitor.visit_superscript(self)
@@ -329,7 +323,7 @@ class SmallCaps(Inline):
     Small caps text.
     """
 
-    contents: List[Inline]
+    contents: list[Inline]
 
     def accept(self: Self, visitor: Any) -> Any:
         return visitor.visit_small_caps(self)
@@ -342,7 +336,7 @@ class Quoted(Inline):
     """
 
     quote_type: QuoteType
-    contents: List[Inline]
+    contents: list[Inline]
 
     def accept(self: Self, visitor: Any) -> Any:
         return visitor.visit_quoted(self)
@@ -354,8 +348,8 @@ class Cite(Inline):
     Citation.
     """
 
-    citations: List[Citation]
-    contents: List[Inline]
+    citations: list[Citation]
+    contents: list[Inline]
 
     def accept(self: Self, visitor: Any) -> Any:
         return visitor.visit_cite(self)
@@ -436,7 +430,7 @@ class Link(Inline):
     Hyperlink.
     """
 
-    alt_text: List[Inline]
+    alt_text: list[Inline]
     target: Target
     attr: Attr = field(default_factory=Attr)
 
@@ -450,7 +444,7 @@ class Image(Inline):
     Image.
     """
 
-    alt_text: List[Inline]
+    alt_text: list[Inline]
     target: Target
     attr: Attr = field(default_factory=Attr)
 
@@ -464,7 +458,7 @@ class Note(Inline):
     Footnote or endnote.
     """
 
-    contents: List[Block]
+    contents: list[Block]
 
     def accept(self: Self, visitor: Any) -> Any:
         return visitor.visit_note(self)
@@ -472,7 +466,7 @@ class Note(Inline):
 
 @dataclass
 class Span(Inline):
-    contents: List[Inline]
+    contents: list[Inline]
     attr: Attr = field(default_factory=Attr)
 
     def accept(self: Self, visitor: Any) -> Any:
@@ -490,7 +484,7 @@ class Plain(Block):
     Plain text, not a paragraph.
     """
 
-    contents: List[Inline]
+    contents: list[Inline]
 
     def accept(self: Self, visitor: Any) -> Any:
         return visitor.visit_plain(self)
@@ -502,7 +496,7 @@ class Para(Block):
     Paragraph.
     """
 
-    contents: List[Inline]
+    contents: list[Inline]
 
     def accept(self: Self, visitor: Any) -> Any:
         return visitor.visit_para(self)
@@ -514,7 +508,7 @@ class LineBlock(Block):
     Multiple non-breaking lines.
     """
 
-    contents: List[List[Inline]]
+    contents: list[list[Inline]]
 
     def accept(self: Self, visitor: Any) -> Any:
         return visitor.visit_line_block(self)
@@ -552,7 +546,7 @@ class BlockQuote(Block):
     Block quote.
     """
 
-    contents: List[Block]
+    contents: list[Block]
 
     def accept(self: Self, visitor: Any) -> Any:
         return visitor.visit_block_quote(self)
@@ -565,7 +559,7 @@ class OrderedList(Block):
     """
 
     attrs: ListAttributes
-    items: List[List[Block]]
+    items: list[list[Block]]
 
     def accept(self: Self, visitor: Any) -> Any:
         return visitor.visit_ordered_list(self)
@@ -577,7 +571,7 @@ class BulletList(Block):
     Bullet list.
     """
 
-    items: List[List[Block]]
+    items: list[list[Block]]
 
     def accept(self: Self, visitor: Any) -> Any:
         return visitor.visit_bullet_list(self)
@@ -585,8 +579,8 @@ class BulletList(Block):
 
 @dataclass
 class DefinitionListItem:
-    term: List[Inline]
-    definitions: List[List[Block]]
+    term: list[Inline]
+    definitions: list[list[Block]]
 
 
 @dataclass
@@ -595,7 +589,7 @@ class DefinitionList(Block):
     Definition list.
     """
 
-    items: List[DefinitionListItem]
+    items: list[DefinitionListItem]
 
     def accept(self: Self, visitor: Any) -> Any:
         return visitor.visit_definition_list(self)
@@ -608,7 +602,7 @@ class Header(Block):
     """
 
     level: int
-    contents: List[Inline]
+    contents: list[Inline]
     attr: Attr = field(default_factory=Attr)
 
     def accept(self: Self, visitor: Any) -> Any:
@@ -632,9 +626,9 @@ class Table(Block):
     """
 
     caption: Caption
-    columns: List[ColSpec]
+    columns: list[ColSpec]
     header: TableHead
-    body: List[TableBody]
+    body: list[TableBody]
     footer: TableFoot
     attr: Attr = field(default_factory=Attr)
 
@@ -649,7 +643,7 @@ class Figure(Block):
     """
 
     caption: Caption
-    contents: List[Block]
+    contents: list[Block]
     attr: Attr = field(default_factory=Attr)
 
     def accept(self: Self, visitor: Any) -> Any:
@@ -662,7 +656,7 @@ class Div(Block):
     Generic block container.
     """
 
-    contents: List[Block]
+    contents: list[Block]
     attr: Attr = field(default_factory=Attr)
 
     def accept(self: Self, visitor: Any) -> Any:
@@ -676,9 +670,9 @@ class Div(Block):
 
 @dataclass
 class Document:
-    blocks: List[Block]
-    pandoc_api_version: Optional[List[int]] = None
-    meta: Optional[Dict[str, Any]] = None
+    blocks: list[Block]
+    pandoc_api_version: list[int] | None = None
+    meta: dict[str, Any] | None = None
 
 
 #
@@ -686,8 +680,8 @@ class Document:
 #
 
 
-def split_text(text: str) -> List[Inline]:
-    inlines: List[Inline] = []
+def split_text(text: str) -> list[Inline]:
+    inlines: list[Inline] = []
     buffer: str = ""
 
     def process_buffer() -> None:
@@ -716,33 +710,17 @@ def split_text(text: str) -> List[Inline]:
 # Exports
 #
 
-__all__: List[str] = [
-    "Attr",
-    "Block",
-    "Document",
-    "split_text",
-    "Format",
+__all__: list[str] = [
     "FORMATS",
     "NATIVE_FORMATS",
-    "NativeFormat",
     "PANDOC_FORMATS",
-    "PandocFormat",
-    "Inline",
+    "Alignment",
+    "Attr",
+    "Block",
     "BlockQuote",
     "BulletList",
-    "CodeBlock",
-    "DefinitionList",
-    "Div",
-    "Figure",
-    "Header",
-    "HorizontalRule",
-    "LineBlock",
-    "OrderedList",
-    "Para",
-    "Plain",
-    "RawBlock",
-    "Table",
     "Caption",
+    "Cell",
     "Citation",
     "CitationHash",
     "CitationId",
@@ -752,36 +730,52 @@ __all__: List[str] = [
     "CitationSuffix",
     "Cite",
     "Code",
+    "CodeBlock",
+    "ColSpec",
+    "DefinitionList",
+    "DefinitionListItem",
+    "Div",
+    "Document",
     "Emph",
+    "Figure",
+    "Format",
+    "Header",
+    "HorizontalRule",
     "Image",
+    "Inline",
+    "LineBlock",
     "LineBreak",
     "Link",
+    "ListAttributes",
+    "ListNumberDelim",
+    "ListNumberStyle",
     "Math",
+    "MathType",
+    "NativeFormat",
     "Note",
+    "OrderedList",
+    "PandocFormat",
+    "Para",
+    "Plain",
+    "QuoteType",
     "Quoted",
+    "RawBlock",
     "RawInline",
+    "Row",
     "SmallCaps",
     "SoftBreak",
     "Space",
+    "Span",
     "Str",
     "Strikeout",
     "Strong",
     "Subscript",
     "Superscript",
-    "Underline",
-    "Span",
-    "Target",
-    "DefinitionListItem",
-    "ListAttributes",
-    "ListNumberDelim",
-    "ListNumberStyle",
-    "MathType",
-    "QuoteType",
-    "Alignment",
-    "Cell",
-    "ColSpec",
-    "Row",
+    "Table",
     "TableBody",
     "TableFoot",
     "TableHead",
+    "Target",
+    "Underline",
+    "split_text",
 ]

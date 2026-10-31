@@ -16,7 +16,7 @@ class RequestSelfIdentify(Esc):
     """
 
     def __init__(self: Self) -> None:
-        return super().__init__("?")
+        super().__init__("?")
 
     def __repr__(self: Self) -> str:
         return "RequestSelfIdentify()"

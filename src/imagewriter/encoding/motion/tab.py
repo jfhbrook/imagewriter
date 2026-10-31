@@ -1,16 +1,15 @@
-from typing import List, Self, Sequence
+from collections.abc import Sequence
+from typing import Self
 
 from imagewriter.base.pitch import Pitch
 from imagewriter.base.units import Length, length_to_int
-from imagewriter.encoding.base import Bytes, Command, esc, Esc, LengthError, number
+from imagewriter.encoding.base import Bytes, Command, Esc, LengthError, esc, number
 
 
 class TabLengthError(LengthError):
     """
     An error raised when a tab character does not have a known length.
     """
-
-    pass
 
 
 class Tab(Bytes):
@@ -31,12 +30,12 @@ class Tab(Bytes):
 TAB = Tab()
 
 
-def to_tab_stops(stops: Sequence[Length], pitch: Pitch) -> List[int]:
+def to_tab_stops(stops: Sequence[Length], pitch: Pitch) -> list[int]:
     return [length_to_int(stop, lambda st: st.characters(pitch)) for stop in stops]
 
 
-def _encode_tab_stops(stops: List[int]) -> bytes:
-    tab_stops: List[int] = sorted(stops)
+def _encode_tab_stops(stops: list[int]) -> bytes:
+    tab_stops: list[int] = sorted(stops)
 
     encoded: bytes = b""
 
@@ -54,7 +53,7 @@ class SetManyTabs(Bytes):
     Reference Manual.
     """
 
-    def __init__(self: Self, stops: List[int]) -> None:
+    def __init__(self: Self, stops: list[int]) -> None:
         self._stops = stops
         super().__init__(esc("(") + _encode_tab_stops(stops))
 
@@ -82,7 +81,7 @@ class ClearManyTabs(Bytes):
     Technical Reference Manual.
     """
 
-    def __init__(self: Self, stops: List[int]) -> None:
+    def __init__(self: Self, stops: list[int]) -> None:
         self._stops = stops
         super().__init__(esc(")") + _encode_tab_stops(stops))
 
@@ -106,7 +105,7 @@ class ClearAllTabs(Esc):
 CLEAR_ALL_TABS = ClearAllTabs()
 
 
-def reset_tabs(stops: List[int]) -> List[Command]:
+def reset_tabs(stops: list[int]) -> list[Command]:
     """
     Clear and then set stops, effectively resetting them.
 
@@ -119,7 +118,7 @@ def reset_tabs(stops: List[int]) -> List[Command]:
     clear_all: Command = ClearAllTabs()
     set_many: Command = SetManyTabs(stops)
 
-    commands: List[Command] = [clear_all]
+    commands: list[Command] = [clear_all]
 
     if stops:
         commands.append(set_many)

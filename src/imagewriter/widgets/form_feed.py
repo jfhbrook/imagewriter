@@ -34,7 +34,7 @@ class TopOfFormButtonWidget(widgets.Button):
 
 
 class TopOfFormCallback(Protocol):
-    def __call__(self: Self, widget: "TopOfFormWidget") -> None: ...
+    def __call__(self: Self, widget: TopOfFormWidget) -> None: ...
 
 
 class TopOfFormWidget(widgets.HBox):
@@ -56,7 +56,7 @@ class TopOfFormWidget(widgets.HBox):
             connection.flush()
         except Exception as exc:
             self._status_widget.error(exc)
-            raise exc
+            raise
         self._status_widget.clear()
 
     def on_set_top_of_form(self: Self, callback: TopOfFormCallback) -> None:

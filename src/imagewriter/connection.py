@@ -2,10 +2,11 @@
 Connection management for the ImageWriter II.
 """
 
-from concurrent.futures import Executor
 import logging
 import queue
-from typing import List, Self, Sequence
+from collections.abc import Sequence
+from concurrent.futures import Executor
+from typing import Self
 
 from imagewriter.encoding import Command
 from imagewriter.serial import Serial, SerialProtocol
@@ -18,8 +19,8 @@ class Interrupt:
     A queued interrupt.
     """
 
-    def __init__(self: Self, commands: List[Command], dump: bool) -> None:
-        self.commands: List[Command] = commands
+    def __init__(self: Self, commands: list[Command], dump: bool) -> None:
+        self.commands: list[Command] = commands
         self.dump: bool = dump
 
 
@@ -122,8 +123,7 @@ class Connection:
                     # Dump the command queue if need be
                     if exc.dump:
                         self._dump()
-                    pass
-        except Exception as exc:
+        except Exception as exc:  # noqa
             logger.error(exc)
             self._error_queue.put(exc)
 

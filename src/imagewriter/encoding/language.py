@@ -1,13 +1,13 @@
-from typing import List, Self
+from typing import Self
 
 from imagewriter.base.character import Language
 from imagewriter.base.switch import SoftwareSwitch
 from imagewriter.encoding.base import Command
 from imagewriter.encoding.switch import (
     CloseSoftwareSwitches,
+    OpenSoftwareSwitches,
     fmt_switch_banks,
     fmt_switch_position,
-    OpenSoftwareSwitches,
 )
 
 
@@ -35,13 +35,13 @@ class CloseLanguageSwitches(CloseSoftwareSwitches):
         return f"CloseLanguageSwitches({self._language}, {position}, {banks})"
 
 
-def set_language(language: Language) -> List[Command]:
+def set_language(language: Language) -> list[Command]:
     """
     Set the language, irrespective of current software switch or language
     settings.
     """
 
-    commands: List[Command] = list()
+    commands: list[Command] = []
 
     open = OpenLanguageSwitches(language)
     close = CloseLanguageSwitches(language)

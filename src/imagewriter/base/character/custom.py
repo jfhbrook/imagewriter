@@ -10,7 +10,7 @@ from typing import Literal, Self, TypeGuard
 from imagewriter.base.character.code_point import CodePoint, from_code_point
 from imagewriter.base.character.repr import repr_code_point
 
-CharacterMaxWidth = Literal[8] | Literal[16]
+CharacterMaxWidth = Literal[8, 16]
 
 
 class Wires(Enum):

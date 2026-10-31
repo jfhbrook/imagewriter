@@ -1,4 +1,4 @@
-from typing import Any, Self
+from typing import Self
 
 from imagewriter.base.character import MouseTextCharacter
 from imagewriter.encoding.base import Command, Esc
@@ -153,5 +153,5 @@ class MouseTextMode(Mode):
             return [DISABLE_MODE]
         return []
 
-    def __eq__(self: Self, other: Any) -> bool:
+    def __eq__(self: Self, other: object) -> bool:
         return isinstance(other, MouseTextMode) and self.map_ascii == other.map_ascii

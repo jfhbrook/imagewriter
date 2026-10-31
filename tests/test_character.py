@@ -3,14 +3,14 @@ from collections.abc import Callable
 import pytest
 
 from imagewriter.base.character import (
-    assert_ascii,
-    assert_high_ascii,
-    assert_low_ascii,
     CodePointError,
     CustomCharacter,
     Language,
     LanguageCharacter,
     MouseTextCharacter,
+    assert_ascii,
+    assert_high_ascii,
+    assert_low_ascii,
     repr_code_point,
 )
 from imagewriter.encoding.character.language import (
@@ -83,8 +83,8 @@ def test_mousetext_character(character: str, snapshot) -> None:
     result = mousetext_character(True).parse(character)
 
     assert isinstance(result, list)
-    for character in result:
-        assert isinstance(character, MouseTextCharacter)
+    for char in result:
+        assert isinstance(char, MouseTextCharacter)
     assert result == snapshot
 
 
@@ -93,8 +93,8 @@ def test_mousetext_character_no_emoji(character: str, snapshot) -> None:
     result = mousetext_character(False).parse(character)
 
     assert isinstance(result, list)
-    for character in result:
-        assert isinstance(character, MouseTextCharacter)
+    for char in result:
+        assert isinstance(char, MouseTextCharacter)
     assert result == snapshot
 
 

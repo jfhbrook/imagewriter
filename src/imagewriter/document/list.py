@@ -1,15 +1,15 @@
 from dataclasses import dataclass
 from typing import Literal
 
-ListNumberStyle = (
-    Literal["DefaultStyle"]
-    | Literal["Example"]
-    | Literal["Decimal"]
-    | Literal["LowerRoman"]
-    | Literal["UpperRoman"]
-    | Literal["LowerAlpha"]
-    | Literal["UpperAlpha"]
-)
+ListNumberStyle = Literal[
+    "DefaultStyle",
+    "Example",
+    "Decimal",
+    "LowerRoman",
+    "UpperRoman",
+    "LowerAlpha",
+    "UpperAlpha",
+]
 
 DEFAULT_STYLE: ListNumberStyle = "DefaultStyle"
 EXAMPLE: ListNumberStyle = "Example"
@@ -19,12 +19,7 @@ UPPER_ROMAN: ListNumberStyle = "UpperRoman"
 LOWER_ALPHA: ListNumberStyle = "LowerAlpha"
 UPPER_ALPHA: ListNumberStyle = "UpperAlpha"
 
-ListNumberDelim = (
-    Literal["DefaultDelim"]
-    | Literal["Period"]
-    | Literal["OneParen"]
-    | Literal["TwoParens"]
-)
+ListNumberDelim = Literal["DefaultDelim", "Period", "OneParen", "TwoParens"]
 
 DEFAULT_DELIM: ListNumberDelim = "DefaultDelim"
 PERIOD: ListNumberDelim = "Period"

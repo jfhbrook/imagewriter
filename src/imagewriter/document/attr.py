@@ -1,5 +1,4 @@
 from dataclasses import dataclass, field
-from typing import List, Tuple
 
 
 @dataclass
@@ -9,5 +8,5 @@ class Attr:
     """
 
     identifier: str = ""
-    classes: List[str] = field(default_factory=list)
-    pairs: List[Tuple[str, str]] = field(default_factory=list)
+    classes: list[str] = field(default_factory=list)
+    pairs: list[tuple[str, str]] = field(default_factory=list)

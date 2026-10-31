@@ -7,7 +7,7 @@ from imagewriter.encoding.base import Print
 
 
 def test_connection(serial: Any, connection: Connection) -> None:
-    def sleep(n: int | float) -> None:
+    def sleep(n: float) -> None:
         time.sleep(2 * n * connection.serial.period)
 
     first = Print(b"first")

@@ -1,11 +1,12 @@
-from typing import Any, Generator
+from collections.abc import Generator
+from typing import Any
 
 from parsy import (  # type: ignore
+    ParseError,
+    Parser,
     alt,
     any_char,
     generate,
-    ParseError,
-    Parser,
     regex,
     string,
 )
@@ -23,8 +24,8 @@ from imagewriter.encoding.character.language import (
 )
 from imagewriter.encoding.character.mousetext import (
     MOUSETEXT_CODE_LOOKUP,
-    mousetext_lookup,
     MOUSETEXT_LOOKUP,
+    mousetext_lookup,
 )
 
 
@@ -38,9 +39,9 @@ class CharacterParseError(CharacterError):
 # Language encoded character
 #
 
-language_character: Parser = alt(
-    *[string(char) for char in LANGUAGE_CHARACTERS.keys()]
-).map(lambda s: [language_encoding(s)])
+language_character: Parser = alt(*[string(char) for char in LANGUAGE_CHARACTERS]).map(
+    lambda s: [language_encoding(s)]
+)
 
 #
 # MouseText character
@@ -48,10 +49,10 @@ language_character: Parser = alt(
 
 
 def mousetext_character(encode_emoji: bool) -> Parser:
-    parsers = [string(name) for name in MOUSETEXT_LOOKUP.keys()]
+    parsers = [string(name) for name in MOUSETEXT_LOOKUP]
 
     if encode_emoji:
-        parsers += [string(name) for name in MOUSETEXT_CODE_LOOKUP.keys()]
+        parsers += [string(name) for name in MOUSETEXT_CODE_LOOKUP]
     return alt(*parsers).map(mousetext_lookup)
 
 

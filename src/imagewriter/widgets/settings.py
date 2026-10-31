@@ -1,4 +1,4 @@
-from typing import Optional, Protocol, Self
+from typing import Protocol, Self
 
 import ipywidgets as widgets  # type: ignore
 
@@ -6,7 +6,7 @@ from imagewriter.base.pitch import Pitch
 from imagewriter.base.print import PrintCommands
 from imagewriter.base.settings import Settings
 from imagewriter.base.switch import DIPSwitches
-from imagewriter.base.units import Distance, Inch, VERTICAL_RESOLUTION
+from imagewriter.base.units import VERTICAL_RESOLUTION, Distance, Inch
 from imagewriter.connection import Connection
 from imagewriter.encoding.settings import apply_settings
 from imagewriter.widgets.base import Label
@@ -339,7 +339,7 @@ class IncludeEighthDataBitWidget(widgets.Dropdown):
 
     @include_eighth_data_bit.setter
     def include_eighth_data_bit(self: Self, include_eighth_data_bit: bool) -> None:
-        self.value = "Included" if include_eighth_data_bit else "Included"
+        self.value = "Included" if include_eighth_data_bit else "Ignored"
 
 
 class ApplyButtonWidget(widgets.Button):
@@ -371,14 +371,14 @@ class ApplyStatusWidget(widgets.Label):
 
 
 class SettingsCallback(Protocol):
-    def __call__(self: Self, widget: "SettingsWidget") -> None: ...
+    def __call__(self: Self, widget: SettingsWidget) -> None: ...
 
 
 class SettingsWidget(widgets.VBox):
     def __init__(
         self: Self,
-        dip_switches: Optional[DIPSwitches] = None,
-        settings: Optional[Settings] = None,
+        dip_switches: DIPSwitches | None = None,
+        settings: Settings | None = None,
     ) -> None:
         self._settings: Settings = (
             settings

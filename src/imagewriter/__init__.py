@@ -1,5 +1,3 @@
-from typing import List
-
 from imagewriter.base.character import Language
 from imagewriter.base.identification import (
     FEAT_COLOR_RIBBON,
@@ -22,41 +20,41 @@ from imagewriter.base.units import (
     Distance,
     Inch,
     Length,
-    length_to_distance,
-    length_to_int,
     Millimeter,
     Pica,
     Point,
+    length_to_distance,
+    length_to_int,
 )
 from imagewriter.connection import Connection
 from imagewriter.container import Container
 from imagewriter.serial import Serial, SerialProtocol
 
-__all__: List[str] = [
-    "Connection",
-    "Container",
+__all__: list[str] = [
     "FEAT_COLOR_RIBBON",
     "FEAT_SHEET_FEEDER",
+    "Centimeter",
+    "Connection",
+    "Container",
+    "DIPSwitch",
+    "DIPSwitches",
+    "Distance",
     "Feature",
     "Identification",
+    "Inch",
     "Language",
+    "Length",
+    "Millimeter",
+    "Pica",
     "Pitch",
+    "Point",
     "PrintCommands",
     "Quality",
     "Serial",
     "SerialProtocol",
     "Settings",
-    "DIPSwitch",
-    "DIPSwitches",
     "SoftwareSwitch",
     "SoftwareSwitches",
-    "Centimeter",
-    "Distance",
-    "Inch",
-    "Length",
     "length_to_distance",
     "length_to_int",
-    "Millimeter",
-    "Pica",
-    "Point",
 ]

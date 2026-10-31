@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Self
+from typing import Self
 
 from imagewriter.encoding.base import Command, Esc
 
@@ -15,23 +15,17 @@ class Mode(ABC):
         Enable the mode. Once enabled, the printer is in this mode.
         """
 
-        pass
-
     @abstractmethod
     def disable(self: Self) -> list[Command]:
         """
         Disable the mode. Once disabled, the printer is in its standard state.
         """
 
-        pass
-
     @abstractmethod
-    def __eq__(self: Self, other: Any) -> bool:
+    def __eq__(self: Self, other: object) -> bool:
         """
         Check if two modes are equivalent.
         """
-
-        pass
 
 
 class DisableMode(Esc):
