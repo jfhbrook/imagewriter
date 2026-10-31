@@ -11,6 +11,7 @@ from imagewriter.base.character import Language
 from imagewriter.base.settings import Settings
 from imagewriter.base.switch import DIPSwitches
 from imagewriter.connection import Connection
+from imagewriter.debug import SerialStateObserver
 from imagewriter.encoding.character import CharacterEncoder
 from imagewriter.render import DocumentRenderer, PandocRenderer, RichTextBuilder
 from imagewriter.serial import BaudRate, Serial, SerialProtocol
@@ -98,6 +99,7 @@ class Container(containers.DeclarativeContainer):
     executor = providers.Resource(provide_executor)
 
     serial = providers.Factory(Serial, port=port, baudrate=baud_rate, protocol=protocol)
+    observer = providers.Factory(SerialStateObserver, serial=serial, executor=executor)
     connection = providers.Resource(
         provide_connection, serial=serial, executor=executor
     )

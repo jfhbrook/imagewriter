@@ -2,7 +2,7 @@
 Printer debugging utilities.
 """
 
-from concurrent.futures import Executor, ThreadPoolExecutor
+from concurrent.futures import Executor
 import datetime
 import time
 from typing import Optional, Self
@@ -16,9 +16,9 @@ class SerialStateObserver:
     for ensuring that flow control is working appropriately.
     """
 
-    def __init__(self: Self, serial: Serial) -> None:
+    def __init__(self: Self, serial: Serial, executor: Executor) -> None:
         self.serial: Serial = serial
-        self._executor: Executor = ThreadPoolExecutor(max_workers=1)
+        self._executor: Executor = executor
         self._tick: float = 0.25 / serial.baudrate
         self.running: bool = False
 
@@ -66,6 +66,10 @@ class SerialStateObserver:
             time.sleep(self._tick)
 
     def start(self: Self) -> None:
+        """
+        Start the observer.
+        """
+
         if self.running:
             return
 
@@ -73,8 +77,7 @@ class SerialStateObserver:
         self._executor.submit(self._loop)
 
     def stop(self: Self) -> None:
+        """
+        Stop the observer.
+        """
         self.running = False
-
-    def shutdown(self: Self) -> None:
-        self.stop()
-        self._executor.shutdown()
