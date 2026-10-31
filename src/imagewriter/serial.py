@@ -12,29 +12,13 @@ with physical DIP switches on the printer itself.
 """
 
 from enum import Enum
+import time
 from typing import Literal, Optional, Self
 
 import serial
 
 BaudRate = Literal[300] | Literal[1200] | Literal[2400] | Literal[9600]
-
-# When CTS goes low, you have 27 characters of grace before the print buffer is
-# completely full and the printer goes into an error state.
-#
-# The documentation suggests the true value is 30 bytes, but up to 3 of those
-# bytes may already be used by the time the host receives the signal.
-#
-# See page 193 of the ImageWriter II Technical Reference Manual for more
-# details.
 AVAILABLE_WHEN_CTS_LOW = 27
-
-# When CTS goes high, you are guaranteed to have at least 100 characters. Note
-# that this means we can actually expect up to 70 characters before CTS goes
-# low again - and, presumably, only 97 characters given the 3 byte grace
-# period.
-#
-# See page 193 of the ImageWriter II Technical Reference Manual for more
-# details.
 AVAILABLE_WHEN_CTS_HIGH = 100
 
 
@@ -136,3 +120,18 @@ class Serial(serial.Serial):
         self._protocol = protocol
         self.rtscts = protocol == SerialProtocol.HARDWARE_HANDSHAKE
         self.xonxoff = protocol == SerialProtocol.XONXOFF
+
+    @property
+    def period(self: Self) -> float:
+        """
+        The amount of time in between received bytes, when the ImageWriter II is
+        writing at the full baud rate.
+        """
+        return 1 / self.baudrate
+
+    def tick(self: Self) -> None:
+        """
+        Wait for the amount of time it would take to receive a byte from the
+        ImageWriter II when it's writing at its full baud rate.
+        """
+        time.sleep(self.period)
