@@ -1,8 +1,7 @@
 import pytest
 
-from imagewriter.base.character import CustomCharacter, CustomCharacterData
+from imagewriter.base.character import CustomCharacter, CustomCharacterData, Language
 from imagewriter.base.color import Color
-from imagewriter.base.language import Language
 from imagewriter.base.pitch import Pitch
 from imagewriter.base.print import PrintCommands
 from imagewriter.base.quality import Quality

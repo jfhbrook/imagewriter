@@ -1,7 +1,6 @@
 from typing import Any, Self
 
-from imagewriter.base.character import LanguageCharacter
-from imagewriter.base.language import Language
+from imagewriter.base.character import Language, LanguageCharacter
 from imagewriter.encoding.base import Command
 from imagewriter.encoding.character.base import Mode
 from imagewriter.encoding.language import set_language

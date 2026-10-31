@@ -69,6 +69,7 @@ class ControlPanel(widgets.Tab):
 
     def connection(self: Self) -> Connection:
         try:
+            executor = self.container.executor()
             connection = self.container.connection()
         except Exception as exc:
             self._serial_widget.error(exc)
@@ -76,7 +77,7 @@ class ControlPanel(widgets.Tab):
 
         serial = connection.serial
 
-        self._activity_widget.instrument(serial)
+        self._activity_widget.instrument(serial, executor)
 
         if serial.is_open:
             self._serial_widget.connect()

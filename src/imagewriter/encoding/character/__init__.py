@@ -3,12 +3,12 @@ from typing import Generator, Self
 from imagewriter.base.character import (
     Character,
     CustomCharacter,
+    Language,
     LanguageCharacter,
     map_to_low_ascii,
     MouseTextCharacter,
     Text,
 )
-from imagewriter.base.language import Language
 from imagewriter.encoding.base import Command, Print
 from imagewriter.encoding.character.base import Mode
 from imagewriter.encoding.character.custom import CustomCharacterMode

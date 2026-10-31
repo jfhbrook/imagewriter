@@ -1,7 +1,7 @@
 import dataclasses
 from typing import Any, List, Optional, Self, Type
 
-from imagewriter.base.language import Language
+from imagewriter.base.character import Language
 from imagewriter.base.pitch import Pitch
 from imagewriter.base.print import PrintCommands
 from imagewriter.base.quality import Quality

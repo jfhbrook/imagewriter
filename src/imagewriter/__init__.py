@@ -1,12 +1,12 @@
 from typing import List
 
+from imagewriter.base.character import Language
 from imagewriter.base.identification import (
     FEAT_COLOR_RIBBON,
     FEAT_SHEET_FEEDER,
     Feature,
     Identification,
 )
-from imagewriter.base.language import Language
 from imagewriter.base.pitch import Pitch
 from imagewriter.base.print import PrintCommands
 from imagewriter.base.quality import Quality

@@ -1,12 +1,10 @@
 """
-Connection management for the ImageWriter II. Supports sending commands as discrete
-packets and interrupting commands (such as a reset).
+Connection management for the ImageWriter II.
 """
 
 from concurrent.futures import Executor
 import logging
 import queue
-import time
 from typing import List, Self, Sequence
 
 from imagewriter.encoding import Command
@@ -16,18 +14,42 @@ logger = logging.getLogger(__name__)
 
 
 class Interrupt:
+    """
+    A queued interrupt.
+    """
+
     def __init__(self: Self, commands: List[Command], dump: bool) -> None:
         self.commands: List[Command] = commands
         self.dump: bool = dump
 
 
 class Interrupted(Exception):
+    """
+    An exception raised when queued commands are interrupted.
+    """
+
     def __init__(self: Self, dump: bool) -> None:
         super().__init__(f"Interrupted(dump={dump})")
         self.dump = dump
 
 
 class Connection:
+    """
+    A connection to an ImageWriter II printer.
+
+    In the common case, we want to generally respect the flow control signal (via the
+    CTS line in "hardware handshake" mode) while allowing to write past the buffer to
+    write a complete command. This is handled by the `write` method.
+
+    However, in certain situations, one may need to interrupt the stream of standard
+    commands, even if the buffer is signaled to be full, with a command, typically to
+    get the printer to clear the buffer. For example, sending a CR could trigger it to
+    print out its current buffer, or a reset command could flush buffered commands and
+    place the printer in a clean state. This is handled by the `interrupt` method.
+
+    This class sends commands asynchronously, using a `concurrent.futures.Executor`.
+    """
+
     def __init__(self: Self, serial: Serial, executor: Executor) -> None:
         self.serial: Serial = serial
         self._executor: Executor = executor
@@ -41,7 +63,7 @@ class Connection:
 
     def shutdown(self: Self) -> None:
         """
-        Shut down the background worker.
+        Shut down the connection.
         """
 
         self._running = False
@@ -50,13 +72,17 @@ class Connection:
         """
         Write to the serial port.
 
-        Commands are buffered, respecting the ImageWriter II's CTS signal.
+        Commands are buffered, generally respecting the ImageWriter II's CTS signal.
         """
 
         for command in commands:
             self._command_queue.put(command)
 
     def flush(self: Self) -> None:
+        """
+        Flush the underlying serial connection.
+        """
+
         self.serial.flush()
         try:
             exc = self._error_queue.get_nowait()
@@ -74,10 +100,6 @@ class Connection:
 
         self._interrupt_queue.put_nowait(Interrupt(commands=list(commands), dump=dump))
 
-    @property
-    def _timeout(self: Self) -> float:
-        return 1 / self.serial.baudrate
-
     def _worker(self: Self) -> None:
         try:
             while self._running:
@@ -86,7 +108,7 @@ class Connection:
                     self._run_interrupts()
                     try:
                         # Fetch the command
-                        command = self._command_queue.get(timeout=self._timeout)
+                        command = self._command_queue.get(timeout=self.serial.period)
                         # Check for interrupts again
                         self._run_interrupts()
                         # Wait for CTS to go high
@@ -108,7 +130,7 @@ class Connection:
     def _wait_for_cts(self: Self) -> None:
         # Check for interrupts until CTS is high
         while not self.serial.cts:
-            time.sleep(self._timeout)
+            self.serial.tick()
             self._run_interrupts()
         # Check for interrupts one last time
         self._run_interrupts()
