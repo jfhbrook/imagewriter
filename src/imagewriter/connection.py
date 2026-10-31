@@ -1,4 +1,6 @@
 """
+Connection management for the ImageWriter II.
+
 The ImageWriter II has a number of idiosyncracies when it comes to connection
 management. Namely, the ImageWriter II uses the CTS line to signal if the write buffer
 is **close** to full.

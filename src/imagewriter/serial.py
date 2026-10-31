@@ -1,6 +1,14 @@
 """
-Support for communicating with the ImageWriter II over serial. Note that the
-ImageWriter II does NOT follow the RS-232 standard for flow control.
+Serial connectivity for the ImageWriter II.
+
+The ImageWriter II communicates over serial with the following standard settings:
+
+* No parity bits
+* One stop bit
+* DSR and DTR lines
+
+The printer uses a baud rate of 300 bps, 1200 bps, 2400 bps, or 9600 bps. This is set
+with physical DIP switches on the printer itself.
 """
 
 from enum import Enum
@@ -40,17 +48,30 @@ class SerialError(Exception):
 
 class SerialProtocol(Enum):
     """
-    The ImageWriter II supports two flow contrl protocols - hardware handshake
-    and XON/XOFF.
+    The ImageWriter II supports two flow control protocols - hardware handshake and
+    XON/XOFF. These are configured with physical DIP switches.
 
-    The hardware handshake protocol is documented by Apple as using its DTR
-    line. Apple recommends, connecting its DTR and DSR lines to the serial
-    device's DSR/DCD and DTR lines, respectively. This recommendation is based
-    on an older regime, where DSR/DCD and DTR were abused to manage flow
-    control a la modern RTS/CTS. On a modern system, DSR and DTR often can not
-    be controlled directly at the OS level, and should not be used in this
-    manner. Instead, the ImageWriter II's DTR and DSR lines should be wired to
-    the serial device's RTS and CTS lines, respectively.
+    The hardware handshake protocol is documented by Apple as using its DTR line. Apple
+    recommends connecting its DTR and DSR lines to the serial device's DSR/DCD and DTR
+    lines, respectively. This recommendation is based on an older regime, where DSR/DCD
+    and DTR were abused to manage flow control a la modern RTS/CTS. On a modern system,
+    DSR and DTR often can not be controlled directly at the OS level, and should not be
+    used in this manner. Instead, the ImageWriter II's DTR and DSR lines should be
+    wired to the serial device's RTS and CTS lines, respectively.
+
+    When the CTS line is low (in the "hardware handshake" protocol), the print buffer
+    has 27 bytes (or fewer) of space before the print buffer is completely full and
+    the printer goes into an error state. The documentation suggests the true value is
+    30 bytes, but up to 3 of those bytes may already be used by the time the host
+    receives the signal.
+
+    When CTS goes high (in the "hardware handshake" protocol), you are guaranteed to
+    have at least 100 characters of space in the print buffer. This means that, if the
+    CTS line went high from low, we can actually expect up to 70 characters before CTS
+    goes low again.
+
+    See page 193 of the ImageWriter II Technical Reference Manual
+    for more details on the semantics of flow control.
 
     Note that the ImageWriter II expects to run in a "half-duplex" mode, where
     it waits for the RTS line to de-assert before processing the data in its
@@ -70,6 +91,10 @@ class SerialProtocol(Enum):
 class Serial(serial.Serial):
     """
     A serial connection.
+
+    This class is a thin wrapper around pyserial's Serial class, which configures the
+    ImageWriter II with standard settings and accounts for its flow control protocol
+    semantics.
     """
 
     def __init__(
@@ -101,6 +126,9 @@ class Serial(serial.Serial):
 
     @property
     def protocol(self: Self) -> SerialProtocol:
+        """
+        The active serial protocol.
+        """
         return self._protocol
 
     @protocol.setter
