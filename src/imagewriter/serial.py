@@ -11,6 +11,13 @@ The printer uses a baud rate of 300 bps, 1200 bps, 2400 bps, or 9600 bps. This i
 with physical DIP switches on the printer itself.
 """
 
+# ⚠️ ACHTUNG! ⚠️
+#
+# You will at some point be tempted to combine this module with the `connection`
+# module. You can not do this in a straightforward way because other modules depend
+# on the `BaudRate` type, leading to circular import issues. Unless you are willing to
+# place the `BaudRate` type in a lone module, do not attempt this.
+
 from enum import Enum
 import time
 from typing import Literal, Optional, Self
