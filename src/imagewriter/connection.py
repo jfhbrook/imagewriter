@@ -1,6 +1,22 @@
 """
-Connection management for the ImageWriter II. Supports sending commands as discrete
-packets and interrupting commands (such as a reset).
+The ImageWriter II has a number of idiosyncracies when it comes to connection
+management. Namely, the ImageWriter II uses the CTS line to signal if the write buffer
+is **close** to full.
+
+The intended standard behavior is that the client should wait for the printer to flush
+its buffer and signal that it's ready for more commands by dropping the CTS signal.
+
+However, it may be necessary to send a command that *doesn't* respect the CTS line to
+the printer to trigger behavior, under the assumption that there's a small overhead in
+buffer space. For example, sending a CR could trigger the printer to print and flush
+the buffer; or a reset command could remove buffered commands and allow for starting
+over.
+
+The `Connection` class handles this by sending discrete `Command`s to the printer
+normally, respecting the CTS line; but with the capability of sending other commands
+as "interrupt" commands.
+
+For more information, review the documentation of the `Connection` object.
 """
 
 from concurrent.futures import Executor
@@ -41,7 +57,7 @@ class Connection:
 
     def shutdown(self: Self) -> None:
         """
-        Shut down the background worker.
+        Shut down the connection.
         """
 
         self._running = False
@@ -57,6 +73,10 @@ class Connection:
             self._command_queue.put(command)
 
     def flush(self: Self) -> None:
+        """
+        Flush the underlying serial connection.
+        """
+
         self.serial.flush()
         try:
             exc = self._error_queue.get_nowait()
