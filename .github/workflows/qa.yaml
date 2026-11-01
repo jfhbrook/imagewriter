@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install Pandoc
-        run: sudo apt install -y pandoc
+        run: sudo apt install -y pandoc=3.6.4
       - name: Install uv
         uses: astral-sh/setup-uv@v10.3.2
       - name: Install the world
