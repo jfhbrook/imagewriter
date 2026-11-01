@@ -15,6 +15,7 @@ default:
 # Generate format type for Pandoc
 generate:
   uv run ./scripts/generate-pandoc-formats.py
+  uv run ruff format ./src/imagewriter/document/format.py
 
 # Format with black and isort
 format:

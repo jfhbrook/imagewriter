@@ -1,12 +1,12 @@
+"""
+Formats supported by Pandoc. This file is generated with
+./scripts/generate-pandoc-formats.py and includes all formats supported by the
+currently installed version of pandoc.
+"""
+
 from typing import Literal
 
-#
-# Formats supported by Pandoc. This file is generated with
-# ./scripts/generate-pandoc-formats.py and includes all formats supported by
-# the currently installed version of pandoc.
-#
-
-NativeFormat = Literal["imagewriter"]
+NativeFormat = Literal["imagewriter",]
 
 PandocFormat = Literal[
     "biblatex",

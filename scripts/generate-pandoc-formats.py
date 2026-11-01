@@ -21,15 +21,15 @@ def pandoc_formats() -> list[str]:
     return [format for format in process.stdout.split("\n") if format]
 
 
-HEAD = """from typing import Literal, Set
-
-#
-# Formats supported by Pandoc. This file is generated with
-# ./scripts/generate-pandoc-formats.py and includes all formats supported by
-# the currently installed version of pandoc.
-#
-
+HEAD = '''"""
+Formats supported by Pandoc. This file is generated with
+./scripts/generate-pandoc-formats.py and includes all formats supported by the
+currently installed version of pandoc.
 """
+
+from typing import Literal
+
+'''
 
 BEGIN_NATIVE_TYPE = """NativeFormat = (
 """
@@ -45,25 +45,27 @@ COMBINED_TYPE = """Format = NativeFormat | PandocFormat
 
 """
 
-BEGIN_NATIVE_SET = """NATIVE_FORMATS: Set[Format] = {
+BEGIN_NATIVE_SET = """NATIVE_FORMATS: set[Format] = {
 """
 
-BEGIN_PANDOC_SET = """PANDOC_FORMATS: Set[Format] = {
+BEGIN_PANDOC_SET = """PANDOC_FORMATS: set[Format] = {
 """
 
 END_SET = """}
 
 """
 
-COMBINED_SET = """FORMATS: Set[Format] = NATIVE_FORMATS | PANDOC_FORMATS
+COMBINED_SET = """FORMATS: set[Format] = NATIVE_FORMATS | PANDOC_FORMATS
 """
 
 
 def write_type_elements(f: IO, formats: list[str]) -> None:
-    f.write(f'    Literal["{formats[0]}"]\n')
+    f.write(f'    Literal["{formats[0]}",\n')
 
     for format in formats[1:]:
-        f.write(f'    | Literal["{format}"]\n')
+        f.write(f'    "{format}",\n')
+
+    f.write("]\n")
 
 
 def write_native_type(f: IO) -> None:
