@@ -30,19 +30,11 @@ class SetSoftwareSwitches(Command, ABC):
         bank_a = 0
         bank_b = 0
 
-        # Collect the bits into a short
-        short = 0
-
-        for sw in sorted(self.switches, key=lambda s: s.value):
-            short |= sw.value
-
-        # Store data in two little endian bytes
-        for i in range(16):
-            if short & (1 << i):
-                if i < 8:
-                    bank_a |= 0x80 >> i
-                else:
-                    bank_b |= 0x8000 >> i
+        for sw in self.switches:
+            if sw.value > 0xFF:
+                bank_b |= sw.value >> 8
+            else:
+                bank_a |= sw.value
 
         return bytes([bank_a, bank_b])
 
