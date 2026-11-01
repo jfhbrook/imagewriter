@@ -40,9 +40,9 @@ class SetSoftwareSwitches(Command, ABC):
         for i in range(16):
             if short & (1 << i):
                 if i < 8:
-                    bank_a |= 0x80 >> i
+                    bank_a |= 1 << i
                 else:
-                    bank_b |= 0x8000 >> i
+                    bank_b |= 1 << (i - 8)
 
         return bytes([bank_a, bank_b])
 

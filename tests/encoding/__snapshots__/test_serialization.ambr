@@ -17,7 +17,7 @@
   '\x1b)00400801.'
 # ---
 # name: test_bytes_command[close software switches-command5]
-  b'\x1bD\xc0\x00'
+  '\x1bD\x03\x00'
 # ---
 # name: test_bytes_command[control character-command7]
   '\x11'
@@ -26,13 +26,13 @@
   '\x13'
 # ---
 # name: test_bytes_command[disable auto line feed after carriage return-command31]
-  '\x1bZ\x01\x00'
+  b'\x1bZ\x80\x00'
 # ---
 # name: test_bytes_command[disable carriage return insertion-command34]
   '\x1bl0'
 # ---
 # name: test_bytes_command[disable line feed when line full-command41]
-  '\x1bZ\x04\x00'
+  '\x1bZ \x00'
 # ---
 # name: test_bytes_command[disable mode-command9]
   '\x1b$'
@@ -41,10 +41,10 @@
   '\x1bo'
 # ---
 # name: test_bytes_command[disable perforation skip-command53]
-  '\x1bD\x00 '
+  '\x1bD\x00\x04'
 # ---
 # name: test_bytes_command[disable software select response-command59]
-  '\x1bD\x08\x00'
+  '\x1bD\x10\x00'
 # ---
 # name: test_bytes_command[disable unidirectional printing-command64]
   '\x1b<'
@@ -53,7 +53,7 @@
   '\x1b&'
 # ---
 # name: test_bytes_command[enable auto line feed after carriage return-command30]
-  '\x1bD\x01\x00'
+  b'\x1bD\x80\x00'
 # ---
 # name: test_bytes_command[enable carriage return insertion-command33]
   '\x1bl1'
@@ -65,16 +65,16 @@
   '\x1b*'
 # ---
 # name: test_bytes_command[enable line feed when line full-command40]
-  '\x1bD\x04\x00'
+  '\x1bD \x00'
 # ---
 # name: test_bytes_command[enable paper out sensor-command50]
   '\x1bO'
 # ---
 # name: test_bytes_command[enable perforation skip-command52]
-  '\x1bZ\x00 '
+  '\x1bZ\x00\x04'
 # ---
 # name: test_bytes_command[enable software select response-command58]
-  '\x1bZ\x08\x00'
+  '\x1bZ\x10\x00'
 # ---
 # name: test_bytes_command[enable unidirectional printing-command63]
   '\x1b>'
@@ -107,7 +107,7 @@
   '\x1bIaD1234\x04'
 # ---
 # name: test_bytes_command[open software switches-command21]
-  b'\x1bZ\xc0\x00'
+  '\x1bZ\x03\x00'
 # ---
 # name: test_bytes_command[print graphics data-command25]
   '\x1bG00041234'
@@ -116,10 +116,10 @@
   'hello'
 # ---
 # name: test_bytes_command[print slashed zero-command23]
-  b'\x1bD\x00\x80'
+  '\x1bD\x00\x01'
 # ---
 # name: test_bytes_command[print unslashed zero-command24]
-  b'\x1bZ\x00\x80'
+  '\x1bZ\x00\x01'
 # ---
 # name: test_bytes_command[raw bytes-command1]
   'hello'
@@ -140,7 +140,7 @@
   '\x1bB'
 # ---
 # name: test_bytes_command[set closed software switches-command60]
-  b'\x1bD\xc0\x00'
+  '\x1bD\x03\x00'
 # ---
 # name: test_bytes_command[set color-command32]
   '\x1bK0'
@@ -155,10 +155,10 @@
   '\x1bT06'
 # ---
 # name: test_bytes_command[set language 0-command38]
-  '\x1bZ \x00'
+  '\x1bZ\x04\x00'
 # ---
 # name: test_bytes_command[set language 1-command39]
-  b'\x1bD\xc0\x00'
+  '\x1bD\x03\x00'
 # ---
 # name: test_bytes_command[set left margin with inch-command37]
   '\x1bL012'
@@ -173,7 +173,7 @@
   '\x1bU016'
 # ---
 # name: test_bytes_command[set open software switches-command61]
-  b'\x1bZ\xc0\x00'
+  '\x1bZ\x03\x00'
 # ---
 # name: test_bytes_command[set page length to 11-command49]
   '\x1bH1584'
@@ -185,10 +185,10 @@
   '\x1bE'
 # ---
 # name: test_bytes_command[set print commands to CR only-command56]
-  '\x1bZ\x02\x00'
+  '\x1bZ@\x00'
 # ---
 # name: test_bytes_command[set print commands to CR, LF and FF-command55]
-  '\x1bD\x02\x00'
+  '\x1bD@\x00'
 # ---
 # name: test_bytes_command[set quality-command57]
   '\x1ba2'
@@ -257,7 +257,7 @@
   'ClearManyTabs([4, 8, 12])'
 # ---
 # name: test_repr_command[close software switches-command5]
-  'CloseSoftwareSwitches([0b11000000, 0b00000000])'
+  'CloseSoftwareSwitches([0b00000011, 0b00000000])'
 # ---
 # name: test_repr_command[control character-command7]
   "Ctrl(b'\\x11')"
@@ -266,13 +266,13 @@
   'Deselect()'
 # ---
 # name: test_repr_command[disable auto line feed after carriage return-command31]
-  'SetAutoLFAfterCR(False, OPEN, [0b00000001, 0b00000000])'
+  'SetAutoLFAfterCR(False, OPEN, [0b10000000, 0b00000000])'
 # ---
 # name: test_repr_command[disable carriage return insertion-command34]
   'SetCRInsertion(False)'
 # ---
 # name: test_repr_command[disable line feed when line full-command41]
-  'SetLFWhenLineFull(False, OPEN, [0b00000100, 0b00000000])'
+  'SetLFWhenLineFull(False, OPEN, [0b00100000, 0b00000000])'
 # ---
 # name: test_repr_command[disable mode-command9]
   'DisableMode()'
@@ -281,10 +281,10 @@
   'SetPaperOutSensor(False)'
 # ---
 # name: test_repr_command[disable perforation skip-command53]
-  'SetPerforationSkip(False, CLOSE, [0b00000000, 0b00100000])'
+  'SetPerforationSkip(False, CLOSE, [0b00000000, 0b00000100])'
 # ---
 # name: test_repr_command[disable software select response-command59]
-  'SetSoftwareSelectResponse(False, CLOSE, [0b00001000, 0b00000000])'
+  'SetSoftwareSelectResponse(False, CLOSE, [0b00010000, 0b00000000])'
 # ---
 # name: test_repr_command[disable unidirectional printing-command64]
   'SetUnidirectionalPrinting(is_unidirectional=False)'
@@ -293,7 +293,7 @@
   'EnableMouseTextMappingMode()'
 # ---
 # name: test_repr_command[enable auto line feed after carriage return-command30]
-  'SetAutoLFAfterCR(True, CLOSE, [0b00000001, 0b00000000])'
+  'SetAutoLFAfterCR(True, CLOSE, [0b10000000, 0b00000000])'
 # ---
 # name: test_repr_command[enable carriage return insertion-command33]
   'SetCRInsertion(True)'
@@ -305,16 +305,16 @@
   'EnableCustomCharacterMode(high_ascii=True)'
 # ---
 # name: test_repr_command[enable line feed when line full-command40]
-  'SetLFWhenLineFull(True, CLOSE, [0b00000100, 0b00000000])'
+  'SetLFWhenLineFull(True, CLOSE, [0b00100000, 0b00000000])'
 # ---
 # name: test_repr_command[enable paper out sensor-command50]
   'SetPaperOutSensor(True)'
 # ---
 # name: test_repr_command[enable perforation skip-command52]
-  'SetPerforationSkip(True, OPEN, [0b00000000, 0b00100000])'
+  'SetPerforationSkip(True, OPEN, [0b00000000, 0b00000100])'
 # ---
 # name: test_repr_command[enable software select response-command58]
-  'SetSoftwareSelectResponse(True, OPEN, [0b00001000, 0b00000000])'
+  'SetSoftwareSelectResponse(True, OPEN, [0b00010000, 0b00000000])'
 # ---
 # name: test_repr_command[enable unidirectional printing-command63]
   'SetUnidirectionalPrinting(is_unidirectional=True)'
@@ -344,7 +344,7 @@
   "LoadCustomCharacters([CustomCharacterData(character=CustomCharacter(97 ('a')), data=b'1234', wires=<Wires.TOP: 'top'>)])"
 # ---
 # name: test_repr_command[open software switches-command21]
-  'OpenSoftwareSwitches([0b11000000, 0b00000000])'
+  'OpenSoftwareSwitches([0b00000011, 0b00000000])'
 # ---
 # name: test_repr_command[print graphics data-command25]
   'PrintGraphicsData(0b110001 0b110010 0b110011 0b110100)'
@@ -353,10 +353,10 @@
   "b'hello'"
 # ---
 # name: test_repr_command[print slashed zero-command23]
-  'PrintSlashedZero(CLOSE, [0b00000000, 0b10000000])'
+  'PrintSlashedZero(CLOSE, [0b00000000, 0b00000001])'
 # ---
 # name: test_repr_command[print unslashed zero-command24]
-  'PrintUnslashedZero(OPEN, [0b00000000, 0b10000000])'
+  'PrintUnslashedZero(OPEN, [0b00000000, 0b00000001])'
 # ---
 # name: test_repr_command[raw bytes-command1]
   "Bytes(b'hello')"
@@ -377,7 +377,7 @@
   'SetLinesPerInch(8)'
 # ---
 # name: test_repr_command[set closed software switches-command60]
-  'SetSoftwareSwitches(True, [0b11000000, 0b00000000])'
+  'SetSoftwareSwitches(True, [0b00000011, 0b00000000])'
 # ---
 # name: test_repr_command[set color-command32]
   'SetColor(Color.BLACK)'
@@ -392,10 +392,10 @@
   'SetDistanceBetweenLines(6)'
 # ---
 # name: test_repr_command[set language 0-command38]
-  'OpenLanguageSwitches(Language.BRITISH, OPEN, [0b00100000, 0b00000000])'
+  'OpenLanguageSwitches(Language.BRITISH, OPEN, [0b00000100, 0b00000000])'
 # ---
 # name: test_repr_command[set language 1-command39]
-  'CloseLanguageSwitches(Language.BRITISH, CLOSE, [0b11000000, 0b00000000])'
+  'CloseLanguageSwitches(Language.BRITISH, CLOSE, [0b00000011, 0b00000000])'
 # ---
 # name: test_repr_command[set left margin with inch-command37]
   'SetLeftMargin(12)'
@@ -410,7 +410,7 @@
   'SetOneTab(16)'
 # ---
 # name: test_repr_command[set open software switches-command61]
-  'SetSoftwareSwitches(False, [0b11000000, 0b00000000])'
+  'SetSoftwareSwitches(False, [0b00000011, 0b00000000])'
 # ---
 # name: test_repr_command[set page length to 11-command49]
   'SetPageLength(1584)'
@@ -422,10 +422,10 @@
   'SetPitch(Pitch.ELITE)'
 # ---
 # name: test_repr_command[set print commands to CR only-command56]
-  'SetPrintCommands(PrintCommands.CR_ONLY, OPEN, [0b00000010, 0b00000000])'
+  'SetPrintCommands(PrintCommands.CR_ONLY, OPEN, [0b01000000, 0b00000000])'
 # ---
 # name: test_repr_command[set print commands to CR, LF and FF-command55]
-  'SetPrintCommands(PrintCommands.CR_LF_AND_FF, CLOSE, [0b00000010, 0b00000000])'
+  'SetPrintCommands(PrintCommands.CR_LF_AND_FF, CLOSE, [0b01000000, 0b00000000])'
 # ---
 # name: test_repr_command[set quality-command57]
   'SetQuality(Quality.NEAR_LETTER_QUALITY, scribe_mode=False)'
