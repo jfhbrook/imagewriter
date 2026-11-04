@@ -475,9 +475,6 @@
     meta=dict({
     }),
     pandoc_api_version=list([
-      1,
-      23,
-      1,
     ]),
   )
 # ---
