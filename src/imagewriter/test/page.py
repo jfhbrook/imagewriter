@@ -14,7 +14,8 @@ from imagewriter.render import PandocRenderer, RichTextBuilder
 # A markdown test page
 MARKDOWN: str = importlib.resources.read_text(__name__, "./test.md")
 
-TEST_PHRASE: str = "A quick brown fox jumped over the lazy dog"
+# Thanks, Grace
+TEST_PHRASE: str = "sphynx of black quartz judge my vow"
 
 LANGUAGE_CHARS: str = f"#${chr(64)}`\\|~[]()"
 
