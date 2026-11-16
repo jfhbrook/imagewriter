@@ -5,7 +5,7 @@ Connection management for the ImageWriter II.
 import logging
 import queue
 from collections.abc import Generator, Sequence
-from concurrent.futures import Executor, Future
+from concurrent.futures import ALL_COMPLETED, Executor, Future, wait
 from contextlib import contextmanager
 from dataclasses import dataclass
 from threading import Lock
@@ -79,8 +79,10 @@ class Connection:
         self._interrupts: queue.Queue[Request] = queue.Queue()
         self._running = True
 
-        self._executor.submit(self._command_worker)
-        self._executor.submit(self._interrupt_worker)
+        self._workers = [
+            self._executor.submit(self._command_worker),
+            self._executor.submit(self._interrupt_worker),
+        ]
 
         logger.debug("Connection established")
 
@@ -118,6 +120,12 @@ class Connection:
         self._running = False
         self._cancel_commands()
         self._cancel_interrupts()
+
+        done, _ = wait(self._workers, return_when=ALL_COMPLETED)
+
+        for fut in done:
+            result = fut.result()
+            assert result is None
 
     #
     # Commands
@@ -207,6 +215,8 @@ class Connection:
             while True:
                 request = self._interrupts.get_nowait()
 
+                print("received interrupt")
+
                 # An interrupt occurred
                 interrupted = True
 
@@ -242,7 +252,7 @@ class Connection:
             logger.debug("Connection flushed after writing interrupts")
 
             result.set_result(counter.count)
-        except Exception as exc:
+        except Exception as exc:  # noqa
             result.set_exception(exc)
 
     def _cancel_interrupts(self: Self) -> None:
