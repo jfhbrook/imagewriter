@@ -9,7 +9,7 @@ from concurrent.futures import Executor
 from typing import Self
 
 from imagewriter.encoding import Command
-from imagewriter.serial import Serial, SerialProtocol
+from imagewriter.serial import Serial
 
 logger = logging.getLogger(__name__)
 
@@ -135,29 +135,18 @@ class Connection:
         # Check for interrupts one last time
         self._run_interrupts()
 
-    def _set_flow_control(self: Self, enabled: bool) -> None:
-        if self.serial.protocol == SerialProtocol.XONXOFF:
-            self.serial.xonxoff = enabled
-        else:
-            self.serial.rtscts = enabled
-
     def _run_interrupts(self: Self) -> None:
         try:
             # Is there an interrupt?
             interrupt = self._interrupt_queue.get_nowait()
 
-            # Disable flow control
-            self._set_flow_control(False)
+            with self.serial.interrupt_mode():
+                # Write our interrupt to the serial
+                for command in interrupt.commands:
+                    self.serial.write(bytes(command))
 
-            # Write our interrupt to the serial
-            for command in interrupt.commands:
-                self.serial.write(bytes(command))
-
-            # Flush the serial
-            self.flush()
-
-            # Enable flow_control again
-            self._set_flow_control(True)
+                # Flush the serial
+                self.flush()
 
             # Let the worker handle the cleanup
             raise Interrupted(interrupt.dump)
