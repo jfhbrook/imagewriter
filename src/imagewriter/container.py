@@ -72,7 +72,7 @@ def provide_emoji_codes(settings: Settings) -> bool:
 
 @contextmanager
 def provide_executor() -> Generator[Executor]:
-    executor = ThreadPoolExecutor(max_workers=1)
+    executor = ThreadPoolExecutor()
 
     logger.debug("Executor created")
 
