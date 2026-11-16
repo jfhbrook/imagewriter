@@ -17,7 +17,11 @@ from imagewriter.serial import Serial
 logger = logging.getLogger(__name__)
 
 
-class ShutdownError(Exception):
+class Shutdown(Exception):
+    pass
+
+
+class Interrupted(Exception):
     pass
 
 
@@ -64,19 +68,31 @@ class Connection:
     def __init__(self: Self, serial: Serial, executor: Executor) -> None:
         self.serial: Serial = serial
         self._executor: Executor = executor
-
         self._lock = Lock()
-
         self._commands: queue.Queue[Request] = queue.Queue()
         self._interrupts: queue.Queue[Request] = queue.Queue()
+
         self._running = True
 
-        self._workers = [
-            self._executor.submit(self._command_worker),
-            self._executor.submit(self._interrupt_worker),
-        ]
+        self._done = self._executor.submit(self._worker)
 
         logger.debug("Connection established")
+
+    def shutdown(self: Self) -> None:
+        """
+        Shut down the connection.
+        """
+        self._running = False
+        self._cancel(self._commands)
+        self._cancel(self._interrupts)
+
+        done, _ = wait([self._done], return_when=ALL_COMPLETED)
+
+        for fut in done:
+            try:
+                fut.result()
+            except Shutdown:
+                pass
 
     def write(self: Self, commands: Sequence[Command]) -> Result:
         """
@@ -108,32 +124,25 @@ class Connection:
         logger.debug(f"Staged interrupts: {commands}")
         return result
 
-    def shutdown(self: Self) -> None:
-        self._running = False
-        self._cancel_commands()
-        self._cancel_interrupts()
-
-        done, _ = wait(self._workers, return_when=ALL_COMPLETED)
-
-        for fut in done:
-            try:
-                result = fut.result()
-                assert result is None
-            except ShutdownError:
-                pass
-
-    #
-    # Commands
-    #
-
-    def _command_worker(self: Self) -> None:
+    def _worker(self: Self) -> None:
         while self._running:
             try:
-                request = self._commands.get_nowait()
-                self._write_commands(request)
-            except queue.Empty:
-                logger.debug("Waiting for commands...")
-                self.serial.tick()
+                # Check for interrupts
+                self._run_interrupts()
+                try:
+                    # Fetch the request
+                    request = self._commands.get_nowait()
+
+                    # Write the commands in the request
+                    self._write_commands(request)
+                except queue.Empty:
+                    # No ready command - that's OK
+                    logger.debug("Waiting for commands...")
+                    self.serial.tick()
+            except Interrupted:
+                pass
+
+        raise Shutdown()
 
     def _write_commands(self: Self, request: Request) -> None:
         commands = request.commands
@@ -145,66 +154,18 @@ class Connection:
 
         try:
             for command in commands:
-                # Ensure CTS is asserted and the lock is acquired
-                with self._command_session():
+                # CTS is asserted and we have a lock
+                with self._space():
                     # Do the actual write
                     count = self.serial.write(bytes(command))
                 counter.add(count)
 
             result.set_result(counter.count)
+        except Interrupted, Shutdown:
+            result.set_result(counter.count)
+            raise
         except Exception as exc:  # noqa
             result.set_exception(exc)
-
-    @contextmanager
-    def _command_session(self: Self) -> Generator[None]:
-        logger.debug("Waiting for CTS to be asserted...")
-
-        while not self.serial.cts:
-            if not self._running:
-                raise ShutdownError()
-
-            self.serial.tick()
-
-        logger.debug("CTS is asserted. Acquiring lock to write command...")
-
-        with self._lock:
-            logger.debug("Lock acquired to write command")
-
-            yield
-
-        logger.debug("Lock released after writing command")
-
-        self.serial.flush()
-
-        logger.debug("Connection flushed after writing command")
-
-    def _cancel_commands(self: Self) -> None:
-        # Cancel all in-flight commands
-        try:
-            while True:
-                request = self._commands.get_nowait()
-                request.result.cancel()
-
-                logger.debug(f"Commands canceled: {request.commands}")
-        except queue.Empty:
-            logger.debug("No commands canceled")
-
-    #
-    # Interrupts
-    #
-
-    def _interrupt_worker(self: Self) -> None:
-        while self._running:
-            logger.debug("Acquiring lock to run interrupts...")
-
-            with self._lock:
-                logger.debug("Lock to write interrupts acquired")
-
-                self._run_interrupts()
-
-            logger.debug("Lock released after writing interrupts")
-
-            self.serial.tick()
 
     def _run_interrupts(self: Self) -> None:
         interrupted = False
@@ -212,8 +173,6 @@ class Connection:
             # Grab interrupts while they're there
             while True:
                 request = self._interrupts.get_nowait()
-
-                print("received interrupt")
 
                 # An interrupt occurred
                 interrupted = True
@@ -227,12 +186,16 @@ class Connection:
         if interrupted:
             logger.debug("Interrupts executed - canceling remaining commands")
 
-            self._cancel_commands()
+            self._cancel(self._commands)
+
+            raise Interrupted()
 
     def _write_interrupt(self: Self, request: Request) -> None:
         counter = Counter()
         commands = request.commands
         result = request.result
+
+        logger.debug(f"Received commands for write: {commands}")
 
         try:
             # Ignore RTS/CTS
@@ -250,16 +213,49 @@ class Connection:
             logger.debug("Connection flushed after writing interrupts")
 
             result.set_result(counter.count)
+        except Interrupted, Shutdown:
+            result.set_result(counter.count)
+            raise
         except Exception as exc:  # noqa
             result.set_exception(exc)
 
-    def _cancel_interrupts(self: Self) -> None:
+    def _breathe(self: Self) -> None:
+        if not self._running:
+            raise Shutdown()
+
+    @contextmanager
+    def _space(self: Self) -> Generator[None]:
+        logger.debug("Waiting for CTS to be asserted...")
+
+        self._breathe()
+
+        while not self.serial.cts:
+            self._breathe()
+            self.serial.tick()
+
+        logger.debug("CTS is asserted. Acquiring lock to write command...")
+
+        with self._lock:
+            logger.debug("Lock acquired to write command")
+            self._breathe()
+
+            yield
+
+        logger.debug("Lock released after writing command")
+
+        self.serial.flush()
+
+        self._breathe()
+
+        logger.debug("Connection flushed after writing command")
+
+    def _cancel(self: Self, requests: queue.Queue[Request]) -> None:
         # Cancel all in-flight interrupts
         try:
             while True:
-                request = self._interrupts.get_nowait()
+                request = requests.get_nowait()
                 request.result.cancel()
 
-                logger.debug(f"Interrupts canceled: {request.commands}")
+                logger.debug(f"Request canceled: {request.commands}")
         except queue.Empty:
-            logger.debug("No interrupts canceled")
+            logger.debug("No requests canceled")
