@@ -19,6 +19,8 @@ with physical DIP switches on the printer itself.
 # place the `BaudRate` type in a lone module, do not attempt this.
 
 import time
+from collections.abc import Generator
+from contextlib import contextmanager
 from enum import Enum
 from typing import Literal, Self
 
@@ -140,3 +142,33 @@ class Serial(serial.Serial):
         ImageWriter II when it's writing at its full baud rate.
         """
         time.sleep(self.period)
+
+    @property
+    def flow_control(self: Self) -> bool:
+        if self.protocol == SerialProtocol.XONXOFF:
+            return self.xonxoff
+        else:
+            return self.rtscts
+
+    @flow_control.setter
+    def flow_control(self: Self, enabled: bool) -> None:
+        """
+        Flow control settings. In hardware handshake mode, this corresponds to RTS/CTS.
+        """
+
+        if self.protocol == SerialProtocol.XONXOFF:
+            self.xonxoff = enabled
+        else:
+            self.rtscts = enabled
+
+    @contextmanager
+    def interrupt_mode(self: Self) -> Generator[None]:
+        """
+        Enter interrupt mode, where flow control is disabled.
+        """
+
+        self.flow_control = False
+
+        yield
+
+        self.flow_control = True
