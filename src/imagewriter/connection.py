@@ -8,7 +8,6 @@ from collections.abc import Generator, Sequence
 from concurrent.futures import ALL_COMPLETED, Executor, Future, wait
 from contextlib import contextmanager
 from dataclasses import dataclass
-from threading import Lock
 from typing import Self
 
 from imagewriter.encoding import Command
@@ -68,7 +67,6 @@ class Connection:
     def __init__(self: Self, serial: Serial, executor: Executor) -> None:
         self.serial: Serial = serial
         self._executor: Executor = executor
-        self._lock = Lock()
         self._commands: queue.Queue[Request] = queue.Queue()
         self._interrupts: queue.Queue[Request] = queue.Queue()
 
@@ -82,6 +80,7 @@ class Connection:
         """
         Shut down the connection.
         """
+
         self._running = False
         self._cancel(self._commands)
         self._cancel(self._interrupts)
@@ -125,6 +124,11 @@ class Connection:
         return result
 
     def _worker(self: Self) -> None:
+        #
+        # The background worker. This pulls requests off the command and
+        # interrupt queues.
+        #
+
         while self._running:
             try:
                 # Check for interrupts
@@ -145,6 +149,10 @@ class Connection:
         raise Shutdown()
 
     def _write_commands(self: Self, request: Request) -> None:
+        #
+        # Write commands.
+        #
+
         commands = request.commands
         result = request.result
 
@@ -154,7 +162,7 @@ class Connection:
 
         try:
             for command in commands:
-                # CTS is asserted and we have a lock
+                # CTS is asserted!
                 with self._space():
                     # Do the actual write
                     count = self.serial.write(bytes(command))
@@ -168,6 +176,10 @@ class Connection:
             result.set_exception(exc)
 
     def _run_interrupts(self: Self) -> None:
+        #
+        # Run any queued interrupt requests.
+        #
+
         interrupted = False
         try:
             # Grab interrupts while they're there
@@ -191,6 +203,10 @@ class Connection:
             raise Interrupted()
 
     def _write_interrupt(self: Self, request: Request) -> None:
+        #
+        # Write an interrupt.
+        #
+
         counter = Counter()
         commands = request.commands
         result = request.result
@@ -219,12 +235,13 @@ class Connection:
         except Exception as exc:  # noqa
             result.set_exception(exc)
 
-    def _breathe(self: Self) -> None:
-        if not self._running:
-            raise Shutdown()
-
     @contextmanager
     def _space(self: Self) -> Generator[None]:
+        #
+        # Create space for sending non-interrupt commands. This means waiting
+        # for the CTS line to be asserted, and flushing the connection afterwards.
+        #
+
         logger.debug("Waiting for CTS to be asserted...")
 
         self._breathe()
@@ -233,15 +250,11 @@ class Connection:
             self._breathe()
             self.serial.tick()
 
-        logger.debug("CTS is asserted. Acquiring lock to write command...")
+        logger.debug("CTS is asserted")
 
-        with self._lock:
-            logger.debug("Lock acquired to write command")
-            self._breathe()
+        self._breathe()
 
-            yield
-
-        logger.debug("Lock released after writing command")
+        yield
 
         self.serial.flush()
 
@@ -249,8 +262,19 @@ class Connection:
 
         logger.debug("Connection flushed after writing command")
 
+    def _breathe(self: Self) -> None:
+        #
+        # Check that the worker isn't supposed to be running.
+        #
+
+        if not self._running:
+            raise Shutdown()
+
     def _cancel(self: Self, requests: queue.Queue[Request]) -> None:
-        # Cancel all in-flight interrupts
+        #
+        # Cancel all in-flight requests in a queue.
+        #
+
         try:
             while True:
                 request = requests.get_nowait()
