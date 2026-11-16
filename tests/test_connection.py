@@ -14,8 +14,6 @@ def test_connection(serial: Any, connection: Connection) -> None:
     second = Print(b"second")
     interrupt = Print(b"interrupt")
 
-    serial.cts = True
-
     connection.write([first])
 
     sleep(1)
@@ -26,7 +24,5 @@ def test_connection(serial: Any, connection: Connection) -> None:
     connection.interrupt([interrupt])
 
     sleep(2)
-
-    serial.cts = True
 
     serial.write.assert_has_calls([call(bytes(first)), call(bytes(interrupt))])
