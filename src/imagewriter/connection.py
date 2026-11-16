@@ -23,10 +23,8 @@ class ConnectionError(Exception):
     """
 
 
-class InterruptError(ConnectionError):
-    """
-    An error while executing interrupts.
-    """
+class ShutdownError(ConnectionError):
+    pass
 
 
 Count = int | None
@@ -124,8 +122,11 @@ class Connection:
         done, _ = wait(self._workers, return_when=ALL_COMPLETED)
 
         for fut in done:
-            result = fut.result()
-            assert result is None
+            try:
+                result = fut.result()
+                assert result is None
+            except ShutdownError:
+                pass
 
     #
     # Commands
@@ -165,6 +166,9 @@ class Connection:
         logger.debug("Waiting for CTS to be asserted...")
 
         while not self.serial.cts:
+            if not self._running:
+                raise ShutdownError("Shut down while waiting for asserted CTS")
+
             self.serial.tick()
 
         logger.debug("CTS is asserted. Acquiring lock to write command...")
