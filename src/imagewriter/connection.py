@@ -17,13 +17,7 @@ from imagewriter.serial import Serial
 logger = logging.getLogger(__name__)
 
 
-class ConnectionError(Exception):
-    """
-    A connection error.
-    """
-
-
-class ShutdownError(ConnectionError):
+class ShutdownError(Exception):
     pass
 
 
@@ -167,7 +161,7 @@ class Connection:
 
         while not self.serial.cts:
             if not self._running:
-                raise ShutdownError("Shut down while waiting for asserted CTS")
+                raise ShutdownError()
 
             self.serial.tick()
 
