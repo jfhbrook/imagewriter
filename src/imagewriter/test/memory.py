@@ -5,7 +5,6 @@ from imagewriter.serial import Serial
 
 def test_memory(serial: Serial, connection: Connection, print_buffer_size: int) -> int:
     connection.write([SetLFWhenLineFull(False), CR])
-    connection.flush()
 
     i = 0
 
@@ -14,6 +13,5 @@ def test_memory(serial: Serial, connection: Connection, print_buffer_size: int) 
         i += 1
 
     connection.interrupt([CANCEL_CURRENT_LINE, CR])
-    connection.flush()
 
     return i
