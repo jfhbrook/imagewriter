@@ -15,6 +15,7 @@ from imagewriter.encoding import (
     FF,
     PRINT_SLASHED_ZERO,
     PRINT_UNSLASHED_ZERO,
+    SPACE,
     START_BOLDFACE,
     START_DOUBLE_WIDTH,
     START_HALF_HEIGHT,
@@ -304,7 +305,7 @@ class RichTextBuilder:
         """
         Write a space.
         """
-        self.write(Space())
+        self.write(SPACE)
         return self
 
     def trim_space(self: Self) -> Self:

@@ -3,6 +3,17 @@ from typing import Self
 from imagewriter.base.pitch import Pitch
 from imagewriter.encoding.base import Esc
 
+PITCH_CODES: dict[Pitch, str] = {
+    Pitch.EXTENDED: "n",
+    Pitch.PICA: "N",
+    Pitch.ELITE: "E",
+    Pitch.SEMICONDENSED: "e",
+    Pitch.CONDENSED: "q",
+    Pitch.ULTRACONDENSED: "Q",
+    Pitch.PICA_PROPORTIONAL: "p",
+    Pitch.ELITE_PROPORTIONAL: "P",
+}
+
 
 class SetPitch(Esc):
     """
@@ -11,23 +22,12 @@ class SetPitch(Esc):
     """
 
     def __init__(self: Self, pitch: Pitch) -> None:
-        self._pitch = pitch
+        self.pitch = pitch
 
-        super().__init__(
-            {
-                Pitch.EXTENDED: "n",
-                Pitch.PICA: "N",
-                Pitch.ELITE: "E",
-                Pitch.SEMICONDENSED: "e",
-                Pitch.CONDENSED: "q",
-                Pitch.ULTRACONDENSED: "Q",
-                Pitch.PICA_PROPORTIONAL: "p",
-                Pitch.ELITE_PROPORTIONAL: "P",
-            }[pitch]
-        )
+        super().__init__(PITCH_CODES[pitch])
 
     def __repr__(self: Self) -> str:
-        return f"SetPitch({self._pitch})"
+        return f"SetPitch({self.pitch})"
 
 
 class InsertSpaces(Esc):
@@ -45,8 +45,8 @@ class InsertSpaces(Esc):
         if not (1 <= spaces <= 6):
             raise ValueError("Spaces must be from 1 to 6")
 
-        self._pitch = pitch
-        self._spaces = spaces
+        self.pitch = pitch
+        self.spaces = spaces
 
         super().__init__(str(spaces))
 

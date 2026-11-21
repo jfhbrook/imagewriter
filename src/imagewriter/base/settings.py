@@ -47,6 +47,10 @@ class Settings:
 
     @classmethod
     def defaults(cls: type[Self], dip_switches: DIPSwitches | None) -> Self:
+        """
+        Default settings, given DIP switches.
+        """
+
         dip_sw = dip_switches if dip_switches is not None else DIPSwitches.defaults()
         software_sw = SoftwareSwitches.defaults(dip_sw)
         return cls(
@@ -71,6 +75,10 @@ class Settings:
 
     @classmethod
     def replace(cls: type[Self], inst: Self, **changes: Any) -> Self:
+        """
+        Replace fields on settings, returning new settings.
+        """
+
         if "lines_per_inch" in changes:
             assert "distance_between_lines" not in changes, (
                 "May only set lines_per_inch or distance_between_lines"
@@ -81,11 +89,36 @@ class Settings:
 
         return dataclasses.replace(inst, **changes)
 
+    @classmethod
+    def replace_switches(
+        cls: type[Self], inst: Self, switches: SoftwareSwitches
+    ) -> Self:
+        """
+        Replace fields on settings based on software switches, returning new settings.
+        """
+
+        return cls.replace(
+            inst,
+            language=switches.language,
+            slashed_zero=switches.slashed_zero,
+            lf_when_line_full=switches.lf_when_line_full,
+            auto_lf_after_cr=switches.auto_lf_after_cr,
+            perforation_skip=not switches.perforation_skip_disabled,
+            print_commands=switches.print_commands,
+            software_select_response=not switches.software_select_response_disabled,
+            include_eighth_data_bit=not switches.ignore_eighth_data_bit,
+        )
+
     @property
     def lines_per_inch(self: Self) -> float:
         return 72 / self.distance_between_lines.points
 
+    @property
     def switches(self: Self) -> SoftwareSwitches:
+        """
+        Software switches corresponding to current settings.
+        """
+
         return SoftwareSwitches(
             language=self.language,
             software_select_response_disabled=not self.software_select_response,

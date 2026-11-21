@@ -14,14 +14,29 @@ class PrintGraphicsData(Command):
     def __init__(self: Self, data: bytes) -> None:
         self._data: bytes = data
 
+    def __len__(self: Self) -> int:
+        return len(self._data)
+
+    @property
+    def _uint64(self: Self) -> bool:
+        # Whether or not data is packed into 64 bit chunks
+        return len(self) % 8 == 0
+
+    @property
+    def _number_bytes(self: Self) -> bytes:
+        return number(len(self), 4)
+
+    @property
+    def _number_uint64(self: Self) -> bytes:
+        return number(len(self) // 8, 3)
+
     def __bytes__(self: Self) -> bytes:
-        length: int = len(self._data)
         encoded: bytes = b""
 
-        if length % 8 == 0:
-            encoded = esc("g") + number(length // 8, 3)
+        if self._uint64:
+            encoded = esc("g") + self._number_uint64
         else:
-            encoded = esc("G") + number(length, 4)
+            encoded = esc("G") + self._number_bytes
 
         encoded += self._data
 

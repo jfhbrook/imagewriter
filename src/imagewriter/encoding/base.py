@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Self
 
 ESC = bytes([27])
+CTRL_OFFSET = 64
 
 
 class InvalidControlCharacterError(ValueError):
@@ -19,6 +20,21 @@ class LengthError(ValueError):
     """
 
 
+def is_ctrl_point(point: int) -> bool:
+    """
+    Whether or not the code point is valid for a control character.
+    """
+
+    return 64 <= point <= 95
+
+
+def is_ctrl_character(character: str) -> bool:
+    """
+    Whether or not the character is a valid control character.
+    """
+    return is_ctrl_point(ord(character))
+
+
 def ctrl(character: str) -> bytes:
     """
     Generate a control character, as per page 5 of the ImageWriter II Technical
@@ -27,10 +43,10 @@ def ctrl(character: str) -> bytes:
 
     point: int = ord(character)
 
-    if not (64 <= point <= 95):
+    if not is_ctrl_point(point):
         raise InvalidControlCharacterError(character, point)
 
-    return bytes(chr(point - 64), encoding="ascii")
+    return bytes(chr(point - CTRL_OFFSET), encoding="ascii")
 
 
 def esc(character: str) -> bytes:
@@ -110,19 +126,23 @@ class Space(Print):
         super().__init__(b" ")
 
 
+SPACE = Space()
+
+
 class Ctrl(Command):
     """
     A command containing a single control character.
     """
 
     def __init__(self: Self, character: str) -> None:
-        self.character: bytes = ctrl(character)
+        self.character: str = character
+        self.ctrl: bytes = ctrl(character)
 
     def __bytes__(self: Self) -> bytes:
-        return self.character
+        return self.ctrl
 
     def __repr__(self: Self) -> str:
-        return f"Ctrl({self.character!r})"
+        return f"Ctrl({self.character})"
 
 
 class Esc(Command):
@@ -132,9 +152,10 @@ class Esc(Command):
 
     def __init__(self: Self, code: str) -> None:
         self.code = code
+        self.esc = esc(code)
 
     def __bytes__(self: Self) -> bytes:
-        return esc(self.code)
+        return self.esc
 
     def __repr__(self: Self) -> str:
         return f"Esc({self.code})"

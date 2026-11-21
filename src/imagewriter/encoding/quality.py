@@ -4,7 +4,7 @@ from imagewriter.base.quality import Quality
 from imagewriter.encoding.base import Esc
 
 
-def _quality_code(quality: Quality, scribe_mode: bool) -> str:
+def _quality_code(quality: Quality, scribe_mode: bool = False) -> str:
     if scribe_mode:
         if quality == Quality.CORRESPONDENCE:
             return "m"

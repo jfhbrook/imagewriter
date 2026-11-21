@@ -24,6 +24,7 @@ from imagewriter.encoding.motion.insertion import (
 )
 from imagewriter.encoding.motion.line_feed import (
     LF,
+    LINE_FEED_ENCODING,
     LINE_FEED_FORWARD,
     LINE_FEED_REVERSE,
     LineFeed,
@@ -145,6 +146,7 @@ __all__: list[str] = [
     "CRLF",
     "FF",
     "LF",
+    "LINE_FEED_ENCODING",
     "LINE_FEED_FORWARD",
     "LINE_FEED_REVERSE",
     "SET_TOP_OF_FORM",

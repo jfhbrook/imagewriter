@@ -576,7 +576,7 @@ requires-dist = [
     { name = "aiohttp", specifier = ">=3.14.5,<4" },
     { name = "dependency-injector", specifier = ">=4.49.1,<5" },
     { name = "ipywidgets", specifier = ">=8.1.9,<9" },
-    { name = "parsy", specifier = ">=2.2,<3" },
+    { name = "parsy", specifier = ">=2.2" },
     { name = "pyserial", specifier = ">=3.5,<4" },
 ]
 

@@ -134,7 +134,7 @@ class LoadCustomCharacters(Bytes):
         Technical Reference Manual.
         """
 
-        self.characters: list[CustomCharacterData] = list(characters)
+        self.characters = list(characters)
 
         encoded: bytes = load_custom_characters(characters)
 

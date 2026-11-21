@@ -39,10 +39,9 @@ def _encode_tab_stops(stops: list[int]) -> bytes:
 
     encoded: bytes = b""
 
-    for stop in tab_stops:
-        encoded += number(stop, 3)
+    encoded += b",".join([number(stop, 3) for stop in tab_stops])
 
-    encoded = encoded[:-1] + b"."
+    encoded += b"."
 
     return encoded
 

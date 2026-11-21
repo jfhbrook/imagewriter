@@ -23,6 +23,7 @@ from imagewriter.encoding.attributes import (
     underline,
 )
 from imagewriter.encoding.base import (
+    SPACE,
     Bytes,
     Command,
     Ctrl,
@@ -94,7 +95,7 @@ from imagewriter.encoding.paper import SetPaperOutSensor
 from imagewriter.encoding.pitch import InsertSpaces, SetPitch, SetSpacing
 from imagewriter.encoding.print import SetPrintCommands
 from imagewriter.encoding.quality import SetQuality
-from imagewriter.encoding.repeat import repeat
+from imagewriter.encoding.repeat import Repeat
 from imagewriter.encoding.reset import RESET
 from imagewriter.encoding.select import DESELECT, SELECT, SetSoftwareSelectResponse
 from imagewriter.encoding.settings import apply_settings
@@ -122,6 +123,7 @@ __all__: list[str] = [
     "SELECT",
     "SET_GRAPHICS_DISTANCE_BETWEEN_LINES",
     "SET_TOP_OF_FORM",
+    "SPACE",
     "START_BOLDFACE",
     "START_DOUBLE_WIDTH",
     "START_HALF_HEIGHT",
@@ -160,6 +162,7 @@ __all__: list[str] = [
     "PlaceExactPrintHeadPosition",
     "Print",
     "PrintGraphicsData",
+    "Repeat",
     "RequestSelfIdentify",
     "SetAutoLFAfterCR",
     "SetCRInsertion",
@@ -190,7 +193,6 @@ __all__: list[str] = [
     "double_width",
     "esc",
     "half_height",
-    "repeat",
     "reset_tabs",
     "set_language",
     "to_tab_stops",
