@@ -70,7 +70,7 @@ In the modern day, the host is almost always much faster than the device. This m
 5. The host stops sending data to the device until `CTS` is re-asserted
 6. The device may de-assert `RTS` when it no longer wants to send data
 
-Note that, in the case of the ImageWriter II, it will not print of the host is asserting `RTS`. This is because it's not powerful enough to both print and buffer data. In practice, the host must de-assert `RTS` when it is done sending data, even though this isn't demanded by the semantics of RS-232.
+Note that, in the case of the ImageWriter II, it will not print if the host is asserting `RTS`. This is because it's not powerful enough to both print and buffer data. In practice, the host must de-assert `RTS` when it is done sending data, even though this isn't demanded by the semantics of RS-232.
 
 Historically, `DSR` and `DTR` would be used (or abused) as `RTS` and `CTS` are today, in scenarios where a device was expected to be slower than a host. `RTS` and `CTS` were added later - an ongoing process during the product lifetime of the ImageWriter II - when it became clear that assumptions on the relative speeds of host and device could not be made. In the modern day, `RTS` and `CTS` are the primary mechanisms for flow control, as the host is almost always much faster than the device.
 
