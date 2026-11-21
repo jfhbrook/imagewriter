@@ -293,6 +293,7 @@ class SoftwareSwitches:
             ignore_eighth_data_bit=SoftwareSwitch.IGNORE_EIGHTH_DATA_BIT in switches,
         )
 
+    @property
     def switches(self: Self) -> set[SoftwareSwitch]:
         switches: set[SoftwareSwitch] = SoftwareSwitch.language_switches(self.language)
 

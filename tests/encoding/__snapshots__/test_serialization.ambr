@@ -14,7 +14,7 @@
   '\x1b0'
 # ---
 # name: test_bytes_command[close many tabs-command4]
-  '\x1b)00400801.'
+  '\x1b)004,008,012.'
 # ---
 # name: test_bytes_command[close software switches-command5]
   '\x1bD\x03\x00'
@@ -167,7 +167,7 @@
   '\x1bL012'
 # ---
 # name: test_bytes_command[set many tabs-command44]
-  '\x1b(00400801.'
+  '\x1b(004,008,012.'
 # ---
 # name: test_bytes_command[set one tab-command47]
   '\x1bU016'
@@ -260,7 +260,7 @@
   'CloseSoftwareSwitches([0b00000011, 0b00000000])'
 # ---
 # name: test_repr_command[control character-command7]
-  "Ctrl(b'\\x11')"
+  'Ctrl(Q)'
 # ---
 # name: test_repr_command[deselect-command8]
   'Deselect()'

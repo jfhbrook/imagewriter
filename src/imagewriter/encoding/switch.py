@@ -75,7 +75,7 @@ def apply_software_switches(switches: SoftwareSwitches) -> list[Command]:
     """
 
     commands: list[Command] = []
-    to_close = switches.switches()
+    to_close = switches.switches
     to_open = SoftwareSwitch.difference(to_close)
 
     if to_open:

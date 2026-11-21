@@ -11,12 +11,17 @@ from imagewriter.encoding.base import (
     number,
 )
 
+LINE_FEED_ENCODING: dict[int, bytes] = {
+    10: b":",
+    11: b";",
+    12: b"<",
+    13: b"=",
+    14: b">",
+    15: b"?",
+}
 
-def _encode_line_feed_count(lines: int) -> bytes:
-    return bytes(
-        {10: ":", 11: ";", 12: "<", 13: "=", 14: ">", 15: "?"}.get(lines, str(lines)),
-        encoding="ascii",
-    )
+for i in range(2, 10):
+    LINE_FEED_ENCODING[i] = bytes(str(i), encoding="ascii")
 
 
 class LineFeedLengthError(LengthError):
@@ -39,7 +44,7 @@ class LineFeed(Bytes):
         if lines == 1:
             super().__init__(b"\n")
         else:
-            super().__init__(ctrl("_") + _encode_line_feed_count(lines))
+            super().__init__(ctrl("_") + LINE_FEED_ENCODING[lines])
 
     def __repr__(self: Self) -> str:
         if self.lines == 1:
@@ -79,12 +84,12 @@ class SetDistanceBetweenLines(Bytes):
 
     def __init__(self: Self, distance: Length) -> None:
         dist: int = length_to_int(distance, lambda d: d.vertical)
-        self._distance: int = dist
+        self.distance: int = dist
 
         super().__init__(esc("T") + number(dist, 2))
 
     def __repr__(self: Self) -> str:
-        return f"SetDistanceBetweenLines({self._distance})"
+        return f"SetDistanceBetweenLines({self.distance})"
 
 
 class LineFeedForward(Esc):

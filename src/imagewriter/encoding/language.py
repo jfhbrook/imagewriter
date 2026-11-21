@@ -13,26 +13,26 @@ from imagewriter.encoding.switch import (
 
 class OpenLanguageSwitches(OpenSoftwareSwitches):
     def __init__(self: Self, language: Language) -> None:
-        self._language = language
+        self.language = language
         super().__init__(SoftwareSwitch.open_language_switches(language))
 
     def __repr__(self: Self) -> str:
         position = fmt_switch_position(self.closed)
         banks = fmt_switch_banks(self.pack())
 
-        return f"OpenLanguageSwitches({self._language}, {position}, {banks})"
+        return f"OpenLanguageSwitches({self.language}, {position}, {banks})"
 
 
 class CloseLanguageSwitches(CloseSoftwareSwitches):
     def __init__(self: Self, language: Language) -> None:
-        self._language = language
+        self.language = language
         super().__init__(SoftwareSwitch.language_switches(language))
 
     def __repr__(self: Self) -> str:
         position = fmt_switch_position(self.closed)
         banks = fmt_switch_banks(self.pack())
 
-        return f"CloseLanguageSwitches({self._language}, {position}, {banks})"
+        return f"CloseLanguageSwitches({self.language}, {position}, {banks})"
 
 
 def set_language(language: Language) -> list[Command]:
