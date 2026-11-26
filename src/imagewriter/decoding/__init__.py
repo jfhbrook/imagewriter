@@ -67,7 +67,7 @@ from imagewriter.decoding.switch import close_software_switches, open_software_s
 from imagewriter.encoding.base import Command, Print
 
 
-def decode(document: bytes, settings: Settings) -> tuple[list[Command], Settings]:
+def decode(document: bytes, settings: Settings) -> list[Command]:
     state = State(settings)
 
     parser = alt(
@@ -161,6 +161,5 @@ def decode(document: bytes, settings: Settings) -> tuple[list[Command], Settings
         any_char.map(Print),
     )
 
-    commands: list[Command] = parser.parse(document)
-
-    return commands, state.settings
+    # TODO: Return settings when state management is complete
+    return parser.parse(document)
