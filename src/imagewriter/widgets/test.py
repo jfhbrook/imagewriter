@@ -53,11 +53,9 @@ class TestPageStatusWidget(widgets.Label):
         super().__init__(value="")
 
     def running(self: Self) -> None:
-        print("set to running")
         self.value = self.RUNNING
 
     def clear(self: Self) -> None:
-        print("cleared")
         self.value = ""
 
     def error(self: Self, err: Exception) -> None:

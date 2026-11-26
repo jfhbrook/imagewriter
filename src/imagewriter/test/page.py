@@ -143,12 +143,14 @@ class TestPage:
 
         return self.builder.commands
 
-    def markdown(self: Self) -> None:
+    def markdown(self: Self) -> list[Command]:
         """
         Test printing markdown.
         """
 
         self._markdown(standalone=True)
+
+        return self.builder.commands
 
     #
     # Individual reports
