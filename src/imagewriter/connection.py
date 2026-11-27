@@ -2,13 +2,14 @@
 Connection management for the ImageWriter II.
 """
 
+import asyncio
 import logging
 import queue
 from collections.abc import Generator, Sequence
 from concurrent.futures import ALL_COMPLETED, Executor, Future, wait
 from contextlib import contextmanager
 from dataclasses import dataclass
-from typing import Self
+from typing import Awaitable, Self
 
 from imagewriter.encoding import Command
 from imagewriter.serial import Serial
@@ -93,7 +94,7 @@ class Connection:
             except Shutdown:
                 pass
 
-    def write(self: Self, commands: Sequence[Command]) -> Result:
+    def write(self: Self, commands: Sequence[Command]) -> Awaitable[Count]:
         """
         Write to the serial port.
 
@@ -106,9 +107,9 @@ class Connection:
 
         logger.debug(f"Staged commands: {commands}")
 
-        return result
+        return asyncio.wrap_future(result)
 
-    def interrupt(self: Self, commands: Sequence[Command]) -> Result:
+    def interrupt(self: Self, commands: Sequence[Command]) -> Awaitable[Count]:
         """
         Interrupt with a sequence of commands.
 
@@ -121,7 +122,8 @@ class Connection:
         self._interrupts.put(request)
 
         logger.debug(f"Staged interrupts: {commands}")
-        return result
+
+        return asyncio.wrap_future(result)
 
     def _worker(self: Self) -> None:
         #
