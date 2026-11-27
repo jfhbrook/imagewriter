@@ -5,7 +5,7 @@ import ipywidgets as widgets  # type: ignore
 from imagewriter.base.pitch import Pitch
 from imagewriter.base.print import PrintCommands
 from imagewriter.base.settings import Settings
-from imagewriter.base.switch import DIPSwitches
+from imagewriter.base.switch import DIPSwitches, SoftwareSwitches
 from imagewriter.base.units import VERTICAL_RESOLUTION, Distance, Inch
 from imagewriter.connection import Connection
 from imagewriter.encoding.settings import apply_settings
@@ -380,12 +380,11 @@ class SettingsWidget(widgets.VBox):
         dip_switches: DIPSwitches | None = None,
         settings: Settings | None = None,
     ) -> None:
+        dip_sw = dip_switches if dip_switches is not None else DIPSwitches.defaults()
         self._settings: Settings = (
             settings
             if settings is not None
-            else Settings.defaults(
-                dip_switches if dip_switches is not None else DIPSwitches.defaults()
-            )
+            else Settings(dip_sw, SoftwareSwitches.defaults(dip_sw))
         )
 
         self._left_margin_widget = LeftMarginWidget(self._settings)
@@ -473,27 +472,28 @@ class SettingsWidget(widgets.VBox):
 
     @property
     def settings(self: Self) -> Settings:
-        self._settings = Settings.replace(
-            self._settings,
-            left_margin=self._left_margin_widget.left_margin,
-            page_length=self._page_length_widget.page_length,
-            language=self._language_widget.language,
-            slashed_zero=self._slashed_zero_widget.slashed_zero,
-            pitch=self._pitch_widget.pitch,
-            distance_between_lines=self._line_spacing_widget.distance_between_lines,
-            lf_when_line_full=self._lf_when_line_full_widget.lf_when_line_full,
-            auto_lf_after_cr=self._auto_lf_after_cr_widget.auto_lf_after_cr,
-            cr_insertion=self._cr_insertion_widget.cr_insertion,
-            perforation_skip=self._perforation_skip_widget.perforation_skip,
-            paper_out_sensor=self._paper_out_sensor_widget.paper_out_sensor,
-            print_commands=self._print_commands_widget.print_commands,
-            quality=self._quality_widget.quality,
-            software_select_response=(
-                self._software_select_response_widget.software_select_response
-            ),
-            include_eighth_data_bit=(
-                self._include_eighth_data_bit_widget.include_eighth_data_bit
-            ),
+        self._settings.left_margin = self._left_margin_widget.left_margin
+        self._settings.page_length = self._page_length_widget.page_length
+        self._settings.language = self._language_widget.language
+        self._settings.slashed_zero = self._slashed_zero_widget.slashed_zero
+        self._settings.pitch = self._pitch_widget.pitch
+        self._settings.distance_between_lines = (
+            self._line_spacing_widget.distance_between_lines
+        )
+        self._settings.lf_when_line_full = (
+            self._lf_when_line_full_widget.lf_when_line_full
+        )
+        self._settings.auto_lf_after_cr = self._auto_lf_after_cr_widget.auto_lf_after_cr
+        self._settings.cr_insertion = self._cr_insertion_widget.cr_insertion
+        self._settings.perforation_skip = self._perforation_skip_widget.perforation_skip
+        self._settings.paper_out_sensor = self._paper_out_sensor_widget.paper_out_sensor
+        self._settings.print_commands = self._print_commands_widget.print_commands
+        self._settings.quality = self._quality_widget.quality
+        self._settings.software_select_response = (
+            self._software_select_response_widget.software_select_response
+        )
+        self._settings.include_eighth_data_bit = (
+            self._include_eighth_data_bit_widget.include_eighth_data_bit
         )
 
         return self._settings

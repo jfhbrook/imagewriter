@@ -1,4 +1,3 @@
-import dataclasses
 import importlib.resources
 from collections.abc import Callable, Generator
 from contextlib import AbstractContextManager, contextmanager
@@ -70,11 +69,9 @@ class TestPage:
         self.builder = rich_text_builder
         self.pandoc = pandoc_renderer
 
-        settings = dataclasses.replace(
-            self.builder.settings,
-            quality=Quality.NEAR_LETTER_QUALITY,
-            emoji_codes=False,
-        )
+        settings = self.builder.settings.clone()
+        settings.quality = Quality.NEAR_LETTER_QUALITY
+        settings.emoji_codes = False
         self.builder.settings = settings
         self.pandoc.settings = settings
 

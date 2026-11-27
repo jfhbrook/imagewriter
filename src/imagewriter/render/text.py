@@ -123,7 +123,7 @@ class RichTextBuilder:
         Set tab stops.
         """
 
-        self._settings = Settings.replace(self._settings, tab_stops=tab_stops)
+        self._settings.tab_stops = list(tab_stops)
 
         if not self._has_header:
             # Tab stops are included in the header.

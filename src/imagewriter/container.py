@@ -8,7 +8,7 @@ from serial.tools.list_ports import comports
 
 from imagewriter.base.character import Language
 from imagewriter.base.settings import Settings
-from imagewriter.base.switch import DIPSwitches
+from imagewriter.base.switch import DIPSwitches, SoftwareSwitches
 from imagewriter.connection import Connection
 from imagewriter.debug import SerialStateObserver
 from imagewriter.encoding.character import CharacterEncoder
@@ -29,12 +29,14 @@ def provide_settings(
     perforation_skip: bool,
     include_eighth_data_bit: bool,
 ) -> Settings:
-    return Settings.replace(
-        Settings.defaults(dip_switches),
-        lf_when_line_full=lf_when_line_full,
-        perforation_skip=perforation_skip,
-        include_eighth_data_bit=include_eighth_data_bit,
-    )
+    software_switches = SoftwareSwitches.defaults(dip_switches)
+    settings = Settings(dip_switches, software_switches)
+
+    settings.lf_when_line_full = lf_when_line_full
+    settings.perforation_skip = perforation_skip
+    settings.include_eighth_data_bit = include_eighth_data_bit
+
+    return settings
 
 
 def provide_language(settings: Settings) -> Language:

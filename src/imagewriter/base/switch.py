@@ -3,7 +3,6 @@ Representations of state for both the ImageWriter II's physical DIP switches and
 in-memory software switches.
 """
 
-from dataclasses import dataclass
 from enum import Enum
 from typing import Self
 
@@ -12,6 +11,31 @@ from imagewriter.base.motion import FormLength
 from imagewriter.base.pitch import Pitch
 from imagewriter.base.print import PrintCommands
 from imagewriter.serial import BaudRate, SerialProtocol
+
+LANGUAGE_LOOKUP = {
+    0b000: Language.AMERICAN,
+    0b100: Language.ITALIAN,
+    0b010: Language.DANISH,
+    0b110: Language.BRITISH,
+    0b001: Language.GERMAN,
+    0b101: Language.SWEDISH,
+    0b011: Language.FRENCH,
+    0b111: Language.SPANISH,
+}
+
+BAUD_RATE_LOOKUP: dict[int, BaudRate] = {
+    0b00: 300,
+    0b10: 1200,
+    0b01: 2400,
+    0b11: 9600,
+}
+
+PITCH_LOOKUP = {
+    0b00: Pitch.PICA,
+    0b10: Pitch.ELITE,
+    0b01: Pitch.ULTRACONDENSED,
+    0b11: Pitch.ELITE_PROPORTIONAL,
+}
 
 
 class DIPSwitch(Enum):
@@ -33,111 +57,84 @@ class DIPSwitch(Enum):
     OPTION_CARD = "2-4"
 
 
-@dataclass
 class DIPSwitches:
     """
     DIP switch settings, as per Chapter 2 of the ImageWriter II Technical
     Reference Manual
+
+    This class wraps a set of DIPSwitch and exposes semantic properties encoded
+    by those switches.
     """
 
-    language: Language
-    form_length: FormLength
-    perforation_skip: bool
-    pitch: Pitch
-    auto_lf_after_cr: bool
-    baud_rate: BaudRate
-    protocol: SerialProtocol
+    def __init__(self: Self, switches: set[DIPSwitch]) -> None:
+        self.switches = switches
 
-    @classmethod
-    def language_from_switches(cls: type[Self], switches: set[DIPSwitch]) -> Language:
+    @property
+    def language(self: Self) -> Language:
         key: int = 0b000
-        if DIPSwitch.LANGUAGE_1 in switches:
+        if DIPSwitch.LANGUAGE_1 in self.switches:
             key |= 0b100
-        if DIPSwitch.LANGUAGE_2 in switches:
+        if DIPSwitch.LANGUAGE_2 in self.switches:
             key |= 0b010
-        if DIPSwitch.LANGUAGE_3 in switches:
+        if DIPSwitch.LANGUAGE_3 in self.switches:
             key |= 0b001
 
-        return {
-            0b000: Language.AMERICAN,
-            0b100: Language.ITALIAN,
-            0b010: Language.DANISH,
-            0b110: Language.BRITISH,
-            0b001: Language.GERMAN,
-            0b101: Language.SWEDISH,
-            0b011: Language.FRENCH,
-            0b111: Language.SPANISH,
-        }[key]
+        return LANGUAGE_LOOKUP[key]
 
-    @classmethod
-    def pitch_from_switches(cls: type[Self], switches: set[DIPSwitch]) -> Pitch:
+    @property
+    def form_length(self: Self) -> FormLength:
+        return 12 if DIPSwitch.FORM_LENGTH in self.switches else 11
+
+    @property
+    def perforation_skip(self: Self) -> bool:
+        return DIPSwitch.PERFORATION_SKIP in self.switches
+
+    @property
+    def pitch(self: Self) -> Pitch:
         key: int = 0b00
-        if DIPSwitch.PITCH_1 in switches:
+        if DIPSwitch.PITCH_1 in self.switches:
             key |= 0b10
-        if DIPSwitch.PITCH_2 in switches:
+        if DIPSwitch.PITCH_2 in self.switches:
             key |= 0b01
 
-        return {
-            0b00: Pitch.PICA,
-            0b10: Pitch.ELITE,
-            0b01: Pitch.ULTRACONDENSED,
-            0b11: Pitch.ELITE_PROPORTIONAL,
-        }[key]
+        return PITCH_LOOKUP[key]
 
-    @classmethod
-    def baud_rate_from_switches(cls: type[Self], switches: set[DIPSwitch]) -> BaudRate:
+    @property
+    def auto_lf_after_cr(self: Self) -> bool:
+        return DIPSwitch.AUTO_LF_AFTER_CR in self.switches
+
+    @property
+    def baud_rate(self: Self) -> BaudRate:
         key: int = 0b00
-        if DIPSwitch.BAUD_RATE_1 in switches:
+        if DIPSwitch.BAUD_RATE_1 in self.switches:
             key |= 0b10
-        if DIPSwitch.BAUD_RATE_2 in switches:
+        if DIPSwitch.BAUD_RATE_2 in self.switches:
             key |= 0b01
 
-        baud_rates: dict[int, BaudRate] = {
-            0b00: 300,
-            0b10: 1200,
-            0b01: 2400,
-            0b11: 9600,
-        }
+        return BAUD_RATE_LOOKUP[key]
 
-        return baud_rates[key]
-
-    @classmethod
-    def from_switches(cls: type[Self], switches: set[DIPSwitch]) -> Self:
-        """
-        Get the DIP switch settings based on which switches are closed, as per
-        Chapter 2 of the ImageWriter II Technical Reference Manual.
-        """
-
-        return cls(
-            language=cls.language_from_switches(switches),
-            form_length=12 if DIPSwitch.FORM_LENGTH in switches else 11,
-            perforation_skip=DIPSwitch.PERFORATION_SKIP in switches,
-            pitch=cls.pitch_from_switches(switches),
-            auto_lf_after_cr=DIPSwitch.AUTO_LF_AFTER_CR in switches,
-            baud_rate=cls.baud_rate_from_switches(switches),
-            protocol=(
-                SerialProtocol.XONXOFF
-                if DIPSwitch.PROTOCOL in switches
-                else SerialProtocol.HARDWARE_HANDSHAKE
-            ),
+    @property
+    def protocol(self: Self) -> SerialProtocol:
+        return (
+            SerialProtocol.XONXOFF
+            if DIPSwitch.PROTOCOL in self.switches
+            else SerialProtocol.HARDWARE_HANDSHAKE
         )
 
     @classmethod
     def defaults(cls: type[Self]) -> Self:
         """
-        Get the factory default DIP switch settings for printers sold in
+        The factory default DIP switch settings for printers sold in
         North America, as per Chapter 2 of the ImageWriter II Technical
         Reference Manual.
         """
 
-        return cls.from_switches(
-            {DIPSwitch.PITCH_1, DIPSwitch.BAUD_RATE_1, DIPSwitch.BAUD_RATE_2}
-        )
+        return cls({DIPSwitch.PITCH_1, DIPSwitch.BAUD_RATE_1, DIPSwitch.BAUD_RATE_2})
 
 
 class SoftwareSwitch(Enum):
     """
-    Software switches, as per Chapter 3 of the ImageWriter II Technical
+    A software switch, as per Chapter 3 of the ImageWriter II Technical
     Reference Manual.
     """
 
@@ -161,18 +158,7 @@ class SoftwareSwitch(Enum):
     # Switch B-8 not used
 
     @classmethod
-    def difference(
-        cls: type[Self], switches: set[SoftwareSwitch]
-    ) -> set[SoftwareSwitch]:
-        """
-        Returns the software switches **not** provided.
-        """
-        return set(cls) - set(switches)
-
-    @classmethod
-    def defaults(
-        cls: type[Self], dip_switches: DIPSwitches | None = None
-    ) -> set[SoftwareSwitch]:
+    def defaults(cls: type[Self], dip_switches: DIPSwitches) -> set[SoftwareSwitch]:
         """
         Returns software switches which are closed by default, as per page 32
         of the ImageWriter II Technical Reference Manual.
@@ -183,72 +169,41 @@ class SoftwareSwitch(Enum):
         North America.
         """
 
-        settings: DIPSwitches = dip_switches if dip_switches else DIPSwitches.defaults()
-
         defaults: set[SoftwareSwitch] = {
             SoftwareSwitch.SOFTWARE_SELECT_RESPONSE_DISABLED,
             SoftwareSwitch.PRINT_COMMANDS_INCLUDE_LF_FF,
             SoftwareSwitch.IGNORE_EIGHTH_DATA_BIT,
         }
 
-        defaults |= cls.language_switches(settings.language)
+        defaults |= SoftwareSwitchLanguage.closed(dip_switches.language)
 
-        if settings.auto_lf_after_cr:
+        if dip_switches.auto_lf_after_cr:
             defaults.add(SoftwareSwitch.AUTO_LF_AFTER_CR)
 
-        if not settings.perforation_skip:
+        if not dip_switches.perforation_skip:
             defaults.add(SoftwareSwitch.PERFORATION_SKIP_DISABLED)
 
         return defaults
 
     @classmethod
-    def language_switches(cls: type[Self], language: Language) -> set[SoftwareSwitch]:
+    def open(cls: type[Self], switches: set[SoftwareSwitch]) -> set[SoftwareSwitch]:
         """
-        Language switches which should be closed, as per page 32 of the
-        ImageWriter II Technical Reference Manual.
+        Open software switches.
+        """
+        return set(cls) - switches
+
+
+class SoftwareSwitchLanguage:
+    """
+    Helpers for working with language software switches.
+    """
+
+    @classmethod
+    def language(cls: type[Self], switches: set[SoftwareSwitch]) -> Language:
+        """
+        The language that corresponds with closed switches.
         """
 
-        return {
-            Language.AMERICAN: set(),
-            Language.BRITISH: {cls.LANGUAGE_1, cls.LANGUAGE_2},
-            Language.GERMAN: {cls.LANGUAGE_3},
-            Language.FRENCH: {cls.LANGUAGE_2, cls.LANGUAGE_3},
-            Language.SWEDISH: {cls.LANGUAGE_1, cls.LANGUAGE_3},
-            Language.ITALIAN: {cls.LANGUAGE_1},
-            Language.SPANISH: {cls.LANGUAGE_1, cls.LANGUAGE_2, cls.LANGUAGE_3},
-            Language.DANISH: {cls.LANGUAGE_2},
-        }[language]
-
-    @classmethod
-    def open_language_switches(
-        cls: type[Self], language: Language
-    ) -> set[SoftwareSwitch]:
-        return {
-            cls.LANGUAGE_1,
-            cls.LANGUAGE_2,
-            cls.LANGUAGE_3,
-        } - cls.language_switches(language)
-
-
-@dataclass
-class SoftwareSwitches:
-    language: Language
-    software_select_response_disabled: bool
-    lf_when_line_full: bool
-    print_commands: PrintCommands
-    auto_lf_after_cr: bool
-    slashed_zero: bool
-    perforation_skip_disabled: bool
-    ignore_eighth_data_bit: bool
-
-    @classmethod
-    def defaults(cls: type[Self], dip_switches: DIPSwitches | None = None) -> Self:
-        return cls.from_switches(SoftwareSwitch.defaults(dip_switches))
-
-    @classmethod
-    def language_from_switches(
-        cls: type[Self], switches: set[SoftwareSwitch]
-    ) -> Language:
         key: int = 0b000
         if SoftwareSwitch.LANGUAGE_1 in switches:
             key |= 0b100
@@ -257,59 +212,140 @@ class SoftwareSwitches:
         if SoftwareSwitch.LANGUAGE_3 in switches:
             key |= 0b001
 
-        return {
-            0b000: Language.AMERICAN,
-            0b110: Language.BRITISH,
-            0b001: Language.GERMAN,
-            0b011: Language.FRENCH,
-            0b101: Language.SWEDISH,
-            0b100: Language.ITALIAN,
-            0b111: Language.SPANISH,
-            0b010: Language.DANISH,
-        }[key]
+        return LANGUAGE_LOOKUP[key]
 
     @classmethod
-    def from_switches(cls: type[Self], switches: set[SoftwareSwitch]) -> Self:
+    def closed(cls: type[Self], language: Language) -> set[SoftwareSwitch]:
         """
-        Get the software switch settings based on which switches are closed.
+        Language switches which should be closed, as per page 32 of the
+        ImageWriter II Technical Reference Manual.
         """
 
-        return cls(
-            language=cls.language_from_switches(switches),
-            software_select_response_disabled=(
-                SoftwareSwitch.SOFTWARE_SELECT_RESPONSE_DISABLED
-            )
-            in switches,
-            lf_when_line_full=SoftwareSwitch.LF_WHEN_LINE_FULL in switches,
-            print_commands=(
-                PrintCommands.CR_LF_AND_FF
-                if SoftwareSwitch.PRINT_COMMANDS_INCLUDE_LF_FF in switches
-                else PrintCommands.CR_ONLY
-            ),
-            auto_lf_after_cr=SoftwareSwitch.AUTO_LF_AFTER_CR in switches,
-            slashed_zero=SoftwareSwitch.SLASHED_ZERO in switches,
-            perforation_skip_disabled=SoftwareSwitch.PERFORATION_SKIP_DISABLED
-            in switches,
-            ignore_eighth_data_bit=SoftwareSwitch.IGNORE_EIGHTH_DATA_BIT in switches,
-        )
+        return {
+            Language.AMERICAN: set(),
+            Language.BRITISH: {SoftwareSwitch.LANGUAGE_1, SoftwareSwitch.LANGUAGE_2},
+            Language.GERMAN: {SoftwareSwitch.LANGUAGE_3},
+            Language.FRENCH: {SoftwareSwitch.LANGUAGE_2, SoftwareSwitch.LANGUAGE_3},
+            Language.SWEDISH: {SoftwareSwitch.LANGUAGE_1, SoftwareSwitch.LANGUAGE_3},
+            Language.ITALIAN: {SoftwareSwitch.LANGUAGE_1},
+            Language.SPANISH: {
+                SoftwareSwitch.LANGUAGE_1,
+                SoftwareSwitch.LANGUAGE_2,
+                SoftwareSwitch.LANGUAGE_3,
+            },
+            Language.DANISH: {SoftwareSwitch.LANGUAGE_2},
+        }[language]
+
+    @classmethod
+    def open(cls: type[Self], language: Language) -> set[SoftwareSwitch]:
+        """
+        Language switches that should be open.
+        """
+
+        return {
+            SoftwareSwitch.LANGUAGE_1,
+            SoftwareSwitch.LANGUAGE_2,
+            SoftwareSwitch.LANGUAGE_3,
+        } - cls.closed(language)
+
+
+class SoftwareSwitches:
+    def __init__(self: Self, switches: set[SoftwareSwitch]) -> None:
+        self.switches = switches
+
+    @classmethod
+    def defaults(cls: type[Self], dip_switches: DIPSwitches) -> Self:
+        switches = SoftwareSwitch.defaults(dip_switches)
+        return cls(switches)
 
     @property
-    def switches(self: Self) -> set[SoftwareSwitch]:
-        switches: set[SoftwareSwitch] = SoftwareSwitch.language_switches(self.language)
+    def language(self: Self) -> Language:
+        return SoftwareSwitchLanguage.language(self.switches)
 
-        if self.software_select_response_disabled:
-            switches.add(SoftwareSwitch.SOFTWARE_SELECT_RESPONSE_DISABLED)
-        if self.lf_when_line_full:
-            switches.add(SoftwareSwitch.LF_WHEN_LINE_FULL)
-        if self.print_commands == PrintCommands.CR_LF_AND_FF:
-            switches.add(SoftwareSwitch.PRINT_COMMANDS_INCLUDE_LF_FF)
-        if self.auto_lf_after_cr:
-            switches.add(SoftwareSwitch.AUTO_LF_AFTER_CR)
-        if self.slashed_zero:
-            switches.add(SoftwareSwitch.SLASHED_ZERO)
-        if self.perforation_skip_disabled:
-            switches.add(SoftwareSwitch.PERFORATION_SKIP_DISABLED)
-        if self.ignore_eighth_data_bit:
-            switches.add(SoftwareSwitch.IGNORE_EIGHTH_DATA_BIT)
+    @language.setter
+    def language(self: Self, language: Language) -> None:
+        self.switches |= SoftwareSwitchLanguage.closed(language)
 
-        return switches
+    @property
+    def software_select_response_disabled(self: Self) -> bool:
+        return SoftwareSwitch.SOFTWARE_SELECT_RESPONSE_DISABLED in self.switches
+
+    @software_select_response_disabled.setter
+    def software_select_response_disabled(self: Self, disabled: bool) -> None:
+        if disabled:
+            self.switches.add(SoftwareSwitch.SOFTWARE_SELECT_RESPONSE_DISABLED)
+        else:
+            self.switches.remove(SoftwareSwitch.SOFTWARE_SELECT_RESPONSE_DISABLED)
+
+    @property
+    def lf_when_line_full(self: Self) -> bool:
+        return SoftwareSwitch.LF_WHEN_LINE_FULL in self.switches
+
+    @lf_when_line_full.setter
+    def lf_when_line_full(self: Self, enabled: bool) -> None:
+        if enabled:
+            self.switches.add(SoftwareSwitch.LF_WHEN_LINE_FULL)
+        else:
+            self.switches.remove(SoftwareSwitch.LF_WHEN_LINE_FULL)
+
+    @property
+    def print_commands(self: Self) -> PrintCommands:
+        return (
+            PrintCommands.CR_LF_AND_FF
+            if SoftwareSwitch.PRINT_COMMANDS_INCLUDE_LF_FF in self.switches
+            else PrintCommands.CR_ONLY
+        )
+
+    @print_commands.setter
+    def print_commands(self: Self, commands: PrintCommands) -> None:
+        if commands == PrintCommands.CR_LF_AND_FF:
+            self.switches.add(SoftwareSwitch.PRINT_COMMANDS_INCLUDE_LF_FF)
+        else:
+            self.switches.remove(SoftwareSwitch.PRINT_COMMANDS_INCLUDE_LF_FF)
+
+    @property
+    def auto_lf_after_cr(self: Self) -> bool:
+        return SoftwareSwitch.AUTO_LF_AFTER_CR in self.switches
+
+    @auto_lf_after_cr.setter
+    def auto_lf_after_cr(self: Self, enabled: bool) -> None:
+        if enabled:
+            self.switches.add(SoftwareSwitch.AUTO_LF_AFTER_CR)
+        else:
+            self.switches.remove(SoftwareSwitch.AUTO_LF_AFTER_CR)
+
+    @property
+    def slashed_zero(self: Self) -> bool:
+        return SoftwareSwitch.SLASHED_ZERO in self.switches
+
+    @slashed_zero.setter
+    def slashed_zero(self: Self, enabled: bool) -> None:
+        if enabled:
+            self.switches.add(SoftwareSwitch.SLASHED_ZERO)
+        else:
+            self.switches.remove(SoftwareSwitch.SLASHED_ZERO)
+
+    @property
+    def perforation_skip_disabled(self: Self) -> bool:
+        return SoftwareSwitch.PERFORATION_SKIP_DISABLED in self.switches
+
+    @perforation_skip_disabled.setter
+    def perforation_skip_disabled(self: Self, disabled: bool) -> None:
+        if disabled:
+            self.switches.add(SoftwareSwitch.PERFORATION_SKIP_DISABLED)
+        else:
+            self.switches.remove(SoftwareSwitch.PERFORATION_SKIP_DISABLED)
+
+    @property
+    def ignore_eighth_data_bit(self: Self) -> bool:
+        return SoftwareSwitch.IGNORE_EIGHTH_DATA_BIT in self.switches
+
+    @ignore_eighth_data_bit.setter
+    def ignore_eighth_data_bit(self: Self, ignored: bool) -> None:
+        if ignored:
+            self.switches.add(SoftwareSwitch.IGNORE_EIGHTH_DATA_BIT)
+        else:
+            self.switches.remove(SoftwareSwitch.IGNORE_EIGHTH_DATA_BIT)
+
+    def clone(self: Self) -> Self:
+        return self.__class__(self.switches.copy())

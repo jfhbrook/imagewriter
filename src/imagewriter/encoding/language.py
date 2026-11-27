@@ -1,7 +1,7 @@
 from typing import Self
 
 from imagewriter.base.character import Language
-from imagewriter.base.switch import SoftwareSwitch
+from imagewriter.base.switch import SoftwareSwitchLanguage
 from imagewriter.encoding.base import Command
 from imagewriter.encoding.switch import (
     CloseSoftwareSwitches,
@@ -14,7 +14,7 @@ from imagewriter.encoding.switch import (
 class OpenLanguageSwitches(OpenSoftwareSwitches):
     def __init__(self: Self, language: Language) -> None:
         self.language = language
-        super().__init__(SoftwareSwitch.open_language_switches(language))
+        super().__init__(SoftwareSwitchLanguage.open(language))
 
     def __repr__(self: Self) -> str:
         position = fmt_switch_position(self.closed)
@@ -26,7 +26,7 @@ class OpenLanguageSwitches(OpenSoftwareSwitches):
 class CloseLanguageSwitches(CloseSoftwareSwitches):
     def __init__(self: Self, language: Language) -> None:
         self.language = language
-        super().__init__(SoftwareSwitch.language_switches(language))
+        super().__init__(SoftwareSwitchLanguage.closed(language))
 
     def __repr__(self: Self) -> str:
         position = fmt_switch_position(self.closed)

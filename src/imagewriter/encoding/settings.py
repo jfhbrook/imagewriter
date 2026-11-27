@@ -15,7 +15,7 @@ from imagewriter.encoding.switch import apply_software_switches
 
 def apply_settings(settings: Settings) -> list[Command]:
     return [
-        *apply_software_switches(settings.switches),
+        *apply_software_switches(settings.software_switches),
         SetCRInsertion(settings.cr_insertion),
         SetPaperOutSensor(settings.paper_out_sensor),
         SetPitch(settings.pitch),

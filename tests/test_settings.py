@@ -9,7 +9,7 @@ from imagewriter.base.switch import DIPSwitches, SoftwareSwitches
 def test_default_settings() -> None:
     dip_switches = DIPSwitches.defaults()
     software_switches = SoftwareSwitches.defaults(dip_switches)
-    settings = Settings.defaults(dip_switches)
+    settings = Settings(dip_switches, software_switches)
 
     # dip switches
     assert settings.language == dip_switches.language
