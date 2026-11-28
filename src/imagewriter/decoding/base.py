@@ -39,7 +39,7 @@ class State:
         try:
             yield
         except Exception:
-            self.settings = settings
+            Settings.apply(self.settings, settings)
             raise
 
     @property

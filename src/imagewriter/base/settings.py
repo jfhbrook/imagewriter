@@ -140,3 +140,19 @@ class Settings:
             setattr(new, name, value)
 
         return new
+
+    @classmethod
+    def apply(cls: type[Self], self: Self, other: Self) -> None:
+        # maintaining the identity of switches - hold my beer
+        self.software_switches.switches &= set()
+        self.software_switches.switches |= other.software_switches.switches
+
+        self.left_margin = other.left_margin
+        self.page_length = other.page_length
+        self.pitch = other.pitch
+        self.tab_stops = other.tab_stops
+        self.distance_between_lines = other.distance_between_lines
+        self.cr_insertion = other.cr_insertion
+        self.paper_out_sensor = other.paper_out_sensor
+        self.quality = other.quality
+        self.emoji_codes = other.emoji_codes

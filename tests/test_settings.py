@@ -6,11 +6,9 @@ from imagewriter.base.settings import Settings
 from imagewriter.base.switch import DIPSwitches, SoftwareSwitches
 
 
-def test_default_settings() -> None:
-    dip_switches = DIPSwitches.defaults()
-    software_switches = SoftwareSwitches.defaults(dip_switches)
-    settings = Settings(dip_switches, software_switches)
-
+def test_default_settings(
+    dip_switches: DIPSwitches, software_switches: SoftwareSwitches, settings: Settings
+) -> None:
     # dip switches
     assert settings.language == dip_switches.language
     assert settings.page_length.inches == dip_switches.form_length

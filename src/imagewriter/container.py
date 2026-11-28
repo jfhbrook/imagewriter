@@ -22,13 +22,17 @@ def provide_port() -> str:
     return comports()[-1].device
 
 
+def provide_software_switches(dip_switches: DIPSwitches) -> SoftwareSwitches:
+    return SoftwareSwitches.defaults(dip_switches)
+
+
 def provide_settings(
     dip_switches: DIPSwitches,
+    software_switches: SoftwareSwitches,
     lf_when_line_full: bool,
     perforation_skip: bool,
     include_eighth_data_bit: bool,
 ) -> Settings:
-    software_switches = SoftwareSwitches.defaults(dip_switches)
     settings = Settings(dip_switches, software_switches)
 
     settings.lf_when_line_full = lf_when_line_full
@@ -98,9 +102,14 @@ class Container(containers.DeclarativeContainer):
 
     dip_switches = providers.Object(DIPSwitches.defaults())
 
+    software_switches = providers.Callable(
+        provide_software_switches, dip_switches=dip_switches
+    )
+
     settings = providers.Callable(
         provide_settings,
         dip_switches=dip_switches,
+        software_switches=software_switches,
         lf_when_line_full=True,
         perforation_skip=True,
         include_eighth_data_bit=True,

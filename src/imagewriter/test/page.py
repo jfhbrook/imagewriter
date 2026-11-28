@@ -67,14 +67,17 @@ class TestPage:
     def __init__(
         self: Self, rich_text_builder: RichTextBuilder, pandoc_renderer: PandocRenderer
     ) -> None:
+        # TODO: Serious shenanigans are afoot here. A better pattern is needed.
         self.builder = rich_text_builder
         self.pandoc = pandoc_renderer
 
         settings = Settings.replace(self.builder.settings)
+
         settings.quality = Quality.NEAR_LETTER_QUALITY
         settings.emoji_codes = False
-        self.builder.settings = settings
-        self.pandoc.settings = settings
+
+        Settings.apply(self.builder.settings, settings)
+        Settings.apply(self.pandoc.settings, settings)
 
         self._standalone: bool = True
 

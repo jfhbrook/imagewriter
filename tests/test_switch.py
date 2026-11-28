@@ -12,29 +12,25 @@ from imagewriter.base.switch import (
 from imagewriter.serial import SerialProtocol
 
 
-def test_dip_switch_defaults() -> None:
-    switches = DIPSwitches.defaults()
-
-    assert switches.language == Language.AMERICAN
-    assert switches.form_length == 11
-    assert not switches.perforation_skip
-    assert switches.pitch == Pitch.ELITE
-    assert not switches.auto_lf_after_cr
-    assert switches.baud_rate == 9600
-    assert switches.protocol == SerialProtocol.HARDWARE_HANDSHAKE
+def test_dip_switch_defaults(dip_switches: DIPSwitches) -> None:
+    assert dip_switches.language == Language.AMERICAN
+    assert dip_switches.form_length == 11
+    assert not dip_switches.perforation_skip
+    assert dip_switches.pitch == Pitch.ELITE
+    assert not dip_switches.auto_lf_after_cr
+    assert dip_switches.baud_rate == 9600
+    assert dip_switches.protocol == SerialProtocol.HARDWARE_HANDSHAKE
 
 
-def test_software_switch_defaults() -> None:
-    switches = SoftwareSwitches.defaults(DIPSwitches.defaults())
-
-    assert switches.language == Language.AMERICAN
-    assert switches.software_select_response_disabled
-    assert not switches.lf_when_line_full
-    assert switches.print_commands == PrintCommands.CR_LF_AND_FF
-    assert not switches.auto_lf_after_cr
-    assert not switches.slashed_zero
-    assert switches.perforation_skip_disabled
-    assert switches.ignore_eighth_data_bit
+def test_software_switch_defaults(software_switches: SoftwareSwitches) -> None:
+    assert software_switches.language == Language.AMERICAN
+    assert software_switches.software_select_response_disabled
+    assert not software_switches.lf_when_line_full
+    assert software_switches.print_commands == PrintCommands.CR_LF_AND_FF
+    assert not software_switches.auto_lf_after_cr
+    assert not software_switches.slashed_zero
+    assert software_switches.perforation_skip_disabled
+    assert software_switches.ignore_eighth_data_bit
 
 
 @pytest.mark.parametrize(
