@@ -2,68 +2,48 @@ import logging
 from collections.abc import Generator
 from concurrent.futures import Executor, ThreadPoolExecutor
 from contextlib import contextmanager
-from pprint import pformat
 
 from dependency_injector import containers, providers
 from serial.tools.list_ports import comports
 
 from imagewriter.base.character import Language
 from imagewriter.base.settings import Settings
-from imagewriter.base.switch import DIPSwitches
+from imagewriter.base.switch import DIPSwitches, SoftwareSwitches
 from imagewriter.connection import Connection
 from imagewriter.debug import SerialStateObserver
-from imagewriter.encoding.character import CharacterEncoder
 from imagewriter.render import DocumentRenderer, PandocRenderer, RichTextBuilder
-from imagewriter.serial import BaudRate, Serial, SerialProtocol
+from imagewriter.serial import Serial
 from imagewriter.test import TestPage
 
 logger = logging.getLogger(__name__)
 
-DIP_SWITCHES = DIPSwitches.defaults()
-
 
 def provide_port() -> str:
-    port = comports()[-1].device
-
-    logger.debug(f"Providing port {port}")
-
-    return port
+    return comports()[-1].device
 
 
-def provide_baud_rate(dip_switches: DIPSwitches) -> BaudRate:
-    logger.debug(f"Baud rate: {dip_switches.baud_rate}")
-
-    return dip_switches.baud_rate
+def provide_software_switches(dip_switches: DIPSwitches) -> SoftwareSwitches:
+    return SoftwareSwitches.defaults(dip_switches)
 
 
-def provide_protocol(dip_switches: DIPSwitches) -> SerialProtocol:
-    logger.debug(f"Protocol: {dip_switches.protocol.value}")
-    return dip_switches.protocol
+def provide_settings(
+    dip_switches: DIPSwitches,
+    software_switches: SoftwareSwitches,
+    lf_when_line_full: bool,
+    perforation_skip: bool,
+    include_eighth_data_bit: bool,
+) -> Settings:
+    settings = Settings(dip_switches, software_switches)
 
-
-def provide_settings(dip_switches: DIPSwitches) -> Settings:
-    settings = Settings.replace(
-        Settings.defaults(dip_switches),
-        lf_when_line_full=True,
-        perforation_skip=True,
-        include_eighth_data_bit=True,
-    )
-
-    logger.debug(f"""Settings:
-
-    {pformat(settings)}
-
-    """)
+    settings.lf_when_line_full = lf_when_line_full
+    settings.perforation_skip = perforation_skip
+    settings.include_eighth_data_bit = include_eighth_data_bit
 
     return settings
 
 
 def provide_language(settings: Settings) -> Language:
     return settings.language
-
-
-def provide_include_eighth_data_bit(settings: Settings) -> bool:
-    return settings.include_eighth_data_bit
 
 
 def provide_emoji_codes(settings: Settings) -> bool:
@@ -74,18 +54,26 @@ def provide_emoji_codes(settings: Settings) -> bool:
 def provide_executor() -> Generator[Executor]:
     executor = ThreadPoolExecutor()
 
-    logger.debug("Executor created")
-
     yield executor
-
-    logger.debug("Shutting down executor")
 
     executor.shutdown(wait=False, cancel_futures=True)
 
 
 @contextmanager
-def provide_connection(serial: Serial, executor: Executor) -> Generator[Connection]:
+def provide_serial(port: str, dip_switches: DIPSwitches) -> Generator[Serial]:
+    with Serial(
+        port=port, baudrate=dip_switches.baud_rate, protocol=dip_switches.protocol
+    ) as serial:
+        yield serial
+
+
+@contextmanager
+def provide_connection(
+    serial: Serial, executor: Executor, settings: Settings
+) -> Generator[Connection]:
     connection = Connection(serial=serial, executor=executor)
+
+    # TODO: await connection.write(apply_settings(settings))
 
     yield connection
 
@@ -104,7 +92,6 @@ class Container(containers.DeclarativeContainer):
         serial: A serial connection
         observer: A serial state observer
         connection: A managed ImageWriter II connection
-        character_encoder: A character encoder for non-ASCII characters
         rich_text_builder: A builder for rich text
         document_renderer: A class for rendering Documents
         pandoc_renderer: A class for rendering text documents with `pandoc`
@@ -113,39 +100,40 @@ class Container(containers.DeclarativeContainer):
 
     port = providers.Callable(provide_port)
 
-    dip_switches = providers.Object(DIP_SWITCHES)
+    dip_switches = providers.Object(DIPSwitches.defaults())
 
-    # Individual configuration from DIP switches
-    baud_rate = providers.Callable(provide_baud_rate, dip_switches=dip_switches)
-    protocol = providers.Callable(provide_protocol, dip_switches=dip_switches)
+    software_switches = providers.Callable(
+        provide_software_switches, dip_switches=dip_switches
+    )
 
-    settings = providers.Callable(provide_settings, dip_switches=dip_switches)
+    settings = providers.Callable(
+        provide_settings,
+        dip_switches=dip_switches,
+        software_switches=software_switches,
+        lf_when_line_full=True,
+        perforation_skip=True,
+        include_eighth_data_bit=True,
+    )
 
     # Individual configuration from settings
     language = providers.Callable(provide_language, settings=settings)
-    include_eighth_data_bit = providers.Callable(
-        provide_include_eighth_data_bit, settings=Settings
-    )
     emoji_codes = providers.Callable(provide_emoji_codes, settings=settings)
 
+    # Persistent connection stuff
     executor = providers.Resource(provide_executor)
 
-    serial = providers.Factory(Serial, port=port, baudrate=baud_rate, protocol=protocol)
+    serial = providers.Resource(provide_serial, port=port, dip_switches=dip_switches)
     observer = providers.Factory(SerialStateObserver, serial=serial, executor=executor)
     connection = providers.Resource(
-        provide_connection, serial=serial, executor=executor
+        provide_connection, serial=serial, executor=executor, settings=settings
     )
 
-    character_encoder = providers.Factory(
-        CharacterEncoder,
-        language=language,
-        include_eighth_data_bit=include_eighth_data_bit,
-        emoji_codes=emoji_codes,
-    )
+    # Rendering
     rich_text_builder = providers.Factory(RichTextBuilder, settings=settings)
     document_renderer = providers.Factory(DocumentRenderer, settings=settings)
     pandoc_renderer = providers.Factory(PandocRenderer, settings=settings)
 
+    # Test page
     test_page = providers.Factory(
         TestPage,
         rich_text_builder=rich_text_builder,

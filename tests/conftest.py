@@ -6,6 +6,7 @@ from unittest.mock import Mock
 import pytest
 
 from imagewriter.base.settings import Settings
+from imagewriter.base.switch import DIPSwitches, SoftwareSwitches
 from imagewriter.connection import Connection
 from imagewriter.container import Container
 from imagewriter.encoding import (
@@ -105,16 +106,35 @@ class MockSerial(Serial):
 
 
 @pytest.fixture
-def serial(port: str) -> Serial:
-    return MockSerial(port)
+def container(port) -> Generator[Container]:
+    container = Container()
+
+    with container.port.override(port), container.serial.override(MockSerial(port)):
+        yield container
 
 
 @pytest.fixture
-def container(port, serial) -> Generator[Container]:
-    container = Container()
+def dip_switches(container: Container) -> DIPSwitches:
+    return container.dip_switches()
 
-    with container.port.override(port), container.serial.override(serial):
-        yield container
+
+@pytest.fixture
+def software_switches(container: Container) -> SoftwareSwitches:
+    return container.software_switches()
+
+
+@pytest.fixture
+def settings(
+    container: Container, dip_switches: DIPSwitches, software_switches: SoftwareSwitches
+) -> Generator[Settings]:
+    # TODO: This is because I override default settings in the container - it's warty
+    with container.settings.override(Settings(dip_switches, software_switches)):
+        yield container.settings()
+
+
+@pytest.fixture
+def serial(container: Container) -> Serial:
+    return container.serial()
 
 
 @pytest.fixture
@@ -124,11 +144,6 @@ def connection(container: Container) -> Generator[Connection]:
     yield connection
 
     connection.shutdown()
-
-
-@pytest.fixture
-def settings(container: Container) -> Settings:
-    return container.settings()
 
 
 @pytest.fixture

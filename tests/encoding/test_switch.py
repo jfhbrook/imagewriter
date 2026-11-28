@@ -21,7 +21,7 @@ from imagewriter.encoding.switch import (
 
 
 def test_apply() -> None:
-    switches = SoftwareSwitches.from_switches(
+    switches = SoftwareSwitches(
         {
             SoftwareSwitch.LANGUAGE_1,
             SoftwareSwitch.SOFTWARE_SELECT_RESPONSE_DISABLED,

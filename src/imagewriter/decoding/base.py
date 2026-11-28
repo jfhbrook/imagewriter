@@ -1,6 +1,5 @@
 from collections.abc import Generator
 from contextlib import contextmanager
-from dataclasses import replace
 from typing import Any, Self, cast
 
 from parsy import Parser, regex, string  # type: ignore
@@ -27,7 +26,7 @@ class State:
     """
 
     def __init__(self: Self, settings: Settings) -> None:
-        self.settings = replace(settings)
+        self.settings = Settings.replace(settings)
 
     @contextmanager
     def transaction(self: Self) -> Generator[None]:
@@ -36,16 +35,16 @@ class State:
         back state.
         """
 
-        settings = replace(self.settings)
+        settings = Settings.replace(self.settings)
         try:
             yield
         except Exception:
-            self.settings = settings
+            Settings.apply(self.settings, settings)
             raise
 
     @property
     def switches(self: Self) -> SoftwareSwitches:
-        return self.settings.switches
+        return self.settings.software_switches
 
     @switches.setter
     def switches(self: Self, switches: SoftwareSwitches) -> None:
@@ -53,7 +52,7 @@ class State:
         Set software switches.
         """
 
-        self.settings = Settings.replace_switches(self.settings, switches)
+        self.settings.software_switches = switches
 
     @property
     def pitch(self: Self) -> Pitch:

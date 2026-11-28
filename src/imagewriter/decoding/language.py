@@ -3,7 +3,7 @@ from collections.abc import Generator
 from parsy import Parser, generate  # type: ignore
 
 from imagewriter.base.character import Language
-from imagewriter.base.switch import SoftwareSwitches
+from imagewriter.base.switch import SoftwareSwitchLanguage
 from imagewriter.decoding.base import State
 from imagewriter.decoding.switch import close_software_switches, open_software_switches
 from imagewriter.encoding.language import CloseLanguageSwitches, OpenLanguageSwitches
@@ -26,13 +26,13 @@ def _from_closed_switches(
 ) -> Language:
     switches = state.switches.switches | closed_switches
 
-    return SoftwareSwitches.language_from_switches(switches)
+    return SoftwareSwitchLanguage.language(switches)
 
 
 def _from_open_switches(state: State, opened_switches: set[SoftwareSwitch]) -> Language:
     switches = state.switches.switches - opened_switches
 
-    return SoftwareSwitches.language_from_switches(switches)
+    return SoftwareSwitchLanguage.language(switches)
 
 
 def open_language_switches(state: State) -> Parser:

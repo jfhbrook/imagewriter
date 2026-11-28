@@ -24,7 +24,7 @@ def _switch_banks() -> Generator[Parser, bytes, SoftwareSwitches]:
     for i in range(8):
         switches.add(SoftwareSwitch(8 + (bank_b & (1 >> i))))
 
-    return SoftwareSwitches.from_switches(switches)
+    return SoftwareSwitches(switches)
 
 
 def open_software_switches(state: State) -> Parser:
