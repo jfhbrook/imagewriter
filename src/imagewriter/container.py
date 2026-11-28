@@ -11,7 +11,6 @@ from imagewriter.base.settings import Settings
 from imagewriter.base.switch import DIPSwitches, SoftwareSwitches
 from imagewriter.connection import Connection
 from imagewriter.debug import SerialStateObserver
-from imagewriter.encoding.character import CharacterEncoder
 from imagewriter.render import DocumentRenderer, PandocRenderer, RichTextBuilder
 from imagewriter.serial import Serial
 from imagewriter.test import TestPage
@@ -77,14 +76,6 @@ def provide_connection(
     connection.shutdown()
 
 
-def provide_character_encoder(settings: Settings) -> CharacterEncoder:
-    return CharacterEncoder(
-        language=settings.language,
-        emoji_codes=settings.emoji_codes,
-        include_eighth_data_bit=settings.include_eighth_data_bit,
-    )
-
-
 class Container(containers.DeclarativeContainer):
     """
     A dependency injection container for various ImageWriter II entities.
@@ -97,7 +88,6 @@ class Container(containers.DeclarativeContainer):
         serial: A serial connection
         observer: A serial state observer
         connection: A managed ImageWriter II connection
-        character_encoder: A character encoder for non-ASCII characters
         rich_text_builder: A builder for rich text
         document_renderer: A class for rendering Documents
         pandoc_renderer: A class for rendering text documents with `pandoc`
@@ -129,8 +119,7 @@ class Container(containers.DeclarativeContainer):
         provide_connection, serial=serial, executor=executor, settings=settings
     )
 
-    # Encoding and Rendering
-    character_encoder = providers.Factory(provide_character_encoder, settings=settings)
+    # Rendering
     rich_text_builder = providers.Factory(RichTextBuilder, settings=settings)
     document_renderer = providers.Factory(DocumentRenderer, settings=settings)
     pandoc_renderer = providers.Factory(PandocRenderer, settings=settings)
