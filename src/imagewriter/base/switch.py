@@ -4,7 +4,7 @@ in-memory software switches.
 """
 
 from enum import Enum
-from typing import Self
+from typing import Any, Self
 
 from imagewriter.base.character import Language
 from imagewriter.base.motion import FormLength
@@ -347,5 +347,11 @@ class SoftwareSwitches:
         else:
             self.switches.remove(SoftwareSwitch.IGNORE_EIGHTH_DATA_BIT)
 
-    def clone(self: Self) -> Self:
-        return self.__class__(self.switches.copy())
+    @classmethod
+    def replace(cls: type[Self], self: Self, **changes: Any) -> Self:
+        new = cls(self.switches.copy())
+
+        for name, value in changes.items():
+            setattr(new, name, value)
+
+        return new

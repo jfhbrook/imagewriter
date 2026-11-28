@@ -26,7 +26,7 @@ class State:
     """
 
     def __init__(self: Self, settings: Settings) -> None:
-        self.settings = settings.clone()
+        self.settings = Settings.replace(settings)
 
     @contextmanager
     def transaction(self: Self) -> Generator[None]:
@@ -35,7 +35,7 @@ class State:
         back state.
         """
 
-        settings = self.settings.clone()
+        settings = Settings.replace(self.settings)
         try:
             yield
         except Exception:

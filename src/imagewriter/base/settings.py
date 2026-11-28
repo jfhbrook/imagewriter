@@ -1,4 +1,4 @@
-from typing import Self, cast
+from typing import Any, Self, cast
 
 from imagewriter.base.character import Language
 from imagewriter.base.motion import LinesPerInch
@@ -119,10 +119,11 @@ class Settings:
         else:
             self.distance_between_lines = Point(9)
 
-    def clone(self: Self) -> Self:
-        copy = self.__class__(
+    @classmethod
+    def replace(cls: type[Self], self: Self, **changes: Any) -> Self:
+        new = cls(
             dip_switches=self._dip_switches,
-            software_switches=self.software_switches.clone(),
+            software_switches=SoftwareSwitches.replace(self.software_switches),
             left_margin=self.left_margin,
             tab_stops=self.tab_stops,
             distance_between_lines=self.distance_between_lines,
@@ -132,7 +133,10 @@ class Settings:
             emoji_codes=self.emoji_codes,
         )
 
-        copy.page_length = self.page_length
-        copy.pitch = self.pitch
+        new.page_length = self.page_length
+        new.pitch = self.pitch
 
-        return copy
+        for name, value in changes.items():
+            setattr(new, name, value)
+
+        return new
